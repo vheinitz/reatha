@@ -60,6 +60,11 @@ F3 User management
 F3.1 Language configuren by user
 F4 Device management
 F5 Nonification management
+F5.1 Notification sent on variable-value condition
+F5.2 Notification sent on variable-timestamp condition
+F5.3 Configurable notification message (variables-list, etc.)
+F5.4 Configurable notification channel e-mail, sms, etc.
+F5.5 Configurable notification modes: instantly, bulk-mode 
 F6 Domain-management
 F7 Customisable views per User, Domain, Device
 F8 Various data types
