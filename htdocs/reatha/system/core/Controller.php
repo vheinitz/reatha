@@ -48,9 +48,14 @@ class CI_Controller {
 
 		$this->load =& load_class('Loader', 'core');
 
-		$this->load->initialize();
-		
+		$this->load->_base_classes =& is_loaded();
+
+		$this->load->_ci_autoloader();   
+                
+//                $this->output->enable_profiler(TRUE);
+
 		log_message('debug', "Controller Class Initialized");
+
 	}
 
 	public static function &get_instance()

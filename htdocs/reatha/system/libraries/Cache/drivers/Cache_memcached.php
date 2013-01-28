@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2006 - 2012 EllisLab, Inc.
+ * @copyright	Copyright (c) 2006 - 2011 EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 2.0
@@ -64,16 +64,7 @@ class CI_Cache_memcached extends CI_Driver {
 	 */
 	public function save($id, $data, $ttl = 60)
 	{
-		if (get_class($this->_memcached) == 'Memcached')
-		{
-			return $this->_memcached->set($id, array($data, time(), $ttl), $ttl);
-		}
-		else if (get_class($this->_memcached) == 'Memcache')
-		{
-			return $this->_memcached->set($id, array($data, time(), $ttl), 0, $ttl);
-		}
-		
-		return FALSE;
+		return $this->_memcached->add($id, array($data, time(), $ttl), $ttl);
 	}
 
 	// ------------------------------------------------------------------------
@@ -162,7 +153,10 @@ class CI_Cache_memcached extends CI_Driver {
 			}			
 		}
 		
-		$this->_memcached = new Memcached();
+                if(class_exists("Memcached"))
+                  $this->_memcached = new Memcached();
+                else
+                  $this->_memcached = new Memcache();		
 
 		foreach ($this->_memcache_conf as $name => $cache_server)
 		{
@@ -198,7 +192,7 @@ class CI_Cache_memcached extends CI_Driver {
 	 */
 	public function is_supported()
 	{
-		if ( ! extension_loaded('memcached'))
+		if ( !extension_loaded('memcached') && !extension_loaded('memcache'))
 		{
 			log_message('error', 'The Memcached Extension must be loaded to use Memcached Cache.');
 			

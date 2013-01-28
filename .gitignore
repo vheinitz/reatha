@@ -1,0 +1,5 @@
+htdocs/reatha/application/config/database.php
+htdocs/reatha/application/config/config.php
+htdocs/reatha/application/cache/*
+htdocs/reatha/application/logs/*
+htdocs/reatha/application/cache_database/*
