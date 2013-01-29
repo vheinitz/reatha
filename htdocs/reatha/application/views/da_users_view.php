@@ -4,14 +4,31 @@
   	<thead>
 	    <tr>
 		    <th style="text-align: center">Username</th>
-	        <th style="text-align: center">Device Assigned</th>
+	        <th style="text-align: center">Devices Assigned</th>
 	        <th style="text-align: center">Action</th>
 	    </tr>
 	</thead>
 	<tbody> 
-<?php foreach($users as $domain_user){ ?>
+<?php foreach($users as $domain_user){ 
+	$assigned_devices = $domain_user->device->get(); ?>
 <tr>
-	<td><?php echo $domain_user->username; ?></td><td><?php echo $domain_user->device->description; ?></td><td><a href="#" onclick="return confirm('Are you sure?')">Delete</a></td>
+	<td><?php echo $domain_user->username; ?></td>
+	<td><?php foreach($assigned_devices as $assigned_device){ 
+		echo $assigned_device->description." (<a href='/da/unnasign_device/$assigned_device->id/$domain_user->id'>Unnasign</a>)<br/>";
+		} ?>
+	<form class="form-inline" action="/da/assign_device" method="post">
+		<label>Assign New Device: </label>
+		<select name='device'>
+			<?php foreach($devices as $device){
+				if(!$domain_user->has_device($device->id)) 
+					echo "<option value='".$device->id."'>".$device->description."</option>";
+			} ?> 
+		</select>
+		<input type="hidden" name="user_id" value="<?php echo $domain_user->id; ?>" />
+		<button type="submit" class="btn">Assign</button>
+	</form>	
+	</td>
+	<td><a href="/da/delete_user/<?php echo $domain_user->id; ?>" onclick="return confirm('Are you sure?')">Delete User</a></td>
 </tr>
 <?php } ?>
 </tbody>

@@ -13,7 +13,7 @@
 	<tr>
 		<td><?php echo $domain->name; ?></td>
 		<td><?php echo $domain_admin->username; ?></td>
-		<td><a href="#" onclick="return confirm('Are you sure?')">Delete</a></td>
+		<td><a href="/a/delete_domain/<?php echo $domain->id; ?>" onclick="return confirm('This action will delete all domain-related data such as domain admins, devices and users. Continue?')">Delete Domain</a></td>
 	</tr>
 <?php } ?>
 </tbody>

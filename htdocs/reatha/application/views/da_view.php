@@ -4,13 +4,21 @@
   	<thead>
 	    <tr>
 		    <th style="text-align: center">Device</th>
+		    <th style="text-align: center">Assigned Users</th>
 	        <th style="text-align: center">Action</th>
 	    </tr>
 	</thead>
 	<tbody> 
-<?php foreach($devices as $device){ ?>
+<?php foreach($devices as $device){ 
+	$device_users = $device->users->get(); ?>
 <tr>
-	<td><?php echo $device->description; ?></td><td><a href="/da/delete_device/<?php echo $device->id; ?>" onclick="return confirm('Are you sure?')">Delete</a></td>
+	<td><?php echo $device->description; ?></td>
+	<td><?php
+		foreach($device_users as $device_user){
+			echo $device_user->username."<br/>";
+		}
+	 ?></td>
+	<td><a href="/da/delete_device/<?php echo $device->id; ?>" onclick="return confirm('Are you sure?')">Delete Device</a></td>
 <tr>	
 <?php } ?>
 </tbody>

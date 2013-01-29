@@ -58,6 +58,31 @@ class A extends CI_Controller{
 		redirect('/a');		
 	}
 
+	function delete_domain($domain_id){
+		$domain = new Domain($domain_id);
+
+		//check if domain exists
+		if($domain->exists()){
+
+			//check if user has the right to delete this domain
+			$user = new User($this->tank_auth->get_user_id());
+			if($user->role == '1'){
+				if($domain->delete_domain()){
+					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Domain successfully deleted"));						
+				} else {
+					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, we were not able to delete this domain. Please try again."));						
+					log_message('error',"a/delete_domain | could not delete domain, domain_id: $domain_id");
+				}
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you don't have enough rights to perform this action"));
+				log_message('error',"a/delete_domain | user is not an admin; domain_id: $domain_id");				
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this domain doesn't exist"));
+			log_message('error',"a/delete_domain | domain does not exist, domain_id:$domain_id");			
+		}
+		redirect('a');		
+	}		
 
 }
 
