@@ -1,10 +1,10 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Main extends CI_Controller{
-	function __construnct(){
-		parent::__construnct();
+	function __construct(){
+		parent::__construct();
 		if(!$this->tank_auth->is_logged_in()){
-			redirect('/auth/login');
+			redirect('auth/login');
 		}
 	}
 
@@ -13,13 +13,13 @@ class Main extends CI_Controller{
 		$data['user'] = $user;
 		switch ($user->role) {
 			case 1:
-				$this->load->view('admin_view',$data);
+				redirect('a');
 				break;
 			case 2:
-				$this->load->view('domain_admin_view',$data);
+				redirect('da');
 				break;				
 			case 3:
-				$this->load->view('user_view',$data);
+				redirect('u');
 				break;			
 		}
 	}
