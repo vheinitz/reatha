@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="ReathaTestClient"
-	ProjectGUID="{0CB830DE-F2D1-3F56-BD57-16D5436EDCD8}"
+	ProjectGUID="{E4E17C35-7E10-3C5D-94E0-39636CDC0669}"
 	Keyword="Qt4VSv1.0">
 	<Platforms>
 		<Platform
@@ -19,7 +19,7 @@
 			UseOfMfc="0">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;..\..\..\..\Qt\4.8.4\include\QtCore&quot;,&quot;..\..\..\..\Qt\4.8.4\include\QtNetwork&quot;,&quot;..\..\..\..\Qt\4.8.4\include\QtGui&quot;,&quot;..\..\..\..\Qt\4.8.4\include\QtXml&quot;,&quot;..\..\..\..\Qt\4.8.4\include&quot;,&quot;..\..\..\..\Qt\4.8.4\include\ActiveQt&quot;,&quot;debug&quot;,&quot;.&quot;,..\..\..\..\Qt\4.8.4\mkspecs\default"
+				AdditionalIncludeDirectories="&quot;c:\Qt\4.8.4\include\QtCore&quot;,&quot;c:\Qt\4.8.4\include\QtNetwork&quot;,&quot;c:\Qt\4.8.4\include\QtGui&quot;,&quot;c:\Qt\4.8.4\include\QtXml&quot;,&quot;c:\Qt\4.8.4\include&quot;,&quot;c:\Qt\4.8.4\include\ActiveQt&quot;,&quot;debug&quot;,&quot;.&quot;,c:\Qt\4.8.4\mkspecs\default"
 				AdditionalOptions="-Zm200 -w34100 -w34189"
 				AssemblerListingLocation="debug\"
 				BufferSecurityCheck="false"
@@ -73,7 +73,7 @@
 			UseOfMfc="0">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;..\..\..\..\Qt\4.8.4\include\QtCore&quot;,&quot;..\..\..\..\Qt\4.8.4\include\QtNetwork&quot;,&quot;..\..\..\..\Qt\4.8.4\include\QtGui&quot;,&quot;..\..\..\..\Qt\4.8.4\include\QtXml&quot;,&quot;..\..\..\..\Qt\4.8.4\include&quot;,&quot;..\..\..\..\Qt\4.8.4\include\ActiveQt&quot;,&quot;release&quot;,&quot;.&quot;,..\..\..\..\Qt\4.8.4\mkspecs\default"
+				AdditionalIncludeDirectories="&quot;c:\Qt\4.8.4\include\QtCore&quot;,&quot;c:\Qt\4.8.4\include\QtNetwork&quot;,&quot;c:\Qt\4.8.4\include\QtGui&quot;,&quot;c:\Qt\4.8.4\include\QtXml&quot;,&quot;c:\Qt\4.8.4\include&quot;,&quot;c:\Qt\4.8.4\include\ActiveQt&quot;,&quot;release&quot;,&quot;.&quot;,c:\Qt\4.8.4\mkspecs\default"
 				AdditionalOptions="-Zm200 -w34100 -w34189"
 				AssemblerListingLocation="release\"
 				BufferSecurityCheck="false"
@@ -141,7 +141,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						AdditionalDependencies="C:\Qt\4.8.4\bin\moc.exe;reathatestclient.h"
-						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_XML_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;..\..\..\..\Qt\4.8.4\include\QtCore&quot; -I&quot;..\..\..\..\Qt\4.8.4\include\QtNetwork&quot; -I&quot;..\..\..\..\Qt\4.8.4\include\QtGui&quot; -I&quot;..\..\..\..\Qt\4.8.4\include\QtXml&quot; -I&quot;..\..\..\..\Qt\4.8.4\include&quot; -I&quot;..\..\..\..\Qt\4.8.4\include\ActiveQt&quot; -I&quot;debug&quot; -I&quot;.&quot; -I..\..\..\..\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 reathatestclient.h -o debug\moc_reathatestclient.cpp"
+						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_XML_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;c:\Qt\4.8.4\include\QtCore&quot; -I&quot;c:\Qt\4.8.4\include\QtNetwork&quot; -I&quot;c:\Qt\4.8.4\include\QtGui&quot; -I&quot;c:\Qt\4.8.4\include\QtXml&quot; -I&quot;c:\Qt\4.8.4\include&quot; -I&quot;c:\Qt\4.8.4\include\ActiveQt&quot; -I&quot;debug&quot; -I&quot;.&quot; -Ic:\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 reathatestclient.h -o debug\moc_reathatestclient.cpp"
 						Description="MOC reathatestclient.h"
 						Outputs="debug\moc_reathatestclient.cpp"
 						Path="c:\Qt\4.8.4\bin" />
@@ -151,7 +151,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						AdditionalDependencies="C:\Qt\4.8.4\bin\moc.exe;reathatestclient.h"
-						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_XML_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;..\..\..\..\Qt\4.8.4\include\QtCore&quot; -I&quot;..\..\..\..\Qt\4.8.4\include\QtNetwork&quot; -I&quot;..\..\..\..\Qt\4.8.4\include\QtGui&quot; -I&quot;..\..\..\..\Qt\4.8.4\include\QtXml&quot; -I&quot;..\..\..\..\Qt\4.8.4\include&quot; -I&quot;..\..\..\..\Qt\4.8.4\include\ActiveQt&quot; -I&quot;release&quot; -I&quot;.&quot; -I..\..\..\..\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 reathatestclient.h -o release\moc_reathatestclient.cpp"
+						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_XML_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;c:\Qt\4.8.4\include\QtCore&quot; -I&quot;c:\Qt\4.8.4\include\QtNetwork&quot; -I&quot;c:\Qt\4.8.4\include\QtGui&quot; -I&quot;c:\Qt\4.8.4\include\QtXml&quot; -I&quot;c:\Qt\4.8.4\include&quot; -I&quot;c:\Qt\4.8.4\include\ActiveQt&quot; -I&quot;release&quot; -I&quot;.&quot; -Ic:\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 reathatestclient.h -o release\moc_reathatestclient.cpp"
 						Description="MOC reathatestclient.h"
 						Outputs="release\moc_reathatestclient.cpp"
 						Path="c:\Qt\4.8.4\bin" />

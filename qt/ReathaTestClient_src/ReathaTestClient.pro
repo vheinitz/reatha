@@ -2,6 +2,8 @@
 #Reference Client for testing Reatha - remote device monitoring
 #Copyright 2013, Valentin Heinitz
 #vheinitz@googlemail.com, 2013-01-16
+#Changelog:
+# 2013-01-28	Added persistence
 
 
 QT       += core gui xml network
@@ -13,8 +15,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        reathatestclient.cpp
+        reathatestclient.cpp\
+		persistence.cpp
+		
 
-HEADERS  += reathatestclient.h
+HEADERS  += reathatestclient.h\
+            persistence.h
+			
 
 FORMS    += reathatestclient.ui
