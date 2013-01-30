@@ -48,6 +48,7 @@
 				
 				<label>Assign to device</label>
 			 	<select name="device">
+				echo "<option value=''></option>";
 				<?php foreach($devices as $device){ 
 					echo "<option value='".$device->id."'>".$device->description."</option>";
 			 	} ?> 
