@@ -13,14 +13,14 @@
 	<tr>
 		<td><?php echo $domain->name; ?></td>
 		<td><?php echo $domain_admin->username; ?></td>
-		<td><a href="/a/delete_domain/<?php echo $domain->id; ?>" onclick="return confirm('This action will delete all domain-related data such as domain admins, devices and users. Continue?')">Delete Domain</a></td>
+		<td><a href="<?php echo base_url(); ?>a/delete_domain/<?php echo $domain->id; ?>" onclick="return confirm('This action will delete all domain-related data such as domain admins, devices and users. Continue?')">Delete Domain</a></td>
 	</tr>
 <?php } ?>
 </tbody>
 </table>
 <hr/>
 <h4>New Domain</h4>
-<form action="/a/add_domain" method="post">
+<form action="<?php echo base_url(); ?>a/add_domain" method="post">
 	<fieldset>
 		<label>Domain Name</label>
 		<input type="text" name="domain_name" id="domain_name" maxlength=150 />

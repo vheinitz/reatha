@@ -55,7 +55,7 @@ class A extends CI_Controller{
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));
 		}
-		redirect('/a');		
+		redirect('a');		
 	}
 
 	function delete_domain($domain_id){

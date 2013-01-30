@@ -65,7 +65,7 @@ class Da extends CI_Controller{
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));			
 		}
-		redirect('/da');
+		redirect('da');
 	}	
 
 	function add_user(){
@@ -93,7 +93,7 @@ class Da extends CI_Controller{
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));	
 		}
-		redirect('/da/users');
+		redirect('da/users');
 	}
 
 	function unnasign_device($device_id, $user_id){
@@ -106,9 +106,9 @@ class Da extends CI_Controller{
 			$user = new User($user_id);
 			if($user->has_device($device_id)){
 				if($user->unnassign_device($device_id)){
-					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device unnasigned"));					
+					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device unnassigned"));					
 				} else {
-					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Device could not be unnasigned. Please try again"));	
+					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Device could not be unnassigned. Please try again"));	
 				}
 			} else {
 				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"User id not associated with this Device. "));
@@ -137,9 +137,9 @@ class Da extends CI_Controller{
 				$user = new User($user_id);
 				if(!$user->has_device($device_id)){
 					if($user->assign_device($device_id)){
-						$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device unnasigned"));					
+						$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device assigned"));					
 					} else {
-						$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Device could not be asigned. Please try again"));	
+						$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Device could not be assigned. Please try again"));	
 					}
 				} else {
 					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"User id is already associated with this Device. "));

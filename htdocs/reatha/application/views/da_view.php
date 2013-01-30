@@ -18,14 +18,14 @@
 			echo $device_user->username."<br/>";
 		}
 	 ?></td>
-	<td><a href="/da/delete_device/<?php echo $device->id; ?>" onclick="return confirm('Are you sure?')">Delete Device</a></td>
+	<td><a href="<?php echo base_url(); ?>da/delete_device/<?php echo $device->id; ?>" onclick="return confirm('Are you sure?')">Delete Device</a></td>
 <tr>	
 <?php } ?>
 </tbody>
 </table>
 <hr/>
 <h4>New Device</h4>
-<form action="/da/add_device" method="post">
+<form action="<?php echo base_url(); ?>da/add_device" method="post">
 	<fieldset>
 		<label>Device Description</label>
 		<input type="text" name="device_description" maxlength=150 />

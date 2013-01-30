@@ -18,7 +18,7 @@ class Auth extends CI_Controller
 		if ($message = $this->session->flashdata('message')) {
 			$this->load->view('auth/general_message', array('message' => $message));
 		} else {
-			redirect('/auth/login/');
+			redirect('auth/login');
 		}
 	}
 
@@ -73,13 +73,13 @@ class Auth extends CI_Controller
 							$data['user'] = $user;
 							switch ($user->role) {
 								case 1:
-									redirect('/a');
+									redirect('a');
 									break;
 								case 2:
-									redirect('/da');
+									redirect('da');
 									break;				
 								case 3:
-									redirect('/u');
+									redirect('u');
 									break;			
 							}					
 
@@ -89,7 +89,7 @@ class Auth extends CI_Controller
 						$this->_show_message($this->lang->line('auth_message_banned').' '.$errors['banned']);
 
 					} elseif (isset($errors['not_activated'])) {				// not activated user
-						redirect('/auth/send_again/');
+						redirect('auth/send_again/');
 
 					} else {													// fail
 						foreach ($errors as $k => $v)	$data['errors'][$k] = $this->lang->line($v);

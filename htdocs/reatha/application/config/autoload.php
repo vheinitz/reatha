@@ -111,6 +111,9 @@ $autoload['language'] = array();
 
 $autoload['model'] = array();
 
+//manually setting timezone, to remove "Strict standards" notice
+date_default_timezone_set('Europe/Berlin');
+
 
 /* End of file autoload.php */
 /* Location: ./application/config/autoload.php */
