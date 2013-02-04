@@ -14,7 +14,7 @@
 | path to your installation.
 |
 */
-$config['base_url']	= '/htdocs/reatha';
+$config['base_url']	= '';
 
 /*
 |--------------------------------------------------------------------------
