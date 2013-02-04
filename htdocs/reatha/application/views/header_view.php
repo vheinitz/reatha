@@ -17,7 +17,20 @@
                             <li><a href="<?php echo base_url(); ?>a/domain_admins">Domain Admins</a></li>
                         </ul>                    
                     <?php } elseif($user->role == '2'){ ?>
-                        <p class="navbar-text pull-left">Domain: <strong><?php echo $domain->name; ?></strong></p>
+                        <p class="navbar-text pull-left">Domain:</p>
+                            <ul class="nav">
+                            <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <b><?php echo $this->session->userdata('managing_domain_name'); ?></b>
+                            <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <?php foreach($domains as $domain){ 
+                                    echo "<li><a tabindex='-1' href='".base_url()."da/change_managing_domain/$domain->id'>$domain->name</a></li>";
+                                } ?>
+                            </ul>
+                            </li>
+                            </ul>                        
                         <ul class="nav">
                             <li class="divider-vertical"></li>
                             <li><a href="<?php echo base_url(); ?>da">Devices</a></li>

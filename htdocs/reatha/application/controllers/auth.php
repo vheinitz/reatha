@@ -76,6 +76,8 @@ class Auth extends CI_Controller
 									redirect('a');
 									break;
 								case 2:
+									$this->session->set_userdata('managing_domain_id',$user->domains->id);
+									$this->session->set_userdata('managing_domain_name',$user->domains->name);
 									redirect('da');
 									break;				
 								case 3:

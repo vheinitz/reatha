@@ -36,9 +36,6 @@ class A extends CI_Controller{
 		$user = new User($this->tank_auth->get_user_id());
 		$this->load->library('form_validation');
 		$this->form_validation->set_rules('domain_name','Domain Name','required|trim|xss_clean|callback_valid_domain_name');
-		$this->form_validation->set_rules('domain_admin_username','Domain Admin Username','required|trim|xss_clean');
-		$this->form_validation->set_rules('domain_admin_password','Domain Admin Password','required|trim|xss_clean');
-		$this->form_validation->set_rules('domain_admin_email','Domain Admin Email','required|trim|xss_clean');
 		$this->form_validation->set_message('valid_domain_name','Sorry, this domain name is already in use.');
 		if($this->form_validation->run()){
 			$domain_name = $this->input->post('domain_name',true);
@@ -50,21 +47,21 @@ class A extends CI_Controller{
 				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, we couldn't save this domain. Please try again."));
 			} else {
 				//domain saved, create the domain_admin user
-				$this->load->library('tank_auth');
-				$email_activation = $this->config->item('email_activation', 'tank_auth');
-				if (!is_null($data = $this->tank_auth->create_user(
-						$this->form_validation->set_value('domain_admin_username'),
-						$this->form_validation->set_value('domain_admin_email'),
-						$this->form_validation->set_value('domain_admin_password'),
-						$email_activation))){
-							//domain_admin user created, save relationship between domain and user, set user role as domain admin
-							$user = new User($data['user_id']);
-							$domain->save_domain_admin($user);
-							$user->role = '2'; $user->save();	
+				// $this->load->library('tank_auth');
+				// $email_activation = $this->config->item('email_activation', 'tank_auth');
+				// if (!is_null($data = $this->tank_auth->create_user(
+				// 		$this->form_validation->set_value('domain_admin_username'),
+				// 		$this->form_validation->set_value('domain_admin_email'),
+				// 		$this->form_validation->set_value('domain_admin_password'),
+				// 		$email_activation))){
+				// 			//domain_admin user created, save relationship between domain and user, set user role as domain admin
+				// 			$user = new User($data['user_id']);
+				// 			$domain->save_domain_admin($user);
+				// 			$user->role = '2'; $user->save();	
 							$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Domain successfully created."));				
-						} else {
-							$this->session->set_flashdata('message',array('type'=>'error', 'message'=>'Could not create user.'));
-						}												
+						// } else {
+						// 	$this->session->set_flashdata('message',array('type'=>'error', 'message'=>'Could not create user.'));
+						// }												
 			}
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));
@@ -98,14 +95,14 @@ class A extends CI_Controller{
 		redirect('a');		
 	}
 
-	function unnasign_domain_admin($domain_id,$domain_admin_id){
+	function unassign_domain_admin($domain_id,$domain_admin_id){
 		$domain = new Domain($domain_id);
 		//check if domain exists
 		if($domain->exists()){
 			//such domain exists, attemt to unnasign domain admin from domain
 			$user = new User($domain_admin_id);
-			if($user->unnasign_domain($domain_id)){
-				$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Domain admin successfully unnasigned"));					
+			if($user->unassign_domain($domain_id)){
+				$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Domain admin successfully unassigned"));					
 			} else {
 				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, something went wrong. Please try again"));
 				log_message('error',"a/unnasign_domain_admin | could not unnasign domain_admin from domain; domain:$domain_id, domain_admin_id: $domain_admin_id");					
@@ -115,11 +112,60 @@ class A extends CI_Controller{
 			log_message('error',"a/unnasign_domain_admin | domain does not exist, domain_id:$domain_id");				
 		}
 
-		redirect('a');
+		redirect('a/domain_admins');
 	}
 
 	function assign_domain_admin(){
-		//TODO get domain id and user id via post and save user as a domain admin
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('domain_id','Domain Id','required|trim|xss_clean');
+		$this->form_validation->set_rules('domain_admin_id','Domain Admin Id','required|trim|xss_clean');
+		if($this->form_validation->run()){
+			$domain_id = $this->form_validation->set_value('domain_id');
+			$domain_admin_id = $this->form_validation->set_value('domain_admin_id');
+			$user = new User($domain_admin_id);
+			if($user->assign_domain($domain_id)){
+				$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Domain admin successfully assigned"));					
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, something went wrong. Please try again."));
+				log_message('error',"a/assign_domain_admin | could not assign new domain admin to domain, domain_id: $domain_id, $domain_admin_id: $domain_admin_id");				
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));
+		}
+
+		redirect('a/domain_admins');
+	}
+
+	function add_domain_admin(){
+		$this->load->library('form_validation');		
+		$this->form_validation->set_rules('username','Username','trim|required|xss_clean');
+		$this->form_validation->set_rules('password','Password','trim|required|xss_clean');
+		$this->form_validation->set_rules('email','Email','trim|required|xss_clean');
+		$this->form_validation->set_rules('domain_id','Domain Id','trim|xss_clean');
+		if($this->form_validation->run()){
+			$this->load->library('tank_auth');
+			$email_activation = $this->config->item('email_activation', 'tank_auth');
+			if (!is_null($data = $this->tank_auth->create_user(
+					$this->form_validation->set_value('username'),
+					$this->form_validation->set_value('email'),
+					$this->form_validation->set_value('password'),
+					$email_activation))){
+				//assign domain admin to to domain
+				$domain_id = $this->form_validation->set_value('domain_id');
+				$new_user = new User($data['user_id']);
+				$new_user->role = '2';
+				$new_user->save();				
+				if(!empty($domain_id)){
+					//if we have a domain id, save the newly created user as a domain admin
+					$domain = new Domain($this->form_validation->set_value('domain_id'));
+					$domain->save_domain_admin($new_user);					
+				}
+				$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"User created successfully"));	
+			}			
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));	
+		}
+		redirect('a/domain_admins');
 	}
 
 	function valid_domain_name($domain_name){

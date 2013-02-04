@@ -12,7 +12,11 @@
 <?php foreach($devices as $device){ 
 	$device_users = $device->users->get(); ?>
 <tr>
-	<td><?php echo $device->description; ?></td>
+	<td>
+		<?php echo "<b>Name: </b>".$device->name; ?><br/>
+		<?php echo "<b>Location: </b>".$device->location; ?><br/>
+		<?php echo "<b>Description: </b>".$device->description; ?><br/>
+	</td>
 	<td><?php
 		foreach($device_users as $device_user){
 			echo $device_user->username."<br/>";
@@ -27,8 +31,12 @@
 <h4>New Device</h4>
 <form action="<?php echo base_url(); ?>da/add_device" method="post">
 	<fieldset>
+		<label>Device Name</label>
+		<input type="text" name="device_name" maxlength=100 />		
 		<label>Device Description</label>
-		<input type="text" name="device_description" maxlength=150 />
+		<input type="text" name="device_description" maxlength=250 />
+		<label>Device Location</label>
+		<input type="text" name="device_location" maxlength=150 />
 		<label></label>
 		<input type="submit" class="btn" value="Add" />
 	</fieldset>

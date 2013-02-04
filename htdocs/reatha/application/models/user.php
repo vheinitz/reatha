@@ -30,9 +30,13 @@ class User extends Datamapper{
     	return $this->db->insert('devices_users', array('user_id' => $this->id, 'device_id' => $device_id));
     }
 
-    function unnasign_domain($domain_id){
+    function unassign_domain($domain_id){
         return $this->db->where('domain_id',$domain_id)->where('da_id',$this->id)->delete('domain_admin_domains');        
     }
+
+    function assign_domain($domain_id){
+        return $this->db->insert('domain_admin_domains', array('da_id' => $this->id, 'domain_id' => $domain_id));
+    }    
 
     function is_admin_of($domain_id){
         return $this->db->where('da_id',$this->id)->where('domain_id',$domain_id)->count_all_results('domain_admin_domains');        
