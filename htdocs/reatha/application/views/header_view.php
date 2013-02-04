@@ -14,6 +14,7 @@
                     if($user->role == '1'){ ?>
                         <ul class="nav">
                             <li><a href="<?php echo base_url(); ?>a">Domains</a></li>
+                            <li><a href="<?php echo base_url(); ?>a/domain_admins">Domain Admins</a></li>
                         </ul>                    
                     <?php } elseif($user->role == '2'){ ?>
                         <p class="navbar-text pull-left">Domain: <strong><?php echo $domain->name; ?></strong></p>

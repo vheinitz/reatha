@@ -1,7 +1,14 @@
 <?php
 class User extends Datamapper{
     var $table = "users";
-    var $has_many = array('device');
+    var $has_many = array('device',
+        'domain' => array(
+            'class'         => 'domain',
+            'other_field'   => 'domain_admin',
+            'join_self_as'  => 'da',
+            'join_other_as' => 'domain',
+            'join_table'    => 'domain_admin_domains'
+            ));
     var $has_one = array('user_profile');
     var $auto_populate_has_one = TRUE;
     var $auto_populate_has_many = TRUE;
@@ -21,6 +28,14 @@ class User extends Datamapper{
 
     function assign_device($device_id){
     	return $this->db->insert('devices_users', array('user_id' => $this->id, 'device_id' => $device_id));
+    }
+
+    function unnasign_domain($domain_id){
+        return $this->db->where('domain_id',$domain_id)->where('da_id',$this->id)->delete('domain_admin_domains');        
+    }
+
+    function is_admin_of($domain_id){
+        return $this->db->where('da_id',$this->id)->where('domain_id',$domain_id)->count_all_results('domain_admin_domains');        
     }
 
     function delete_user(){

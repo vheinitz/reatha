@@ -3,16 +3,17 @@
     	<thead>
 	    <tr>
 	        <th style="width:150px; text-align: center">Domain Name</th>
-	        <th style="width:150px; text-align: center">Domain Admin</th>                
+	        <th style="width:150px; text-align: center">Domain Admins</th>                
 	        <th style="width:140px; text-align: center">Action</th>
 	    </tr>
 	    </thead>
 	    <tbody>    	
-<?php foreach($domains as $domain){ 
-	$domain_admin = new User($domain->da_id); ?>
+<?php foreach($domains as $domain){ ?>
 	<tr>
 		<td><?php echo $domain->name; ?></td>
-		<td><?php echo $domain_admin->username; ?></td>
+		<td><?php foreach($domain->domain_admin as $domain_admin){
+			echo $domain_admin->username." (<a href='".base_url()."a/unnasign_domain_admin/$domain->id/$domain_admin->id'>Unnasign</a>)<br/>";
+		} ?></td>
 		<td><a href="<?php echo base_url(); ?>a/delete_domain/<?php echo $domain->id; ?>" onclick="return confirm('This action will delete all domain-related data such as domain admins, devices and users. Continue?')">Delete Domain</a></td>
 	</tr>
 <?php } ?>
