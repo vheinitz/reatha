@@ -124,6 +124,9 @@ class A extends CI_Controller{
 			$domain_admin_id = $this->form_validation->set_value('domain_admin_id');
 			$user = new User($domain_admin_id);
 			if($user->assign_domain($domain_id)){
+				$domain = new Domain($domain_id);
+				//domain admin assigned to domain, send email notification to domain admin
+				$user->send_domain_admin_email_notification($domain);
 				$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Domain admin successfully assigned"));					
 			} else {
 				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, something went wrong. Please try again."));
@@ -150,6 +153,10 @@ class A extends CI_Controller{
 					$this->form_validation->set_value('email'),
 					$this->form_validation->set_value('password'),
 					$email_activation))){
+				//send welcome email to newly created domain admin, with login details
+				$data['site_name'] = $this->config->item('website_name', 'tank_auth');
+				$this->_send_email('welcome', $data['email'], $data);
+
 				//assign domain admin to to domain
 				$domain_id = $this->form_validation->set_value('domain_id');
 				$new_user = new User($data['user_id']);
@@ -158,7 +165,10 @@ class A extends CI_Controller{
 				if(!empty($domain_id)){
 					//if we have a domain id, save the newly created user as a domain admin
 					$domain = new Domain($this->form_validation->set_value('domain_id'));
-					$domain->save_domain_admin($new_user);					
+					if($domain->save_domain_admin($new_user)){
+						//domain admin assigned to domain, send email notification to domain admin
+						$new_user->send_domain_admin_email_notification($domain);
+					}					
 				}
 				$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"User created successfully"));	
 			}			
@@ -168,9 +178,47 @@ class A extends CI_Controller{
 		redirect('a/domain_admins');
 	}
 
+	function delete_domain_admin($user_id){
+		$user = new User($user_id);
+
+		//check if such user exists
+		if($user->exists()){
+
+			//check if user is a domain admin
+			if($user->role == '2'){
+				if($user->delete_user()){
+					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"User successfully deleted"));						
+				} else {
+					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, we were not able to delete this user. Please try again."));						
+					log_message('error',"a/delete_domain_admin | could not delete user, user_id: $user_id");
+				}
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you don't have enough rights to perform this action"));
+				log_message('error',"a/delete_domain_admin | the deletion user is not a domain admin; user_id: $user_id");				
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this user doesn't exist"));
+			log_message('error',"a/delete_domain_admin | user does not exist, user_id:$user_id");			
+		}
+		redirect('a/domain_admins');			
+	}
+
 	function valid_domain_name($domain_name){
 		return !($this->db->where('name',$domain_name)->count_all_results('domains')); 
-	}		
+	}
+
+	function _send_email($type, $email, &$data)
+	{
+		$this->load->config('tank_auth', TRUE);
+		$this->lang->load('tank_auth');
+		$this->load->library('email');
+		$this->email->from($this->config->item('webmaster_email', 'tank_auth'), $this->config->item('website_name', 'tank_auth'));
+		$this->email->reply_to($this->config->item('webmaster_email', 'tank_auth'), $this->config->item('website_name', 'tank_auth'));
+		$this->email->to($email);
+		$this->email->subject(sprintf($this->lang->line('auth_subject_'.$type), $this->config->item('website_name', 'tank_auth')));
+		$this->email->message($this->load->view('email/'.$type.'-html', $data, TRUE));
+		$this->email->send();
+	}			
 
 }
 

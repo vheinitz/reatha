@@ -14,14 +14,14 @@
 <tr>
 	<td><?php echo $domain_user->username; ?></td>
 	<td><?php foreach($assigned_devices as $assigned_device){ 
-		echo $assigned_device->description." (<a href='".base_url()."da/unnasign_device/$assigned_device->id/$domain_user->id'>Unnasign</a>)<br/>";
+		echo $assigned_device->name." (<a href='".base_url()."da/unnasign_device/$assigned_device->id/$domain_user->id'>Unnasign</a>)<br/>";
 		} ?>
 	<form class="form-inline" action="<?php echo base_url(); ?>da/assign_device" method="post">
 		<label>Assign New Device: </label>
 		<select name='device'>
 			<?php foreach($devices as $device){
 				if(!$domain_user->has_device($device->id)) 
-					echo "<option value='".$device->id."'>".$device->description."</option>";
+					echo "<option value='".$device->id."'>".$device->name."</option>";
 			} ?> 
 		</select>
 		<input type="hidden" name="user_id" value="<?php echo $domain_user->id; ?>" />
@@ -47,14 +47,15 @@
 				<input type="text" name="email" maxlength=150 />
 				
 				<label>Assign to device</label>
-			 	<select name="device">
+			 	<select name="device_id">
 				echo "<option value=''></option>";
 				<?php foreach($devices as $device){ 
-					echo "<option value='".$device->id."'>".$device->description."</option>";
+					echo "<option value='".$device->id."'>".$device->name."</option>";
 			 	} ?> 
 				</select>
 
 				<label></label>
+				<input type="hidden" name="domain_id" value="<?php echo $this->session->userdata('managing_domain_id'); ?>" />
 				<input type="submit" class="btn" value="Add" />
 			</fieldset>
 		</form>

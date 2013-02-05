@@ -291,7 +291,8 @@ class Auth extends CI_Controller
 					// Send email with password activation link
 					$this->_send_email('forgot_password', $data['email'], $data);
 
-					$this->_show_message($this->lang->line('auth_message_new_password_sent'));
+					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>$this->lang->line('auth_message_new_password_sent')));
+					redirect('auth/forgot_password');					
 
 				} else {
 					$errors = $this->tank_auth->get_error_message();
@@ -329,10 +330,12 @@ class Auth extends CI_Controller
 				// Send email with new password
 				$this->_send_email('reset_password', $data['email'], $data);
 
-				$this->_show_message($this->lang->line('auth_message_new_password_activated').' '.anchor('/auth/login/', 'Login'));
+				$this->session->set_flashdata('message',array('type'=>'success', 'message'=>$this->lang->line('auth_message_new_password_activated')));
+				redirect('auth/login');
 
 			} else {														// fail
-				$this->_show_message($this->lang->line('auth_message_new_password_failed'));
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>$this->lang->line('auth_message_new_password_failed')));
+				redirect('auth/forgot_password');
 			}
 		} else {
 			// Try to activate user by password key (if not activated yet)
@@ -363,13 +366,14 @@ class Auth extends CI_Controller
 			$this->form_validation->set_rules('confirm_new_password', 'Confirm new Password', 'trim|required|xss_clean|matches[new_password]');
 
 			$data['errors'] = array();
+			$data['user']	= new User($this->tank_auth->get_user_id());
 
 			if ($this->form_validation->run()) {								// validation ok
 				if ($this->tank_auth->change_password(
 						$this->form_validation->set_value('old_password'),
 						$this->form_validation->set_value('new_password'))) {	// success
-					$this->_show_message($this->lang->line('auth_message_password_changed'));
-
+							$this->session->set_flashdata('message',array('type'=>'success', 'message'=>$this->lang->line('auth_message_password_changed')));					
+							redirect('auth/change_password');
 				} else {														// fail
 					$errors = $this->tank_auth->get_error_message();
 					foreach ($errors as $k => $v)	$data['errors'][$k] = $this->lang->line($v);

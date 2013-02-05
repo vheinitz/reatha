@@ -19,7 +19,7 @@ Link doesn't work? Copy the following link to your browser address bar:<br />
 <br />
 <?php if (strlen($username) > 0) { ?>Your username: <?php echo $username; ?><br /><?php } ?>
 Your email address: <?php echo $email; ?><br />
-<?php /* Your password: <?php echo $password; ?><br /> */ ?>
+<?php if (isset($password)) {  ?>Your password: <?php echo $password; ?><br /><?php  } ?>
 <br />
 <br />
 Have fun!<br />

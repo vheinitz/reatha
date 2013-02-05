@@ -20,15 +20,15 @@
                         <p class="navbar-text pull-left">Domain:</p>
                             <ul class="nav">
                             <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <b><?php echo $this->session->userdata('managing_domain_name'); ?></b>
-                            <b class="caret"></b>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <?php foreach($domains as $domain){ 
-                                    echo "<li><a tabindex='-1' href='".base_url()."da/change_managing_domain/$domain->id'>$domain->name</a></li>";
-                                } ?>
-                            </ul>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <b><?php echo $this->session->userdata('managing_domain_name'); ?></b>
+                                <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <?php foreach($domains as $domain){ 
+                                        echo "<li><a tabindex='-1' href='".base_url()."da/change_managing_domain/$domain->id'>$domain->name</a></li>";
+                                    } ?>
+                                </ul>
                             </li>
                             </ul>                        
                         <ul class="nav">
@@ -38,7 +38,16 @@
                         </ul>                         
                     <?php } ?>
                         <ul class="nav pull-right">
-                            <li><a href="<?php echo base_url(); ?>auth/logout">Logout</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <b><?php echo $user->username; ?></b>
+                                <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a tabindex="-1" href="<?php echo base_url(); ?>auth/change_password">Change Password</a></li>
+                                    <li><a tabindex="-1" href="<?php echo base_url(); ?>auth/logout">Logout</a></li>
+                                </ul>
+                            </li>                            
                         </ul>                    
                 <? } ?>
             </div>

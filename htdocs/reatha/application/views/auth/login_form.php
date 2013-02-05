@@ -4,7 +4,7 @@
 <table>
 	<tr>
 		<td>Username</td>
-		<td><input type="text" name="login" id="login" maxlength=80 size=30 value="<?php set_value('login'); ?>" /></td>
+		<td><input type="text" name="login" id="login" maxlength=80 size=30 value="<?php $this->form_validation->set_value('login'); ?>" /></td>
 		<td style="color: red;"><?php echo form_error('login'); ?><?php echo isset($errors['login'])?$errors['login']:''; ?></td>
 	</tr>
 	<tr>
@@ -16,7 +16,8 @@
 		<td></td>
 		<td colspan="2">
 			<input type="checkbox" name="remember" id="remember" value=1 checked="<?php set_value('remember'); ?>" style="margin:0;padding:0" />
-			Remember me
+			Remember me &nbsp;
+			<a href="<?php echo base_url(); ?>auth/forgot_password">Forgot Password?</a>
 		</td>
 	</tr>
 	<tr>

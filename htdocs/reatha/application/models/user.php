@@ -42,6 +42,22 @@ class User extends Datamapper{
         return $this->db->where('da_id',$this->id)->where('domain_id',$domain_id)->count_all_results('domain_admin_domains');        
     }
 
+    function send_domain_admin_email_notification($domain){
+        $ci = & get_instance();
+        $ci->load->config('tank_auth', TRUE);
+        $data['user']       = $this;
+        $data['domain']     = $domain;
+        $data['site_name']  = $ci->config->item('website_name', 'tank_auth');
+        $data['site_url']   = base_url();
+        $ci->load->library('email');
+        $ci->email->from($ci->config->item('webmaster_email', 'tank_auth'), $ci->config->item('website_name', 'tank_auth'));
+        $ci->email->reply_to($ci->config->item('webmaster_email', 'tank_auth'), $ci->config->item('website_name', 'tank_auth'));
+        $ci->email->to($this->email);
+        $ci->email->subject('You are now a domain admin on Reatha.de');
+        $ci->email->message($this->load->view('email/domain_admin_notification-html', $data, TRUE));
+        $ci->email->send();        
+    }
+
     function delete_user(){
 		$this->user_profile->delete();
 		return($this->delete());    	

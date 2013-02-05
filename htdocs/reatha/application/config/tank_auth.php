@@ -8,7 +8,7 @@
 |--------------------------------------------------------------------------
 */
 $config['website_name'] = 'Reatha';
-$config['webmaster_email'] = 'webmaster@your-site.com';
+$config['webmaster_email'] = 'contact@reatha.de';
 
 /*
 |--------------------------------------------------------------------------

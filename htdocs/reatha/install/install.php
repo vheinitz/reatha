@@ -2,6 +2,13 @@
 error_reporting(E_ERROR | E_PARSE | E_NOTICE);
 ?>
 
+<?php
+if(isset($_POST['delete_install'])){
+/*	unlink('install.php');
+	exit();*/
+}
+?>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
     <head>
@@ -58,6 +65,7 @@ if(isset($_POST['db_user']) && isset($_POST['db_name'])){
 		//get current web dir
 		$web_dir = dirname($_SERVER['PHP_SELF']);
 		$web_dir = str_replace('/install', '', $web_dir);
+		if(empty($web_dir)) $web_dir = '/';		
 
 		//rewrite .htaccess data
 		$htaccess_file = './.htaccess';
@@ -75,7 +83,7 @@ if(isset($_POST['db_user']) && isset($_POST['db_name'])){
 		}
 
 		//rewrite base_url() value in config.php
-		if(empty($web_dir)) $web_dir = '/';
+		$web_dir = "http://". $_SERVER["SERVER_NAME"].$web_dir;
 		$config_file = '../application/config/config.php';
 		if(is_writable($config_file)){
 			$file = file_get_contents($config_file, FILE_USE_INCLUDE_PATH);	
@@ -101,8 +109,15 @@ if(isset($_POST['db_user']) && isset($_POST['db_name'])){
 		$errors[] = 'Connection Error: ' . $mysqli->connect_error;
 	}
 
-	if(empty($errors)){
-		echo "<div class='alert alert-success'>Reatha was successfully installed.</div>";
+	if(empty($errors)){ ?>
+		<div class='alert alert-success'>
+			Reatha was successfully installed.
+			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+				<input type="hidden" name="delete_install" value="1" />
+				<input type="submit" class="btn" value="Delete Installation Script" />
+			</form>
+		</div>
+		<?php 
 		exit();
 	} else {
 		echo "<div class='alert alert-error'>";

@@ -83,14 +83,13 @@ class Da extends CI_Controller{
 	}	
 
 	function add_user(){
-		log_message('error','da/add_user | entering function');
 		$this->load->library('form_validation');		
 		$this->form_validation->set_rules('username','Username','trim|required|xss_clean');
 		$this->form_validation->set_rules('password','Password','trim|required|xss_clean');
 		$this->form_validation->set_rules('email','Email','trim|required|xss_clean');
-		$this->form_validation->set_rules('device','Device','trim|required|xss_clean');
+		$this->form_validation->set_rules('device_id','Device Id','trim|xss_clean');
+		$this->form_validation->set_rules('domain_id','Domain Id','trim|required|xss_clean');
 		if($this->form_validation->run()){
-			log_message('error','da/add_user | form_validation ran ok');
 			$this->load->library('tank_auth');
 			$email_activation = $this->config->item('email_activation', 'tank_auth');
 			if (!is_null($data = $this->tank_auth->create_user(
@@ -98,14 +97,26 @@ class Da extends CI_Controller{
 					$this->form_validation->set_value('email'),
 					$this->form_validation->set_value('password'),
 					$email_activation))){
-				//assign user to device
-				log_message('error','da/add_user | user created');
-				$device = new Device($this->input->post('device'));
+				//mark user as belonging to submitted domain id
 				$new_user = new User($data['user_id']);
-				$new_user->role = '3';
-				$new_user->belongs_to_domain_id = $device->domain_id;
-				$new_user->save($device);
-				$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"User added successfully"));	
+				$domain_id = $this->form_validation->set_value('domain_id');
+				$domain = new Domain($domain_id);
+				if($domain->exists()){
+					$new_user->belongs_to_domain_id = $domain_id;
+					$new_user->role = '3';
+					$new_user->save();
+
+					//if we have a device_id submitted - assign user to device
+					$device_id = $this->form_validation->set_value('device_id');
+					if(!empty($device_id)){
+						$device = new Device($device_id);
+						$new_user = new User($data['user_id']);
+						$new_user->save($device);
+					}
+					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"User added successfully"));					
+				} else {
+					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>'This domain does not exist'));					
+				}	
 			}			
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));	
