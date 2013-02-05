@@ -15,8 +15,8 @@ class Da extends CI_Controller{
 
 	function index(){
 		$user = new User($this->tank_auth->get_user_id());
-		$devices = new Device(); $domain = new Domain();
-		$domain = $domain->get_by_da_id($user->id);
+		$devices = new Device(); $domain = new Domain($this->session->userdata('managing_domain_id'));
+		$domains = $user->domains->get();
 		
 		//if user has a domain under management
 		if($domain->id){
@@ -24,13 +24,14 @@ class Da extends CI_Controller{
 		}
 		$data['user'] 		= $user;
 		$data['devices']	= $devices;
-		$data['domain']		= $domain;
+		$data['domains']	= $domains;
 		$this->load->view('da_view',$data);
 	}
 
 	function users(){
 		$user = new User($this->tank_auth->get_user_id());
-		$domain = new Domain(); $domain = $domain->get_by_da_id($user->id);
+		$domain = new Domain($this->session->userdata('managing_domain_id'));
+		$domains = $user->domains->get();
 		
 		//if user has a domain under manangement
 		$users = new User(); $devices = new Device();
@@ -40,7 +41,7 @@ class Da extends CI_Controller{
 		}
 		$data['user'] 		= $user;
 		$data['users'] 		= $users;
-		$data['domain']		= $domain;
+		$data['domains']	= $domains;
 		$data['devices'] 	= $devices;
 		$this->load->view('da_users_view',$data);
 	}
@@ -48,16 +49,29 @@ class Da extends CI_Controller{
 	function add_device(){
 		$user = new User($this->tank_auth->get_user_id());
 		$this->load->library('form_validation');
-		$this->form_validation->set_rules('device_description','Device Description','required|trim|xss_clean');
+		$this->form_validation->set_rules('device_name','Device Name','required|trim|xss_clean|max_length[100]|callback_valid_device_name');
+		$this->form_validation->set_rules('device_description','Device Description','required|trim|xss_clean|max_length[250]');
+		$this->form_validation->set_rules('device_location','Device Location','required|trim|xss_clean|max_length[150]');
+		$this->form_validation->set_message('valid_device_name','This device name is already in use in this domain.');
 		if($this->form_validation->run()){
-			$device_description = $this->input->post('device_description',true);
-			$domain = new Domain();
-			$domain = $domain->get_by_da_id($user->id);
+			$device_name 		= $this->form_validation->set_value('device_name');
+			$device_description = $this->form_validation->set_value('device_description');
+			$device_location 	= $this->form_validation->set_value('device_location');
+			
+			// Hash device key using phpass
+			require_once('application/libraries/phpass-0.1/PasswordHash.php');
+			$hasher 	= new PasswordHash(6,FALSE);
+			$device_key = $hasher->HashPassword($device_name);
+						
+			$domain = new Domain($this->session->userdata('managing_domain_id'));
 			$device = new Device();
-			$device->domain_id = $domain->id;
-			$device->description = $device_description;
+			$device->domain_id 		= $domain->id;
+			$device->name 			= $device_name;
+			$device->description 	= $device_description;
+			$device->location 		= $device_location;
+			$device->key 			= $device_key;
 			if(!$device->save()){
-				log_message('error','da/add_device | could not save device, user id: '.$user->id.', device description: '.$device_description);
+				log_message('error','da/add_device | could not save device, user id: '.$user->id.', device name: '.$device_name);
 				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, we couldn't save this device. Please try again."));
 			} else {
 				$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device successfully created."));				
@@ -69,12 +83,14 @@ class Da extends CI_Controller{
 	}	
 
 	function add_user(){
+		log_message('error','da/add_user | entering function');
 		$this->load->library('form_validation');		
 		$this->form_validation->set_rules('username','Username','trim|required|xss_clean');
 		$this->form_validation->set_rules('password','Password','trim|required|xss_clean');
 		$this->form_validation->set_rules('email','Email','trim|required|xss_clean');
 		$this->form_validation->set_rules('device','Device','trim|required|xss_clean');
 		if($this->form_validation->run()){
+			log_message('error','da/add_user | form_validation ran ok');
 			$this->load->library('tank_auth');
 			$email_activation = $this->config->item('email_activation', 'tank_auth');
 			if (!is_null($data = $this->tank_auth->create_user(
@@ -83,6 +99,7 @@ class Da extends CI_Controller{
 					$this->form_validation->set_value('password'),
 					$email_activation))){
 				//assign user to device
+				log_message('error','da/add_user | user created');
 				$device = new Device($this->input->post('device'));
 				$new_user = new User($data['user_id']);
 				$new_user->role = '3';
@@ -99,9 +116,10 @@ class Da extends CI_Controller{
 	function unnasign_device($device_id, $user_id){
 		$domain = new Domain();
 		$domain->where_related_device('id',$device_id)->get();
+		$domain_admin = new User($this->tank_auth->get_user_id());
 
 		//check if current user is an admin of the device's domain
-		if($domain->da_id == $this->tank_auth->get_user_id()){
+		if($domain_admin->is_admin_of($domain->id)){
 			//check if user_id is associated with device_id
 			$user = new User($user_id);
 			if($user->has_device($device_id)){
@@ -130,9 +148,10 @@ class Da extends CI_Controller{
 			$user_id = $this->form_validation->set_value('user_id');
 			$domain = new Domain(); $device = new Device($device_id);
 			$domain = $device->domain->get();
+			$user = new User($this->tank_auth->get_user_id());
 
 			//check if current user is an admin of the device's domain
-			if($domain->da_id == $this->tank_auth->get_user_id()){
+			if($user->is_admin_of($domain->id)){
 				//check if user_id is not already associated with device_id
 				$user = new User($user_id);
 				if(!$user->has_device($device_id)){
@@ -161,9 +180,10 @@ class Da extends CI_Controller{
 		//check if such user exists
 		if($user->exists()){
 			$domain = new Domain($user->belongs_to_domain_id);
+			$domain_admin = new User($this->tank_auth->get_user_id());
 
 			//check if domain exists and if user is the domain admin of it
-			if($domain->exists() && ($domain->da_id == $this->tank_auth->get_user_id())){
+			if($domain->exists() && ($domain_admin->is_admin_of($domain->id))){
 				if($user->delete_user()){
 					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"User successfully deleted"));						
 				} else {
@@ -186,9 +206,9 @@ class Da extends CI_Controller{
 
 		//check if device exists
 		if($device->exists()){
-
+			$user = new User($this->tank_auth->get_user_id());
 			//check if user is the admin of the device's domain
-			if($device->domain->da_id == $this->tank_auth->get_user_id()){
+			if($user->is_admin_of($device->domain->id)){
 				if($device->delete_device()){
 					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device successfully deleted"));						
 				} else {
@@ -204,6 +224,32 @@ class Da extends CI_Controller{
 			log_message('error',"da/delete_device | device does not exist, device_id:$device_id");			
 		}
 		redirect('da');		
+	}
+
+	function change_managing_domain($domain_id){
+		$user = new User($this->tank_auth->get_user_id());
+		if($user->is_admin_of($domain_id)){
+			$domain = new Domain($domain_id);
+			$this->session->set_userdata('managing_domain_id',$domain_id);
+			$this->session->set_userdata('managing_domain_name',$domain->name);
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you are not an admin of this domain"));
+			log_message('error',"da/change_managing_domain | user attempted to change managing domain to one he is not an admin of; domain_id: $device_id, user_id: $user->id");			
+		}
+
+		redirect('da');
+	}
+
+	function valid_device_name($device_name){
+		$domain_id = $this->session->userdata('managing_domain_id');
+		$count = $this->db->where('domain_id',$domain_id)->where('name',$device_name)->count_all_results('devices'); 
+		if($count){
+			//such device name has been found in this domain - device name not valid
+			return FALSE;
+		} else {
+			//device name is valid
+			return TRUE;
+		}
 	}
 }
 
