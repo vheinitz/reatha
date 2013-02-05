@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 RewriteEngine on
 RewriteCond $1 !^(index\.php|favicon\.ico|install|avatars|layout|js|css|robots\.txt)
 RewriteRule ^(.*)$ /index.php/$1 [L]
+=======
+RewriteEngine on
+RewriteCond $1 !^(index\.php|favicon\.ico|install|avatars|layout|js|css|robots\.txt)
+RewriteRule ^(.*)$ /htdocs/reatha/index.php/$1 [L]
+>>>>>>> 532811372554ee26da7ed1f128604c714d0512c1
