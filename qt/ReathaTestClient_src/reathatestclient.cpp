@@ -120,3 +120,13 @@ void ReathaTestClient::on_bSend_clicked()
 {
     updateData( ui->processDataNameLineEdit->text(), ui->processDataValueLineEdit->text() );
 }
+
+void ReathaTestClient::on_bClearLog_clicked()
+{
+
+}
+
+void ReathaTestClient::on_bRunStopScript_clicked(bool checked)
+{
+
+}

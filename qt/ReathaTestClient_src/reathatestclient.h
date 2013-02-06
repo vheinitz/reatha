@@ -10,6 +10,9 @@
 #include <QNetworkAccessManager>
 #include <QUrl>
 #include <QTimer>
+#include <QStandardItemModel>
+#include <QMap>
+#include <QSharedPointer>
 
 class QSslError;
 class QAuthenticator;
@@ -18,6 +21,38 @@ class QNetworkReply;
 namespace Ui {
 class ReathaTestClient;
 }
+
+class ScriptData : public QObject
+{
+    Q_OBJECT
+private:
+    QTimer _timer;
+public:
+    QString _varName;
+    QStringList _values;
+    int _currentIdx;
+    int _timerStepMs;
+    ScriptData():_currentIdx(0),_timerStepMs(0){}
+
+    void start()
+    {
+        _timer.start(_timerStepMs);
+    }
+
+    void stop()
+    {
+        _timer.stop();
+    }
+
+    void setHandler( QObject* h )
+    {
+        QObject::connect( &_timer, SIGNAL( timeout() ) )
+    }
+};
+
+typedef QSharedPointer<ScriptData> PScriptData;
+
+typedef QMap<QString,PScriptData> TScript;
 
 class ReathaTestClient : public QMainWindow
 {
@@ -44,11 +79,17 @@ private slots:
 
     void on_bSend_clicked();
 
+    void on_bClearLog_clicked();
+
+    void on_bRunStopScript_clicked(bool checked);
+
 private:
     Ui::ReathaTestClient *ui;
     QTimer _rmLifeCheckTimer;
-    QUrl url;
-    QNetworkAccessManager qnam;
+    QUrl _url;
+    QNetworkAccessManager _qnam;
+    QStandardItemModel _currentValues;
+    TScript _script;
 };
 
 #endif // REATHATESTCLIENT_H
