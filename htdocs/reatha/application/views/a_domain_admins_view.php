@@ -34,7 +34,7 @@
 </tbody>
 </table>
 <hr/>
-<h4>New User</h4>
+<h4>New Domain Admin</h4>
 		<form action="<?php echo base_url(); ?>a/add_domain_admin" method="post">
 			<fieldset>
 				<label>Username</label>
