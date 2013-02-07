@@ -13,6 +13,7 @@
 #include <QStandardItemModel>
 #include <QMap>
 #include <QSharedPointer>
+#include <scriptengine.h>
 
 class QSslError;
 class QAuthenticator;
@@ -22,37 +23,6 @@ namespace Ui {
 class ReathaTestClient;
 }
 
-class ScriptData : public QObject
-{
-    Q_OBJECT
-private:
-    QTimer _timer;
-public:
-    QString _varName;
-    QStringList _values;
-    int _currentIdx;
-    int _timerStepMs;
-    ScriptData():_currentIdx(0),_timerStepMs(0){}
-
-    void start()
-    {
-        _timer.start(_timerStepMs);
-    }
-
-    void stop()
-    {
-        _timer.stop();
-    }
-
-    void setHandler( QObject* h )
-    {
-        QObject::connect( &_timer, SIGNAL( timeout() ) )
-    }
-};
-
-typedef QSharedPointer<ScriptData> PScriptData;
-
-typedef QMap<QString,PScriptData> TScript;
 
 class ReathaTestClient : public QMainWindow
 {
@@ -82,6 +52,10 @@ private slots:
     void on_bClearLog_clicked();
 
     void on_bRunStopScript_clicked(bool checked);
+
+    void onVarValueChanges(QString, QVariant);
+
+    void on_bOnOff_clicked();
 
 private:
     Ui::ReathaTestClient *ui;

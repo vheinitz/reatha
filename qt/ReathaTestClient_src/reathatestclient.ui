@@ -16,6 +16,37 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Reatha URL:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="eUrl"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Life-check timeout:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="eLcTimeout">
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLabel" name="label">
@@ -89,39 +120,39 @@
      </layout>
     </item>
     <item>
-     <layout class="QFormLayout" name="formLayout">
-      <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
        <widget class="QLabel" name="processDataNameLabel">
         <property name="text">
-         <string>Process Data Name</string>
+         <string>Single Variable: </string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item>
        <widget class="QLineEdit" name="processDataNameLineEdit">
         <property name="text">
-         <string>status</string>
+         <string/>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item>
        <widget class="QLabel" name="processDataValueLabel">
         <property name="text">
-         <string>Process Data Value</string>
+         <string>Value:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
+      <item>
+       <widget class="QLineEdit" name="processDataValueLineEdit">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="bSend">
         <property name="text">
          <string>Send</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="processDataValueLineEdit">
-        <property name="text">
-         <string>Running</string>
         </property>
        </widget>
       </item>
@@ -158,7 +189,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QTableView" name="tableView">
+          <widget class="QTableView" name="tvCurrentValues">
            <property name="alternatingRowColors">
             <bool>true</bool>
            </property>
@@ -240,7 +271,7 @@
         <number>1</number>
        </property>
        <item>
-        <widget class="QPlainTextEdit" name="plainTextEdit"/>
+        <widget class="QPlainTextEdit" name="eLog"/>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">

@@ -16,11 +16,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         reathatestclient.cpp\
-		persistence.cpp
+		persistence.cpp \
+    scriptengine.cpp
 		
 
 HEADERS  += reathatestclient.h\
-            persistence.h
+            persistence.h \
+    scriptengine.h
 			
 
 FORMS    += reathatestclient.ui
