@@ -91,3 +91,38 @@ Use-cases
 3.2.3 Assign devices to domain
 3.2.4 Remove devices from domain
 
+Data-Pool
+=========
+Main part of the system is the data-pool - a list of process-variables which are updated by the device and monitored by the client.
+Each device has one data-pool vontaining many data-items
+Each data-item consists of
+ 1) ID - unique name (within device context) identifying the item. Allowed format: [a-zA-Z][0-9a-zA-Z_.]*
+ 2) Timestamp - unix time stmap of the last change in local time of the server.
+ 3) Value - string duck-type value
+NOTE! In future the structure may be changed.  
+      E.g. for performance reasons stronger typing may be specified allowing to store values of different types in separate tables,
+	  value-constraints, update-time constraints could be added etc. 
+	  However, for the pilot-phase this simple structure it's OK.
+
+I'd suggest the implementation structure in DB as following:
+Table DeviceData
+	DeviceID, DataItemID, Timestamp, Value
+	
+Communication protocol
+======================
+The device updates its data-pool by pushing its values (get or post).
+The request should contain
+ 1) Device's UID
+ 2) One or more key-value pairs <ID>=<Value>
+Example: http://reatha.de/rm/update.php?UID=4711E3F8J6VFJ35F9GJU&status=ok&temperature=6&door=closed
+
+Testing tith Test Client
+------------------------
+In current test-client implementation only one key-value pair can be sent. The placeholders in URL %1,%2,%3
+correspond to UID, key,value respectively. e.g:http://reatha.de/rm/update.php?UID=%1&%2=%3
+Script section contains instruction (one per line) for updating value automatically. The format is:
+<variable>;<update time in ms>;<1st value>;<2nd value>[;<3rd value>]
+E.G:
+temperature;1000;10;20;30;40;30;20
+This line would update temperature variable each second increasing from 10 to 40 and back to 10
+At least two values are required.
