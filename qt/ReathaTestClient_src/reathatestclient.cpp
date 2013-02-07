@@ -10,14 +10,16 @@
 #include <QMessageBox>
 #include <QDateTime>
 #include <QNetworkReply>
+#include "help.h"
 
+const QString ReathaTestClientVersion="0.0.3";
 
 ReathaTestClient::ReathaTestClient(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ReathaTestClient)
 {
     ui->setupUi(this);
-    PERSISTENCE_INIT("Reatha","Test Client");
+    PERSISTENCE_INIT("Reatha","Device Simulator");
     PERSISTENT("devname",ui->eDeviceName,"text");
     PERSISTENT("devkey",ui->eDeviceKey,"text");
     PERSISTENT("url",ui->eUrl,"text");
@@ -25,11 +27,16 @@ ReathaTestClient::ReathaTestClient(QWidget *parent) :
 	PERSISTENT("singleVarName",ui->processDataNameLineEdit,"text");
 	PERSISTENT("singleVarValue",ui->processDataValueLineEdit,"text");
     PERSISTENT("LcTimeout",ui->eLcTimeout,"text");
+    PERSISTENT("collectTimeout",ui->eCollectTime,"text");
 
 
 	_rmLifeCheckTimer.setInterval(ui->eLcTimeout->text().toInt());
-	connect(&_rmLifeCheckTimer, SIGNAL(timeout()), this , SLOT(lifeCheck()) );	
+	connect(&_rmLifeCheckTimer, SIGNAL(timeout()), this , SLOT(lifeCheck()) );
+	connect(&_sendDataTimer, SIGNAL(timeout()), this, SLOT(startRequest()) );
+	_sendDataTimer.setSingleShot(true);
+	_sendDataTimer.setInterval(1000);
     ui->tvCurrentValues->setModel(&_currentValues);
+	this->setWindowTitle(QString("Reatha Device Simulator. Version: %1").arg(ReathaTestClientVersion) );
     _currentValues.setColumnCount(2);
 }
 
@@ -90,29 +97,37 @@ void ReathaTestClient::on_actionAbout_triggered()
 
 void ReathaTestClient::lifeCheck()
 {
-	QString rmUrl = ui->eUrl->text().arg(ui->eDeviceKey->text()).arg("LC").arg( QDateTime::currentMSecsSinceEpoch() );	
-    if (rmUrl.isEmpty())
-        return;    
-	ui->eLog->appendPlainText( rmUrl );
-    startRequest( QUrl(rmUrl) );
+	updateData( "LC", "" );
 }
 
 void ReathaTestClient::updateData( QString tagId, QString tagValue )
 {
-    //_rmLifeCheckTimer.stop();
-	QString rmUrl = ui->eUrl->text().arg(ui->eDeviceKey->text()).arg(tagId).arg( tagValue );	
-    if (rmUrl.isEmpty())
-        return;
-	ui->eLog->appendPlainText( rmUrl );
-    startRequest( QUrl(rmUrl) );
-    //lifeCheck();
-    //_rmLifeCheckTimer.start();
+	_sendDataList[tagId] = tagValue;
+	if (!_sendDataTimer.isActive())
+	{
+		_sendDataTimer.setInterval( ui->eCollectTime->text().toInt() );
+		_sendDataTimer.start();	
+	}
 }
 
-void ReathaTestClient::startRequest(QUrl url)
+void ReathaTestClient::startRequest()
 {
+	QUrl url(ui->eUrl->text());
+	QUrl postData;
 
-    QNetworkReply *reply = _qnam.get(QNetworkRequest(url));
+	postData.addQueryItem("UID", ui->eDeviceKey->text());
+	for( QMap<QString,QString>::iterator it = _sendDataList.begin(); it !=_sendDataList.end();++it )
+	{
+		postData.addQueryItem( it.key(), it.value() );
+	}
+	_sendDataList.clear();
+
+	QNetworkRequest request(url);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+	ui->eLog->appendPlainText( "POST: " + url.toString() );
+	ui->eLog->appendPlainText( "  DATA: " + postData.encodedQuery());	
+	QNetworkReply *reply = _qnam.post(request, postData.encodedQuery());
+
     connect(reply, SIGNAL(finished()),
          this, SLOT(httpFinished()));
     connect(reply, SIGNAL(readyRead()),
@@ -189,7 +204,7 @@ void ReathaTestClient::on_bRunStopScript_clicked(bool checked)
 
 }
 
-void ReathaTestClient::on_bOnOff_clicked()
+void ReathaTestClient::on_actionHelp_triggered()
 {
-
+	(new Help)->show();
 }

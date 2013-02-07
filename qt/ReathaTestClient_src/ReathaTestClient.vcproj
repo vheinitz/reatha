@@ -126,6 +126,8 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath="help.cpp" />
+			<File
 				RelativePath="main.cpp" />
 			<File
 				RelativePath="persistence.cpp" />
@@ -138,6 +140,29 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath="help.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\Qt\4.8.4\bin\moc.exe;help.h"
+						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_XML_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;c:\Qt\4.8.4\include\QtCore&quot; -I&quot;c:\Qt\4.8.4\include\QtNetwork&quot; -I&quot;c:\Qt\4.8.4\include\QtGui&quot; -I&quot;c:\Qt\4.8.4\include\QtXml&quot; -I&quot;c:\Qt\4.8.4\include&quot; -I&quot;c:\Qt\4.8.4\include\ActiveQt&quot; -I&quot;debug&quot; -I&quot;.&quot; -Ic:\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 help.h -o debug\moc_help.cpp"
+						Description="MOC help.h"
+						Outputs="debug\moc_help.cpp"
+						Path="c:\Qt\4.8.4\bin" />
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\Qt\4.8.4\bin\moc.exe;help.h"
+						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_XML_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;c:\Qt\4.8.4\include\QtCore&quot; -I&quot;c:\Qt\4.8.4\include\QtNetwork&quot; -I&quot;c:\Qt\4.8.4\include\QtGui&quot; -I&quot;c:\Qt\4.8.4\include\QtXml&quot; -I&quot;c:\Qt\4.8.4\include&quot; -I&quot;c:\Qt\4.8.4\include\ActiveQt&quot; -I&quot;release&quot; -I&quot;.&quot; -Ic:\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 help.h -o release\moc_help.cpp"
+						Description="MOC help.h"
+						Outputs="release\moc_help.cpp"
+						Path="c:\Qt\4.8.4\bin" />
+				</FileConfiguration>
+			</File>
 			<File
 				RelativePath="persistence.h">
 				<FileConfiguration
@@ -213,6 +238,18 @@
 			Filter="cpp;c;cxx;moc;h;def;odl;idl;res;"
 			UniqueIdentifier="{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}">
 			<File
+				RelativePath="debug\moc_help.cpp">
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true" />
+			</File>
+			<File
+				RelativePath="release\moc_help.cpp">
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true" />
+			</File>
+			<File
 				RelativePath="debug\moc_persistence.cpp">
 				<FileConfiguration
 					Name="Release|Win32"
@@ -249,6 +286,8 @@
 					ExcludedFromBuild="true" />
 			</File>
 			<File
+				RelativePath="ui_help.h" />
+			<File
 				RelativePath="ui_reathatestclient.h" />
 		</Filter>
 		<Filter
@@ -256,6 +295,29 @@
 			Filter="ui"
 			UniqueIdentifier="{99349809-55BA-4b9d-BF79-8FDBB0286EB3}"
 			ParseFiles="false">
+			<File
+				RelativePath="help.ui">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\Qt\4.8.4\bin\uic.exe;help.ui"
+						CommandLine="C:\Qt\4.8.4\bin\uic.exe help.ui -o ui_help.h"
+						Description="UIC help.ui"
+						Outputs="ui_help.h"
+						Path="c:\Qt\4.8.4\bin" />
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\Qt\4.8.4\bin\uic.exe;help.ui"
+						CommandLine="C:\Qt\4.8.4\bin\uic.exe help.ui -o ui_help.h"
+						Description="UIC help.ui"
+						Outputs="ui_help.h"
+						Path="c:\Qt\4.8.4\bin" />
+				</FileConfiguration>
+			</File>
 			<File
 				RelativePath="reathatestclient.ui">
 				<FileConfiguration
