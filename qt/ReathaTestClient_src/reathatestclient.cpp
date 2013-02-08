@@ -12,7 +12,7 @@
 #include <QNetworkReply>
 #include "help.h"
 
-const QString ReathaTestClientVersion="0.0.3";
+const QString ReathaTestClientVersion="0.0.4";
 
 ReathaTestClient::ReathaTestClient(QWidget *parent) :
     QMainWindow(parent),
