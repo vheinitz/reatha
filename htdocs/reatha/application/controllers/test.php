@@ -36,6 +36,23 @@ class Test extends CI_Controller{
 		echo $this->config->item('website_name', 'tank_auth');
 		sprintf($this->lang->line('auth_subject_'.$type), $this->config->item('website_name', 'tank_auth'));
 	}
+
+	function save_new_var(){
+		$var = new Variable();
+		$device = new Device(6);
+		$var->name = 'temperature';
+		$var->save($device);
+	}
+
+	function submit_values(){
+		$data['user'] = new User($this->tank_auth->get_user_id());
+		$this->load->view('submit_values_view',$data);
+	}
+
+	function update_life_check(){
+		$device = new Device(1);
+		$device->where('id',$device->id)->update('life_check',1);
+	}
 }
 
 

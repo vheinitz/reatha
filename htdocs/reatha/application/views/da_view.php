@@ -4,6 +4,7 @@
   	<thead>
 	    <tr>
 		    <th style="text-align: center">Device</th>
+		    <th style="text-align: center">Variables</th>
 		    <th style="text-align: center">Assigned Users</th>
 	        <th style="text-align: center">Action</th>
 	    </tr>
@@ -18,6 +19,12 @@
 		<?php echo "<b>Description: </b>".$device->description; ?><br/>
 	</td>
 	<td><?php
+		foreach($device->variable as $var){
+			echo $var->name." (<a href='".base_url()."da/delete_var/$var->id/'>Delete</a>)<br/>";
+		}
+	 ?>	 
+	</td>	
+	<td><?php
 		foreach($device_users as $device_user){
 			echo $device_user->username."<br/>";
 		}
@@ -28,18 +35,41 @@
 </tbody>
 </table>
 <hr/>
-<h4>New Device</h4>
-<form action="<?php echo base_url(); ?>da/add_device" method="post">
-	<fieldset>
-		<label>Device Name</label>
-		<input type="text" name="device_name" maxlength=100 />		
-		<label>Device Description</label>
-		<input type="text" name="device_description" maxlength=250 />
-		<label>Device Location</label>
-		<input type="text" name="device_location" maxlength=150 />
-		<label></label>
-		<input type="submit" class="btn" value="Add" />
-	</fieldset>
-</form>
+<div class="row">
+	<div class="span5">
+		<h4>New Device</h4>
+		<form action="<?php echo base_url(); ?>da/add_device" method="post">
+			<fieldset>
+				<label>Device Name</label>
+				<input type="text" name="device_name" maxlength=100 />		
+				<label>Device Description</label>
+				<input type="text" name="device_description" maxlength=250 />
+				<label>Device Location</label>
+				<input type="text" name="device_location" maxlength=150 />
+				<label>Device Variables (comma separated)</label>
+				<input type="text" name="device_variables" maxlength=150 placeholder="e.g: status, temperature, color" />		
+				<label></label>
+				<input type="submit" class="btn" value="Add" />
+			</fieldset>
+		</form>
+	</div>
+	<div class="span5">
+		<h4>New Variables</h4>
+		<form action="<?php echo base_url(); ?>da/add_var" method="post">
+			<fieldset>
+				<label>Device</label>
+				<select name="device_id">
+					<?php foreach ($devices as $device) {
+						echo "<option value='$device->id'>$device->name</option>";
+					} ?>
+				</select>		
+				<label>Variables (comma separated)</label>
+				<input type="text" name="variables" maxlength=50 placeholder="e.g: status, temperature, color" />	
+				<label></label>
+				<input type="submit" class="btn" value="Add" />
+			</fieldset>
+		</form>		
+	</div>
+</div>
 
 <?php $this->load->view('footer_view'); ?>

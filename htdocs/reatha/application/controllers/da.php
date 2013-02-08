@@ -52,11 +52,13 @@ class Da extends CI_Controller{
 		$this->form_validation->set_rules('device_name','Device Name','required|trim|xss_clean|max_length[100]|callback_valid_device_name');
 		$this->form_validation->set_rules('device_description','Device Description','required|trim|xss_clean|max_length[250]');
 		$this->form_validation->set_rules('device_location','Device Location','required|trim|xss_clean|max_length[150]');
+		$this->form_validation->set_rules('device_variables','Device Variables','required|trim|xss_clean|max_length[300]');
 		$this->form_validation->set_message('valid_device_name','This device name is already in use in this domain.');
 		if($this->form_validation->run()){
 			$device_name 		= $this->form_validation->set_value('device_name');
 			$device_description = $this->form_validation->set_value('device_description');
 			$device_location 	= $this->form_validation->set_value('device_location');
+			$device_variables	= $this->form_validation->set_value('device_variables');
 			
 			// Hash device key using phpass
 			require_once('application/libraries/phpass-0.1/PasswordHash.php');
@@ -74,6 +76,8 @@ class Da extends CI_Controller{
 				log_message('error','da/add_device | could not save device, user id: '.$user->id.', device name: '.$device_name);
 				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, we couldn't save this device. Please try again."));
 			} else {
+				//device saved, now process and save device variables
+				$device->add_variables($device_variables);				
 				$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device successfully created."));				
 			}
 		} else {
@@ -235,6 +239,58 @@ class Da extends CI_Controller{
 			log_message('error',"da/delete_device | device does not exist, device_id:$device_id");			
 		}
 		redirect('da');		
+	}
+
+	function delete_var($var_id){
+		$var = new Variable($var_id);
+		if($var->exists()){
+			//check if the user is the admin of the device's domain
+			$user = new User($this->tank_auth->get_user_id());
+			if($user->is_admin_of($var->device->domain->id)){
+				if($var->delete()){
+					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Variable successfully deleted"));						
+				} else {
+					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, we were not able to delete this variabe. Please try again."));						
+					log_message('error',"da/delete_var | could not delete var, var_id: $var_id");					
+				}
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you don't have enough rights to perform this action."));						
+				log_message('error',"da/delete_var |  user is not the devices's domain admin, var_id: $var_id ");				
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this variable doesn't seem to exist."));						
+			log_message('error',"da/delete_var | no such variable, var_id: $var_id");			
+		}
+		redirect('da');			
+	}
+
+	function add_var(){
+		$user = new User($this->tank_auth->get_user_id());
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('device_id','Device Id','required|trim|xss_clean|max_length[100]');
+		$this->form_validation->set_rules('variables','Variables','required|trim|xss_clean|max_length[300]');	
+		if($this->form_validation->run()){
+			$device = new Device($this->form_validation->set_value('device_id'));
+			$variables = $this->form_validation->set_value('variables');
+
+			//check if such device exists
+			if($device->exists()){
+				//check if user is the admin of device's domain
+				if($user->is_admin_of($device->domain->id)){
+					$device->add_variables($variables);
+					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Variables successfully added"));					
+				} else {
+					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you don't have enough rights to perform this action."));						
+					log_message('error',"da/add_var |  user is not the devices's domain admin, device_id: $device->id ");					
+				}
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this device doesn't seem to exist."));						
+				log_message('error',"da/delete_var | no such device, device id: $device->id");					
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));			
+		}
+		redirect('da');				
 	}
 
 	function change_managing_domain($domain_id){
