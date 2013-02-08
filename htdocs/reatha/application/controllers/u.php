@@ -19,6 +19,18 @@ class U extends CI_Controller{
 		$data['devices']	= $user->devices->get();
 		$this->load->view('u_view',$data);
 	}
+
+	function get_device_vars(){
+		$user = new User($this->tank_auth->get_user_id());
+		$vars = array();
+		foreach ($user->device as $device) {
+			//get variables for each device
+			foreach ($device->variable as $var) {
+				$vars[$var->id] = $var->value;
+			}
+		}
+		echo json_encode($vars);
+	}
 }
 
 

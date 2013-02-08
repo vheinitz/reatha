@@ -17,13 +17,24 @@
 	</td>
 	<td>
 		<?php foreach($device->variable as $var){
-			echo $var->name.': '.$var->value.'<br/>';
+			echo $var->name.": <span id='var_$var->id'>".$var->value."</span><br/>";
 		} ?>
 	</td>
 <tr>	
 <?php } ?>
 </tbody>
 </table>
+
+<script type="text/javascript">
+	setInterval(function(){
+		$.getJSON("<?php echo base_url(); ?>u/get_device_vars", function(variables) {
+			$.each(variables, function(i, variable){
+				$('#var_'+i).html(variable);
+				// $('body').append(i+': '+variable+',  ');
+			});
+		});		
+	}, 2000)
+</script>
 
 
 <?php $this->load->view('footer_view'); ?>

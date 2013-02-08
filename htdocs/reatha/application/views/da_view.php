@@ -29,7 +29,10 @@
 			echo $device_user->username."<br/>";
 		}
 	 ?></td>
-	<td><a href="<?php echo base_url(); ?>da/delete_device/<?php echo $device->id; ?>" onclick="return confirm('Are you sure?')">Delete Device</a></td>
+	<td>
+		<a href="<?php echo base_url(); ?>da/delete_device/<?php echo $device->id; ?>" onclick="return confirm('Are you sure?')">Delete Device</a><br/>
+		<button class="btn btn-mini" onclick="show_device_key(<?php echo $device->id; ?>);">Show Key</button>
+	</td>
 <tr>	
 <?php } ?>
 </tbody>
@@ -71,5 +74,18 @@
 		</form>		
 	</div>
 </div>
+
+<script type="text/javascript">
+	function show_device_key($device_id){
+		$.get('<?php echo base_url(); ?>da/get_device_key/'+$device_id, function($data){
+			$data = $.parseJSON($data);
+			if($data.type == 'success'){
+				alert($data.key);
+			} else {
+				alert($data.message);
+			}
+		});
+	}
+</script>
 
 <?php $this->load->view('footer_view'); ?>

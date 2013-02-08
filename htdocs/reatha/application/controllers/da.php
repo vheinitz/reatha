@@ -293,6 +293,24 @@ class Da extends CI_Controller{
 		redirect('da');				
 	}
 
+	function get_device_key($device_id){
+		$user = new User($this->tank_auth->get_user_id());
+		$device = new Device($device_id);
+		$return = array();
+		if($device->exists()){
+			if($user->is_admin_of($device->domain->id)){
+				$return = array('type'=>'success','key'=>$device->key);
+			} else {
+				$return = array('type'=>'error','message'=>"Sorry, you do not have enough rights to view this key.");	
+				log_message('error',"da/get_device_key | user is not admin of device's domain, device_id: $device_id");			
+			}
+		} else {
+			$return = array('type'=>'error','message'=>"Sorry, this device does not seem to exist");	
+			log_message('error',"da/get_device_key | device doesn't exist, device_id: $device_id");					
+		}
+		echo json_encode($return);
+	}
+
 	function change_managing_domain($domain_id){
 		$user = new User($this->tank_auth->get_user_id());
 		if($user->is_admin_of($domain_id)){
