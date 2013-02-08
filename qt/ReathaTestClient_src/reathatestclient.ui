@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>627</width>
-    <height>491</height>
+    <width>713</width>
+    <height>490</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,12 +25,32 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="eUrl"/>
+       <widget class="QLineEdit" name="eUrl">
+        <property name="text">
+         <string>http://reatha.de/rm/updatedata.php</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Life-check timeout:</string>
+         <string>Life-check timeout(ms):</string>
         </property>
        </widget>
       </item>
@@ -41,6 +61,51 @@
           <width>50</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="text">
+         <string>5000</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="lCollectTime">
+        <property name="text">
+         <string>Collect time(ms):</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="eCollectTime">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>1000</string>
         </property>
        </widget>
       </item>
@@ -58,7 +123,7 @@
       <item>
        <widget class="QLineEdit" name="eDeviceName">
         <property name="text">
-         <string/>
+         <string>SimDevice</string>
         </property>
        </widget>
       </item>
@@ -86,7 +151,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="eDeviceKey"/>
+       <widget class="QLineEdit" name="eDeviceKey">
+        <property name="text">
+         <string>TEST-UID-STRING-12345</string>
+        </property>
+       </widget>
       </item>
       <item>
        <spacer name="horizontalSpacer">
@@ -131,7 +200,7 @@
       <item>
        <widget class="QLineEdit" name="processDataNameLineEdit">
         <property name="text">
-         <string/>
+         <string>status</string>
         </property>
        </widget>
       </item>
@@ -145,9 +214,22 @@
       <item>
        <widget class="QLineEdit" name="processDataValueLineEdit">
         <property name="text">
-         <string/>
+         <string>ok</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="QPushButton" name="bSend">
@@ -185,6 +267,10 @@
              <width>400</width>
              <height>0</height>
             </size>
+           </property>
+           <property name="plainText">
+            <string>var1;1000;1;2;3;4;5
+var2;333;hello;bye</string>
            </property>
           </widget>
          </item>
@@ -307,7 +393,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>627</width>
+     <width>713</width>
      <height>21</height>
     </rect>
    </property>
@@ -321,6 +407,7 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionHelp"/>
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
@@ -349,6 +436,11 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help</string>
    </property>
   </action>
  </widget>

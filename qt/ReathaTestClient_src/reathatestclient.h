@@ -43,7 +43,7 @@ private slots:
 
     void lifeCheck();
     void updateData( QString data, QString value );
-    void startRequest(QUrl url);
+    void startRequest();
     void httpFinished();
     void httpReadyRead();
 
@@ -55,15 +55,16 @@ private slots:
 
     void onVarValueChanges(QString, QVariant);
 
-    void on_bOnOff_clicked();
+    void on_actionHelp_triggered();
 
 private:
     Ui::ReathaTestClient *ui;
     QTimer _rmLifeCheckTimer;
-    QUrl _url;
+	QTimer _sendDataTimer;
     QNetworkAccessManager _qnam;
     QStandardItemModel _currentValues;
     TScript _script;
+	QMap<QString,QString> _sendDataList;
 };
 
 #endif // REATHATESTCLIENT_H
