@@ -17,12 +17,18 @@ class Main extends CI_Controller{
 			//remove access key from the post array
 			unset($variables['key']);
 
-			//traverse the post array and attemt to update variables in database
-			foreach ($variables as $key => $value) {
-				if(!$device->update_variables($key,$value)){
-					$device->update_invalid_data($key,$value);
-					log_message('error','main/post_variables | $key is not a valid variable, key value: $value');					
-					echo "$key is not a valid variable<br/>";
+			//check if this is a life check post
+			if(isset($variables['lc'])){
+				$device->update_life_check();
+				echo "life checked";				
+			} else {
+				//traverse the post array and attemt to update variables in database
+				foreach ($variables as $key => $value) {
+					if(!$device->update_variables($key,$value)){
+						$device->update_invalid_data($key,$value);
+						log_message('error','main/post_variables | $key is not a valid variable, key value: $value');					
+						echo "$key is not a valid variable<br/>";
+					}
 				}
 			}
 		} else {

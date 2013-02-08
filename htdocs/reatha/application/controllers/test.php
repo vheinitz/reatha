@@ -53,6 +53,17 @@ class Test extends CI_Controller{
 		$device = new Device(1);
 		$device->where('id',$device->id)->update('life_check',1);
 	}
+
+	function post_data(){
+		$data = $this->input->post();
+		log_message('error','test/post_data | '.var_export($data,true));
+	}
+
+	function date_time(){
+		$device = new Device(1);
+		$date = new DateTime($device->updated);
+		echo $date->format('Y-m-d H:i:sP');
+	}
 }
 
 

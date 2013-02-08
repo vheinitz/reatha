@@ -6,6 +6,8 @@ class Device extends Datamapper{
     var $auto_populate_has_one = TRUE;
     var $auto_populate_has_many = TRUE;	
     var $default_order_by = array('id'=>'desc');
+    var $local_time = TRUE;
+    var $unix_timestamp = TRUE;    
 
     function __construct($id = NULL){
     	parent::__construct($id);
