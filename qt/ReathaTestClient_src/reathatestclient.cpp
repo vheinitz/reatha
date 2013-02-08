@@ -97,7 +97,7 @@ void ReathaTestClient::on_actionAbout_triggered()
 
 void ReathaTestClient::lifeCheck()
 {
-	updateData( "LC", "" );
+	updateData( "lc", "" );
 }
 
 void ReathaTestClient::updateData( QString tagId, QString tagValue )
@@ -115,7 +115,7 @@ void ReathaTestClient::startRequest()
 	QUrl url(ui->eUrl->text());
 	QUrl postData;
 
-	postData.addQueryItem("UID", ui->eDeviceKey->text());
+	postData.addQueryItem("key", ui->eDeviceKey->text());
 	for( QMap<QString,QString>::iterator it = _sendDataList.begin(); it !=_sendDataList.end();++it )
 	{
 		postData.addQueryItem( it.key(), it.value() );
