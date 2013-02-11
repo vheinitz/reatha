@@ -64,6 +64,7 @@ class Test extends CI_Controller{
 		$date = new DateTime($device->updated);
 		echo $date->format('Y-m-d H:i:sP');
 	}
+
 }
 
 

@@ -77,8 +77,12 @@ class Da extends CI_Controller{
 				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, we couldn't save this device. Please try again."));
 			} else {
 				//device saved, now process and save device variables
-				$device->add_variables($device_variables);				
-				$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device successfully created."));				
+				$result = $device->add_variables($device_variables);
+				if($result['type']=='success'){
+					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device successfully created."));				
+				} else {
+					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>$result['message']));					
+				}
 			}
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));			
@@ -241,12 +245,35 @@ class Da extends CI_Controller{
 		redirect('da');		
 	}
 
+	function edit_device($device_id){
+		$device = new Device($device_id);
+
+		//check if device exists
+		if($device->exists()){
+			$user = new User($this->tank_auth->get_user_id());
+			//check if user is the admin of the device's domain
+			if($user->is_admin_of($device->domain->id)){
+				$data['user'] = $user;
+				$data['device'] = $device;
+				$data['domains'] = $user->domains->get();
+				$this->load->view('da_edit_device_view',$data);
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you don't have enough rights to perform this action"));
+				log_message('error',"da/delete_device | user is not the devices's domain admin; device_id: $device_id");				
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this device doesn't exist"));
+			log_message('error',"da/delete_device | device does not exist, device_id:$device_id");			
+		}		
+	}
+
 	function delete_var($var_id){
 		$var = new Variable($var_id);
 		if($var->exists()){
 			//check if the user is the admin of the device's domain
 			$user = new User($this->tank_auth->get_user_id());
 			if($user->is_admin_of($var->device->domain->id)){
+				$device_id = $var->device->id;
 				if($var->delete()){
 					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Variable successfully deleted"));						
 				} else {
@@ -261,7 +288,8 @@ class Da extends CI_Controller{
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this variable doesn't seem to exist."));						
 			log_message('error',"da/delete_var | no such variable, var_id: $var_id");			
 		}
-		redirect('da');			
+		log_message('info','da/delete_var | device_id: '.$var->device->id);
+		redirect('da/edit_device/'.$device_id);			
 	}
 
 	function add_var(){
@@ -277,20 +305,24 @@ class Da extends CI_Controller{
 			if($device->exists()){
 				//check if user is the admin of device's domain
 				if($user->is_admin_of($device->domain->id)){
-					$device->add_variables($variables);
-					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Variables successfully added"));					
+					$result = $device->add_variables($variables);
+					if($result['type']=='success'){
+						$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device successfully created."));				
+					} else {
+						$this->session->set_flashdata('message',array('type'=>'error', 'message'=>$result['message']));					
+					}					
 				} else {
 					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you don't have enough rights to perform this action."));						
 					log_message('error',"da/add_var |  user is not the devices's domain admin, device_id: $device->id ");					
 				}
 			} else {
 				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this device doesn't seem to exist."));						
-				log_message('error',"da/delete_var | no such device, device id: $device->id");					
+				log_message('error',"da/add_var | no such device, device id: $device->id");					
 			}
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));			
 		}
-		redirect('da');				
+		redirect('da/edit_device/'.$device->id);				
 	}
 
 	function get_device_key($device_id){
@@ -310,6 +342,88 @@ class Da extends CI_Controller{
 		}
 		echo json_encode($return);
 	}
+
+	function generate_device_key($device_id){
+		$user = new User($this->tank_auth->get_user_id());
+		$device = new Device($device_id);
+		if($device->exists()){
+			if($user->is_admin_of($device->domain->id)){
+				if($device->generate_key()){
+					$this->session->set_flashdata('message', array('type'=>'success','message'=>"Device key successfully generated."));
+				} else {
+					$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, something went wrong. Please try again."));	
+					log_message('error',"da/generate_device_key | could not generate device key, device_id: $device_id");						
+				}
+			} else {
+				$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, you do not have enough rights to view this key."));	
+				log_message('error',"da/generate_device_key | user is not admin of device's domain, device_id: $device_id");			
+			}
+		} else {
+			$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, this device does not seem to exist"));	
+			log_message('error',"da/generate_device_key | device doesn't exist, device_id: $device_id");					
+		}
+		redirect('da/edit_device/'.$device->id);	
+	}
+
+	function change_device_name(){
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('device_name','Device Name','required|trim|xss_clean');
+		$this->form_validation->set_rules('device_id','Device Id','required|trim|xss_clean');
+		if($this->form_validation->run()){
+			$user = new User($this->tank_auth->get_user_id());
+			$name = $this->form_validation->set_value('device_name');
+			$device = new Device($this->form_validation->set_value('device_id'));
+			//check if such device exists
+			if($device->exists()){
+				//check if user is the admin of device's domain
+				if($user->is_admin_of($device->domain->id)){
+					if($device->update_name($name)){
+						$this->session->set_flashdata('message', array('type'=>'success', 'message'=>"Device name successfully updated."));				
+					} else {
+						$this->session->set_flashdata('message', array('type'=>'error', 'message'=>'Sorry, something went wrong. Please try again.'));					
+					}					
+				}else {
+					$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, you do not have enough rights to perform this action."));	
+					log_message('error',"da/get_device_key | user is not admin of device's domain, device_id: $device_id");						
+				}
+			} else {
+				$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, this device does not seem to exist"));	
+				log_message('error',"da/change_device_name | device doesn't exist, device_id: $device->id");					
+			}
+		}
+
+		redirect('da/edit_device/'.$device->id);
+	}
+
+	function change_device_description(){
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('device_description','Device Description','required|trim|xss_clean');
+		$this->form_validation->set_rules('device_id','Device Id','required|trim|xss_clean');
+		if($this->form_validation->run()){
+			$user = new User($this->tank_auth->get_user_id());
+			$description = $this->form_validation->set_value('device_description');
+			$device = new Device($this->form_validation->set_value('device_id'));
+			//check if such device exists
+			if($device->exists()){
+				//check if user is the admin of device's domain
+				if($user->is_admin_of($device->domain->id)){
+					if($device->update_description($description)){
+						$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device description successfully updated."));				
+					} else {
+						$this->session->set_flashdata('message',array('type'=>'error', 'message'=>'Sorry, something went wrong. Please try again.'));					
+					}					
+				}else {
+					$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, you do not have enough rights to perform this action."));	
+					log_message('error',"da/change_device_description | user is not admin of device's domain, device_id: $device_id");						
+				}
+			} else {
+				$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, this device does not seem to exist"));	
+				log_message('error',"da/change_device_description | device doesn't exist, device_id: $device->id");					
+			}
+		}
+
+		redirect('da/edit_device/'.$device->id);
+	}	
 
 	function change_managing_domain($domain_id){
 		$user = new User($this->tank_auth->get_user_id());

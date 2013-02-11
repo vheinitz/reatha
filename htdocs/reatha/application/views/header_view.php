@@ -3,8 +3,10 @@
     <head>
         <meta charset="utf-8"/>            
         <link href="<?php echo base_url(); ?>css/bootstrap.min.css" rel="stylesheet" media="screen" />       
+        <link href="<?php echo base_url(); ?>css/style.css" rel="stylesheet" />
         <script type="text/javascript" src="<?php echo base_url(); ?>js/jquery.1.9.0.min.js"></script>
-        <script type="text/javascript" src="<?php echo base_url(); ?>js/bootstrap.min.js"></script>      
+        <script type="text/javascript" src="<?php echo base_url(); ?>js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="<?php echo base_url(); ?>js/functions.js"></script>
     </head>
     <body>
         <div class="navbar">
