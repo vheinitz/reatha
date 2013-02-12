@@ -10,8 +10,6 @@ CREATE TABLE IF NOT EXISTS `ci_sessions` (
   PRIMARY KEY (`session_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO `ci_sessions` (`session_id`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
-('9c27325a4e9f8fbf13a7028620e38b44', '127.0.0.1', 'Mozilla/5.0 (Windows NT 5.1; rv:18.0) Gecko/201001', 1360333175, 0x613a313a7b733a31373a22666c6173683a6f6c643a6d657373616765223b733a39353a22596f752068617665207375636365737366756c6c7920726567697374657265642e203c6120687265663d22687474703a2f2f3132372e302e302e312f6874646f63732f7265617468612f617574682f6c6f67696e223e4c6f67696e3c2f613e223b7d);
 
 DROP TABLE IF EXISTS `devices`;
 CREATE TABLE IF NOT EXISTS `devices` (
@@ -60,6 +58,30 @@ CREATE TABLE IF NOT EXISTS `login_attempts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;
 
 
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `notification_rule_id` int(11) NOT NULL,
+  `body` varchar(350) NOT NULL,
+  `created` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
+DROP TABLE IF EXISTS `notification_rules`;
+CREATE TABLE IF NOT EXISTS `notification_rules` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `device_id` int(11) NOT NULL,
+  `variable_id` int(11) NOT NULL,
+  `text` varchar(300) NOT NULL,
+  `interval` int(11) NOT NULL,
+  `status` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -80,10 +102,10 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=4 ;
 
 INSERT INTO `users` (`id`, `belongs_to_domain_id`, `username`, `password`, `email`, `role`, `activated`, `banned`, `ban_reason`, `new_password_key`, `new_password_requested`, `new_email`, `new_email_key`, `last_ip`, `last_login`, `created`, `modified`) VALUES
-(1, 0, 'test', '$2a$08$N/vhGJ7FhSHLgiE0hmXFGuzKC7WjJXksgWmxeBWvtaFZNfQUsJIKy', 'tefd@sdg.com', 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '127.0.0.1', '0000-00-00 00:00:00', '2013-02-08 15:19:53', '2013-02-08 16:22:44');
+(1, 0, 'test', '$2a$08$N/vhGJ7FhSHLgiE0hmXFGuzKC7WjJXksgWmxeBWvtaFZNfQUsJIKy', 'tefd@sdg.com', 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '127.0.0.1', '2013-02-12 10:18:01', '2013-02-08 15:19:53', '2013-02-12 11:18:01');
 
 DROP TABLE IF EXISTS `user_autologin`;
 CREATE TABLE IF NOT EXISTS `user_autologin` (
@@ -103,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `user_profiles` (
   `first_name` varchar(100) NOT NULL,
   `last_name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 INSERT INTO `user_profiles` (`id`, `user_id`, `first_name`, `last_name`) VALUES
 (1, 1, '', '');

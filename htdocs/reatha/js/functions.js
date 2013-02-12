@@ -9,6 +9,14 @@
 		});
 	}
 
+	function get_devices_power_status($base_url){
+		$.getJSON($base_url+"u/get_devices_power_status", function($result) {
+			$.each($result, function($i, $power_status){
+				$('#power_'+$power_status.device_id).html($power_status.power);
+			});
+		});			
+	}
+
 	function get_device_vars($device_id, $base_url){
 		$.getJSON($base_url+"u/get_device_vars/"+$device_id, function(variables) {
 			$variable_data = "";
@@ -26,3 +34,4 @@
 			get_device_vars($device_id, $base_url);
 		}, 2000);		
 	}
+

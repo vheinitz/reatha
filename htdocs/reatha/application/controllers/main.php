@@ -36,18 +36,34 @@ class Main extends CI_Controller{
 
 			//check if this is a life check post
 			if(isset($variables['lc'])){
-				$device->update_life_check();
-				echo "life checked";				
-			} else {
-				//traverse the post array and attemt to update variables in database
-				foreach ($variables as $key => $value) {
-					if(!$device->update_variables($key,$value)){
-						$device->update_invalid_data($key,$value);
-						log_message('error',"main/post_variables | $key is not a valid variable, key value: $value");					
-						echo "$key is not a valid variable<br/>";
+				// log_message('info','main/post_variables | life check');
+				$device->update_life_check();				
+			}
+			
+			//traverse the post array and attemt to update variables in database
+			foreach ($variables as $key => $value) {
+				if(!$device->update_variables($key,$value)){
+					$device->update_invalid_data($key,$value);
+					log_message('error',"main/post_variables | $key is not a valid variable, key value: $value");					
+					echo "$key is not a valid variable<br/>";
+				} else {
+					//check if we must send notification
+					$var = new variable();
+					$var->where('name',$key)->where('device_id',$device->id)->get();
+					if($var->notification_rule->exists()){
+						log_message('info','main/post_variables | var_id '.$var->id.' has a notification rule, id: '.$var->notification_rule->id);
+						foreach($var->notification_rule as $rule){
+							//get last notification sent to user under this rule
+							$last_sent = $rule->user->get_last_sent_notification_under_rule($rule->id);
+							if(round((time() - $last_sent)/60) >= $rule->interval){
+								//must send new notification
+								$n = new Notification();
+								//todo: send notification
+						}
 					}
 				}
 			}
+
 		} else {
 			echo "The provided key is not valid.";
 			log_message('error',"main/post_variables | key not valid, no such device key, key: $key");

@@ -65,6 +65,21 @@ class Test extends CI_Controller{
 		echo $date->format('Y-m-d H:i:sP');
 	}
 
+	function unixtime(){
+		echo time();
+	}
+
+	function last_notification(){
+		$rule = new Notification_rule(1);
+		$last_sent = $rule->user->get_last_sent_notification_under_rule($rule->id);
+		// echo round((time() - $last_sent)/60);
+		if (round((time() - $last_sent)/60) >= $rule->interval) {
+			echo "bigger";
+		} else {
+			"lower";
+		}
+	}
+
 }
 
 

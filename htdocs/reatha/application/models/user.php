@@ -1,7 +1,7 @@
 <?php
 class User extends Datamapper{
     var $table = "users";
-    var $has_many = array('device',
+    var $has_many = array('device', 'notification_rule','notification',
         'domain' => array(
             'class'         => 'domain',
             'other_field'   => 'domain_admin',
@@ -56,6 +56,16 @@ class User extends Datamapper{
         $ci->email->subject('You are now a domain admin on Reatha.de');
         $ci->email->message($this->load->view('email/domain_admin_notification-html', $data, TRUE));
         $ci->email->send();        
+    }
+
+    function get_last_sent_notification_under_rule($rule_id){
+        $query = $this->db->where('user_id',$this->id)->where('notification_rule_id',$rule_id)->order_by('id','desc')->get('notifications',1);
+        $result = $query->result();
+        if(isset($result[0])){
+            return $result[0]->created;
+        } else {
+            return '0';
+        }
     }
 
     function delete_user(){
