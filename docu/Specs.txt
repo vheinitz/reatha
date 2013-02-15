@@ -116,7 +116,7 @@ The request should contain
  2) One or more key-value pairs <ID>=<Value>
 Example: http://reatha.de/rm/update.php?UID=4711E3F8J6VFJ35F9GJU&status=ok&temperature=6&door=closed
 
-Testing tith Test Client
+Testing with Test Client
 ------------------------
 In current test-client implementation only one key-value pair can be sent. The placeholders in URL %1,%2,%3
 correspond to UID, key,value respectively. e.g:http://reatha.de/rm/update.php?UID=%1&%2=%3
@@ -126,3 +126,50 @@ E.G:
 temperature;1000;10;20;30;40;30;20
 This line would update temperature variable each second increasing from 10 to 40 and back to 10
 At least two values are required.
+
+Notification
+=============
+Notification is the main feature and intent of reatha. Whenever a device runs in a critical situation, the corresponding user should be informed.
+ -Every user should be able to set-up the notification triggers and the messages to be sent for her.
+ -The notification definition is valid within user-device combination context. That means: 
+   -Different users may get different notifications from same device.
+   -One user may get notification and another not at all.
+ -The user should be able to define different notifications for similar devices.
+ -The user should be able to define as many notification items from as many devices as she likes.
+ -Every notification item consists of:
+  -Variable triggering the notification
+  -Condition
+  -Minimal Interval
+  -Timestamp of last send notification
+  -Message template
+  WHERE
+   -Variable is the name of  a device's variable(, the user is allowed to watch)
+   -Condition is a expression-string containing variable names and operators.
+    -For the first step, the condition should be a string for regular expression to check against the value of triggering variable
+	 The check is applied on value-update (e.g. using PHP's preg_match )
+	 Later, (AFTER FEATURE COMPLETE MILESTONE) the condition should contain any variables and operators. e.g. "{temp}>100 && {pressure}>10}"
+	 Before such expression is evaluated (e.g. by https://github.com/rezzza/exprlib or other lib similar to JS eval)
+	 the variables-placeholders in {} are replaced by actual variable values
+   -Minimal Interval (in seconds) is the time-interval which should pass since last sent notification. 
+    Otherwise, the device may cause a mass of e-mails sent to user. There is no use to send notifications faster then the user can react.
+   -Timestamp of last send notification is used to check on incomming values (triggers), wether interval passed and either send notification or ignore variable update
+    The user can reset all Timestamps in device view (set timestamp to 0)
+   -Message template: String containing placeholders for variables. E.g.: "Temperature to high: {temp}" where {temp} should be replaced by the actual value of the variable "temp"
+    Feel free to chose another reserved characters to mark placeholders.
+	It would be nice, if the message template could contain any mark-up syntax like "\n" or "<br>", whatever is feasible.
+
+Examples
+--------
+
+temperature, /[1-9][0-9]{2}/, 3600, "Temperature too high: {temperature}"
+	Message: "Temperature too high: <Temp>" is sent every hour, whenever temperature is >=100
+
+status, /[eE]rror/, 30000000, "Error occured"
+    Message: "Error occured" sent nearly every year (practically once)
+	
+UI for notification definition
+------------------------------
+The notifications should be defned in a separate device-notification config view.
+This UI should be accessible by user from menu or an icon-link in context of device-view.
+In the same manner as admin adds and deletes devices or users, the user should be able to add and delete notification items.
+	
