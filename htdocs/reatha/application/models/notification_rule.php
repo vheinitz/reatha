@@ -8,5 +8,18 @@ class Notification_rule extends Datamapper{
 		parent::__construct($id);
 	}
 
+	function must_send_notification($var){
+		log_message('info','notification_rule/must_send_notification | entering function');
+		//get last notification sent to user under this rule
+		$last_sent = $this->user->get_last_sent_notification_under_rule($this->id);
+		if((time() - $last_sent) >= $this->interval){
+			//check if var value matches condition
+			if(preg_match($this->condition,$var->value)){
+				return TRUE;
+			}
+		}
+		return FALSE;
+	}
+
 }
 ?>

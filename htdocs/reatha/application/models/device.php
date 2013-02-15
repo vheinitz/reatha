@@ -1,7 +1,7 @@
 <?php
 class Device extends Datamapper{
 	var $table = "devices";
-	var $has_many = array('user','variable');
+	var $has_many = array('user','variable','notification_rule');
 	var $has_one = array('domain');
     var $auto_populate_has_one = TRUE;
     var $auto_populate_has_many = TRUE;	

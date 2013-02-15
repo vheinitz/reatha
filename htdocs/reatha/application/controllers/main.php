@@ -26,11 +26,14 @@ class Main extends CI_Controller{
 	}	
 
 	function post_variables(){
+		log_message('info','main/post_variables | entering function');
+		$variables = array();
 		$variables = $this->input->post(NULL, true);
 		$key = $variables['key'];
 		$device = new Device();
 		$device->get_by_key($key);
 		if($device->exists()){
+			log_message('info','main/post_variables | found device with given key');
 			//remove access key from the post array
 			unset($variables['key']);
 
@@ -41,28 +44,31 @@ class Main extends CI_Controller{
 			}
 			
 			//traverse the post array and attemt to update variables in database
-			foreach ($variables as $key => $value) {
-				if(!$device->update_variables($key,$value)){
-					$device->update_invalid_data($key,$value);
-					log_message('error',"main/post_variables | $key is not a valid variable, key value: $value");					
-					echo "$key is not a valid variable<br/>";
+			foreach ($variables as $name => $value) {
+				if(!$device->update_variables($name,$value)){
+					$device->update_invalid_data($name,$value);
+					log_message('error',"main/post_variables | $name is not a valid variable, key value: $value");					
+					echo "$name is not a valid variable<br/>";
 				} else {
 					//check if we must send notification
 					$var = new variable();
-					$var->where('name',$key)->where('device_id',$device->id)->get();
+					$var->where('name',$name)->where('device_id',$device->id)->get();
 					if($var->notification_rule->exists()){
-						log_message('info','main/post_variables | var_id '.$var->id.' has a notification rule, id: '.$var->notification_rule->id);
 						foreach($var->notification_rule as $rule){
-							//get last notification sent to user under this rule
-							$last_sent = $rule->user->get_last_sent_notification_under_rule($rule->id);
-							if(round((time() - $last_sent)/60) >= $rule->interval){
+							if($rule->must_send_notification($var)){
 								//must send new notification
+								log_message('info','main/post_variables | must send notification');
 								$n = new Notification();
-								//todo: send notification
+								$n->save_and_email($rule, $var);
+						} else {
+							log_message('info','main/post_variables | not sending notification');							
 						}
 					}
+				} else {
+					log_message('info','main/post_variables | variable has no rules');
 				}
 			}
+		}
 
 		} else {
 			echo "The provided key is not valid.";

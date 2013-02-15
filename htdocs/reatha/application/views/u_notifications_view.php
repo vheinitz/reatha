@@ -4,15 +4,24 @@
 
 <h3>Notifications for Device: <?php echo $device->name; ?></h3>
 
-<form class="form-horizontal" action="<?php echo base_url(); ?>u/setup_notification/" method="POST">
-	<div class="control-group">
-		<label class="control-label" for="status">Status</label>
-		<div class="controls">
-			<label class="checkbox">
-			<input type="checkbox" id="status" name="status" value="1"> Enabled
-			</label>
-		</div>		
-	</div>
+
+<?php foreach ($device->notification_rules as $notification_rule) { ?>
+	<table class="table table-striped table-bordered">
+		<tbody>
+			<tr>
+				<td class="td-notification-list-row-caption">Variable:</td><td><?php echo $notification_rule->variable->name;?></td>
+				<td rowspan="4" class="td-notification-list-action"><a href="<?php echo base_url(); ?>u/delete_notification_rule/<?php echo $notification_rule->id; ?>">Delete</a></td>
+			</tr>
+			<tr><td>Condition:</td><td><?php echo $notification_rule->condition;?></td></tr>
+			<tr><td>Min. Interval:</td><td><?php echo $notification_rule->interval;?></td></tr>
+			<tr><td>Message:</td><td><?php echo $notification_rule->message;?></td></tr>
+		</tbody>
+	</table>	
+<?php } ?>
+
+
+<h4>New Notification</h4>
+<form class="form-horizontal" action="<?php echo base_url(); ?>u/add_notification_rule/" method="POST">
 	<div class="control-group">
 		<label class="control-label" for="variable">Variable</label>
 		<div class="controls">
@@ -25,15 +34,21 @@
 		</div>
 	</div>
 	<div class="control-group">
-		<label class="control-label" for="interval">Interval (minutes)</label>
+		<label class="control-label" for="interval">Condition</label>
+		<div class="controls">
+			<input type="text" id="condition" name="condition"/>
+		</div>
+	</div>	
+	<div class="control-group">
+		<label class="control-label" for="interval">Interval (seconds)</label>
 		<div class="controls">
 			<input type="text" id="interval" name="interval"/>
 		</div>
 	</div>
 	<div class="control-group">
-		<label class="control-label" for="text">Text</label>
+		<label class="control-label" for="text">Message</label>
 		<div class="controls">
-			<textarea id="text" name="text"></textarea>
+			<textarea id="text" name="message"></textarea>
 		</div>
 	</div>
 	<div class="control-group">

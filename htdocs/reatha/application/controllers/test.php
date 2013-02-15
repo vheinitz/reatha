@@ -80,6 +80,29 @@ class Test extends CI_Controller{
 		}
 	}
 
+	function condition(){
+		echo preg_match('/^[0-9]$/','10');
+	}
+
+	function mail_send(){
+		$to = "contact@youtopica.com";
+		$subject = "Test mail";
+		$message = "Hello! This is a simple email message.";
+		$from = "noreply@reatha.de";
+		$headers = "From:" . $from;
+		mail($to,$subject,$message,$headers);
+		echo "Mail Sent.";		
+	}
+
+	function find_vars(){
+		$text = "var {status} and var {file} and dsfdsfsfsdf {jur status} and {color} is: {var}";
+		preg_match_all("/\{(.+)\}/U", $text, $result);
+		$vars = $result[1];		
+		foreach($vars as $var){
+			echo $var." ";
+		}
+	}
+
 }
 
 

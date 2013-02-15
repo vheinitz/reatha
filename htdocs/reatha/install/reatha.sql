@@ -75,9 +75,9 @@ CREATE TABLE IF NOT EXISTS `notification_rules` (
   `user_id` int(11) NOT NULL,
   `device_id` int(11) NOT NULL,
   `variable_id` int(11) NOT NULL,
-  `text` varchar(300) NOT NULL,
+  `condition` varchar(300) NOT NULL,
+  `message` varchar(300) NOT NULL,
   `interval` int(11) NOT NULL,
-  `status` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -102,10 +102,10 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=6 ;
 
 INSERT INTO `users` (`id`, `belongs_to_domain_id`, `username`, `password`, `email`, `role`, `activated`, `banned`, `ban_reason`, `new_password_key`, `new_password_requested`, `new_email`, `new_email_key`, `last_ip`, `last_login`, `created`, `modified`) VALUES
-(1, 0, 'test', '$2a$08$N/vhGJ7FhSHLgiE0hmXFGuzKC7WjJXksgWmxeBWvtaFZNfQUsJIKy', 'tefd@sdg.com', 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '127.0.0.1', '2013-02-12 10:18:01', '2013-02-08 15:19:53', '2013-02-12 11:18:01');
+(1, 0, 'test', '$2a$08$N/vhGJ7FhSHLgiE0hmXFGuzKC7WjJXksgWmxeBWvtaFZNfQUsJIKy', 'tefd@sdg.com', 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '127.0.0.1', '2013-02-15 09:17:34', '2013-02-08 15:19:53', '2013-02-15 10:17:34');
 
 DROP TABLE IF EXISTS `user_autologin`;
 CREATE TABLE IF NOT EXISTS `user_autologin` (
@@ -117,6 +117,8 @@ CREATE TABLE IF NOT EXISTS `user_autologin` (
   PRIMARY KEY (`key_id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+INSERT INTO `user_autologin` (`key_id`, `user_id`, `user_agent`, `last_ip`, `last_login`) VALUES
+('472d349d511a0e05410ebd5e9d325a00', 5, 'Mozilla/5.0 (Windows NT 5.1; rv:18.0) Gecko/20100101 Firefox/18.0', '127.0.0.1', '2013-02-15 10:19:23');
 
 DROP TABLE IF EXISTS `user_profiles`;
 CREATE TABLE IF NOT EXISTS `user_profiles` (
@@ -125,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `user_profiles` (
   `first_name` varchar(100) NOT NULL,
   `last_name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 INSERT INTO `user_profiles` (`id`, `user_id`, `first_name`, `last_name`) VALUES
 (1, 1, '', '');

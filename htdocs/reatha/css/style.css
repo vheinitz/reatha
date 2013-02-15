@@ -5,3 +5,11 @@
 #user-device-variables{
 	height: 200px;
 }
+
+.td-notification-list-row-caption{
+	width: 25%;
+}
+
+.td-notification-list-action{
+	width: 15%;
+}

@@ -13,6 +13,7 @@
 
 $config['mailtype']             = 'html';
 $config['charset']              = 'utf-8';
+$config['protocol']              = 'mail';
 
 
 /* End of file email.php */
