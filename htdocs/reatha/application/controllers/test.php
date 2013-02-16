@@ -94,6 +94,16 @@ class Test extends CI_Controller{
 		echo "Mail Sent.";		
 	}
 
+	function mail_send_2(){
+		$this->load->library('email');
+		$this->email->to('contact@youtopica.com');
+		$this->email->from('noreply@reatha.de','Reatha');
+		$this->email->subject('test mail');
+		$this->email->message('<html><head></head><body>test <b>message</b></body></html>');
+		$this->email->send();
+		echo $this->email->print_debugger();
+	}
+
 	function find_vars(){
 		$text = "var {status} and var {file} and dsfdsfsfsdf {jur status} and {color} is: {var}";
 		preg_match_all("/\{(.+)\}/U", $text, $result);

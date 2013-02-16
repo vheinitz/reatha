@@ -30,28 +30,26 @@ class Notification extends Datamapper{
 	}
 
 	function _send_email(){
-/*		$this->lang->load('notifications');
-		$this->load->library('email');
+		$ci = &get_instance();
+		$ci->lang->load('notifications');
+		$ci->load->library('email');
 
-		$message = sprintf($this->lang->line('email_notification'), $this->user->username, $this->body);
-		log_message('info','notification/_send_email | message: '.$message);
-		log_message('info','notification/_send_email | sending to email: '.$this->user->email);
+		$message = sprintf($ci->lang->line('email_notification'), $ci->user->username, $this->body);
 
-		$this->email->from('noreply@reatha.de');
-		$this->email->to($this->user->email);
+		$ci->email->from('noreply@reatha.de','Reatha');
+		$ci->email->to($this->user->email);
 
-		$this->email->subject('New Notification');
-		$this->email->message($message);
+		$ci->email->subject('New Notification');
+		$ci->email->message($message);
 
-		$this->email->send();		
-		log_message('info','notification/_send_email | email debugger: '.$this->email->print_debugger());*/
+		$ci->email->send();		
 		
-		$to = $this->user->email;
+/*		$to = $this->user->email;
 		$subject = "New Notification";
 		$message = $this->body;
 		$from = "noreply@reatha.de";
 		$headers = "From:" . $from;
-		mail($to,$subject,$message,$headers);		
+		mail($to,$subject,$message,$headers);*/		
 	}
 
 }
