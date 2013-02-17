@@ -39,8 +39,10 @@ class A extends CI_Controller{
 		$this->form_validation->set_message('valid_domain_name','Sorry, this domain name is already in use.');
 		if($this->form_validation->run()){
 			$domain_name = $this->input->post('domain_name',true);
+			$domain_description = $this->input->post('domain_description',true);
 			$domain = new Domain();
 			$domain->name = $domain_name;
+			$domain->description = $domain_description;
 			if(!$domain->save()){
 				//error - domain could not be saved
 				log_message('error','a/add_domain | could not save domain, user id: '.$user->id.', domain name: '.$domain_name);

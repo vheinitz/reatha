@@ -25,15 +25,9 @@
 	<fieldset>
 		<label>Domain Name</label>
 		<input type="text" name="domain_name" id="domain_name" maxlength=150 />
-<!-- 
-		<label>Domain Admin Username</label>
-		<input type="text" name="domain_admin_username" maxlength=150 />				
-
-		<label>Domain Admin Password</label>
-		<input type="password" name="domain_admin_password" maxlength=150 />		
-
-		<label>Domain Admin Email</label>
-		<input type="text" name="domain_admin_email" maxlength=150 />	 -->	
+		
+		<label>Domain Desctiption</label>
+		<input type="text" name="domain_description" id="domain_description" maxlength=250 />
 		
 		<label></label>
 		<input type="submit" class="btn" value="Add" />
