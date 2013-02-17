@@ -2,13 +2,6 @@
 error_reporting(E_ERROR | E_PARSE | E_NOTICE);
 ?>
 
-<?php
-if(isset($_POST['delete_install'])){
-/*	unlink('install.php');
-	exit();*/
-}
-?>
-
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
     <head>
@@ -103,6 +96,11 @@ if(isset($_POST['db_user']) && isset($_POST['db_name'])){
 		if(!copy('./.htaccess','../.htaccess')){
 			$errors[] = 'Please manually copy the .htaccess file from /install directory to the root of your Reatha folder.';
 		}
+		
+		//removing default index.html
+		if( !unlink('../index.html')){
+			$errors[] = 'Please remove index.html file from / directory manually';
+		}
 
 
 	} else {
@@ -112,9 +110,9 @@ if(isset($_POST['db_user']) && isset($_POST['db_name'])){
 	if(empty($errors)){ ?>
 		<div class='alert alert-success'>
 			Reatha was successfully installed.
-			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+			<form action="install1.php" method="POST">
 				<input type="hidden" name="delete_install" value="1" />
-				<input type="submit" class="btn" value="Delete Installation Script" />
+				<input type="submit" class="btn" value="Complete Installation" />
 			</form>
 		</div>
 		<?php 
