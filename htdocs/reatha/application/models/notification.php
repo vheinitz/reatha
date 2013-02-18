@@ -42,12 +42,12 @@ class Notification extends Datamapper{
 		$ci->lang->load('notifications');
 		$ci->load->library('email');
 
-		$message = sprintf($ci->lang->line('email_notification'), $ci->user->username, $this->body);
+		$message = sprintf($ci->lang->line('email_notification'), $this->user->username, $this->body);
 
 		$ci->email->from('noreply@reatha.de','Reatha');
 		$ci->email->to($this->user->email);
 
-		$ci->email->subject('New Notification');
+		$ci->email->subject($this->subject);
 		$ci->email->message($message);
 
 		$ci->email->send();		
