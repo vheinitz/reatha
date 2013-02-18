@@ -12,9 +12,9 @@
 				<td class="td-notification-list-row-caption">Variable:</td><td><?php echo $notification_rule->variable->name;?></td>
 				<td rowspan="6" class="td-notification-list-action">
 					<?php if($notification_rule->activated) { ?>
-						<a href="<?php echo base_url(); ?>/u/toggle_notification_status/<?php echo $notification_rule->id."/0"; ?>" class="btn btn-small" id="notification-list-action"><i class="icon-pause"></i> Deactivate</a><br/>
+						<a href="<?php echo base_url(); ?>u/toggle_notification_status/<?php echo $notification_rule->id."/0"; ?>" class="btn btn-small" id="notification-list-action"><i class="icon-pause"></i> Deactivate</a><br/>
 					<?php } else { ?>
-						<a href="<?php echo base_url(); ?>/u/toggle_notification_status/<?php echo $notification_rule->id."/1"; ?>" class="btn btn-small" id="notification-list-action"><i class="icon-play"></i> Activate</a><br/>
+						<a href="<?php echo base_url(); ?>u/toggle_notification_status/<?php echo $notification_rule->id."/1"; ?>" class="btn btn-small" id="notification-list-action"><i class="icon-play"></i> Activate</a><br/>
 					<?php } ?>
 					<a class="btn btn-small" id="notification-list-action" href="<?php echo base_url(); ?>u/edit_notification_rule/<?php echo $notification_rule->id; ?>"><i class="icon-pencil"></i> Edit</a><br/>
 					<a class="btn btn-small" id="notification-list-action" href="<?php echo base_url(); ?>u/delete_notification_rule/<?php echo $notification_rule->id; ?>"><i class="icon-remove"></i> Delete</a>
