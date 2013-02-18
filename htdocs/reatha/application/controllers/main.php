@@ -26,7 +26,6 @@ class Main extends CI_Controller{
 	}	
 
 	function post_variables(){
-		log_message('info','main/post_variables | entering function');
 		$variables = array();
 		$variables = $this->input->post(NULL, true);
 		$key = $variables['key'];
@@ -57,7 +56,6 @@ class Main extends CI_Controller{
 						foreach($var->notification_rule as $rule){
 							if($rule->must_send_notification($var)){
 								//must send new notification
-								log_message('info','main/post_variables | must send notification');
 								$n = new Notification();
 								$n->save_and_email($rule, $var);
 						} else {

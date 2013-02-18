@@ -13,3 +13,17 @@
 .td-notification-list-action{
 	width: 15%;
 }
+
+#notification-list-action{
+	margin-bottom: 5px;
+}
+
+.login-table{
+	margin-top: 150px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.td-login-copyright{
+	font-size: 12px;
+}

@@ -105,12 +105,16 @@ class Test extends CI_Controller{
 	}
 
 	function find_vars(){
-		$text = "var {status} and var {file} and dsfdsfsfsdf {jur status} and {color} is: {var}";
+		$text = "status is {status} and temperature is {temperature}";
 		preg_match_all("/\{(.+)\}/U", $text, $result);
-		$vars = $result[1];		
-		foreach($vars as $var){
-			echo $var." ";
+		$vars = $result[1];
+		$device = new Device(1);		
+		foreach($vars as $var_name){
+			$var = $device->variables->where('name',$var_name)->get();
+			$text = str_replace('{'.$var_name.'}', $var->value, $text);
 		}
+
+		echo $text;
 	}
 
 }

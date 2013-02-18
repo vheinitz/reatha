@@ -12,21 +12,29 @@ class Notification extends Datamapper{
 
 	// save notification and email it. Params: rule - notification rule, var - variable that triggered the notification
 	function save_and_email($rule, $var){
-		$message = str_replace('{'.$var->name.'}', $var->value, $rule->message);
-		$this->body = $message;
+		log_message('info',"notification/save_and_email | entering fucntion");
+		$this->body = $this->_process_message_vars($rule,'body');
+		$this->subject = $this->_process_message_vars($rule,'subject');
 		if($this->save(array($rule, $rule->user))){
 			$this->_send_email();
 		}
 	}
 
-	function _process_message_vars(){
-		$body = $this->body;
-		preg_match_all("/\{(.+)\}/U", $body, $result);
-		$vars = $result[1];
-		foreach($vars as $var){
-			//TODO: check if such var exists and the current device has this var
-			//$body = str_replace('{'.$var.'}', $var->value, $rule->message);
+	function _process_message_vars($rule, $type){
+		//check whether to process notification body or notification subject
+		if($type == 'body'){
+			$text = $rule->message;
+		} else {
+			$text = $rule->subject;
 		}
+		preg_match_all("/\{(.+)\}/U", $text, $var_names);
+		$var_names = $var_names[1];
+		$device = $rule->device->get();
+		foreach($var_names as $var_name){
+			$var = $device->variables->where('name',$var_name)->get();
+			$text = str_replace('{'.$var_name.'}', $var->value, $text);
+		}
+		return $text;
 	}
 
 	function _send_email(){
@@ -43,13 +51,6 @@ class Notification extends Datamapper{
 		$ci->email->message($message);
 
 		$ci->email->send();		
-		
-/*		$to = $this->user->email;
-		$subject = "New Notification";
-		$message = $this->body;
-		$from = "noreply@reatha.de";
-		$headers = "From:" . $from;
-		mail($to,$subject,$message,$headers);*/		
 	}
 
 }

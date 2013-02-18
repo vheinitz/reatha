@@ -110,12 +110,15 @@ class Users extends CI_Model
 	 */
 	function is_email_available($email)
 	{
-		$this->db->select('1', FALSE);
+		//temporarily allow duplicate emails
+/*		$this->db->select('1', FALSE);
 		$this->db->where('LOWER(email)=', strtolower($email));
 		$this->db->or_where('LOWER(new_email)=', strtolower($email));
 
 		$query = $this->db->get($this->table_name);
-		return $query->num_rows() == 0;
+		return $query->num_rows() == 0;*/
+
+		return TRUE;
 	}
 
 	/**
