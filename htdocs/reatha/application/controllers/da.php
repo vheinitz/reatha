@@ -105,6 +105,10 @@ class Da extends CI_Controller{
 					$this->form_validation->set_value('email'),
 					$this->form_validation->set_value('password'),
 					$email_activation))){
+				//send welcome email to newly created user admin, with login details
+				$data['site_name'] = $this->config->item('website_name', 'tank_auth');
+				$this->_send_email('welcome', $data['email'], $data);
+
 				//mark user as belonging to submitted domain id
 				$new_user = new User($data['user_id']);
 				$domain_id = $this->form_validation->set_value('domain_id');
@@ -450,6 +454,20 @@ class Da extends CI_Controller{
 			return TRUE;
 		}
 	}
+
+	function _send_email($type, $email, &$data)
+	{
+		$this->load->config('tank_auth', TRUE);
+		$this->lang->load('tank_auth');
+		$this->load->library('email');
+		$this->email->from($this->config->item('webmaster_email', 'tank_auth'), $this->config->item('website_name', 'tank_auth'));
+		$this->email->reply_to($this->config->item('webmaster_email', 'tank_auth'), $this->config->item('website_name', 'tank_auth'));
+		$this->email->to($email);
+		$this->email->subject(sprintf($this->lang->line('auth_subject_'.$type), $this->config->item('website_name', 'tank_auth')));
+		$this->email->message($this->load->view('email/'.$type.'-html', $data, TRUE));
+		$this->email->send();
+	}			
+	
 }
 
 

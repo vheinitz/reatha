@@ -1,7 +1,7 @@
 <?php $this->load->view('header_view'); ?>
 
 <div class="row">
-	<div class="span4" style="height: 350px; overflow: auto">
+	<div class="span4" style="overflow: auto">
 		<table class="table table-striped table-bordered">
 		  	<thead>
 			    <tr>
