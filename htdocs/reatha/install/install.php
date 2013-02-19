@@ -60,15 +60,19 @@ if(isset($_POST['db_user']) && isset($_POST['db_name'])){
 		$web_dir = str_replace('/install', '', $web_dir);
 		if(empty($web_dir)) $web_dir = '/';		
 
+		//moving .htaccess-template to the root
+		if(!copy('./ci_.htaccess','../.htaccess')){
+			$errors[] = 'Please manually copy the ci_.htaccess file from /install directory to .htaccess in the root of your Reatha folder .';
+		}
 		//rewrite .htaccess data
-		$htaccess_file = './.htaccess';
+		$htaccess_file = '../.htaccess';
 		if(is_writeable($htaccess_file)){
 			$file = file_get_contents($htaccess_file, FILE_USE_INCLUDE_PATH);
 			$file = str_replace("\$ /index.php", "\$ ".$web_dir."/index.php", $file);
 			file_put_contents($htaccess_file, $file);
 		} else {
 			if(!empty($web_dir)){
-				$errors[] = "We were not able to write data to file '/install/.htaccess'. Please change file permissions or manually replace the file content with these 3 lines and then move the file to the root of your Reatha directory:<br/>
+				$errors[] = "We were not able to write data to file '../.htaccess'. Please change file permissions or manually replace the file content with these 3 lines and then move the file to the root of your Reatha directory:<br/>
 				RewriteEngine on<br/>
 				RewriteCond \$1 !^(index\.php|favicon\.ico|install|layout|js|css|robots\.txt)<br/>
 				RewriteRule ^(.*)\$ $web_dir/index.php/\$1 [L]<br/>";				
@@ -92,10 +96,7 @@ if(isset($_POST['db_user']) && isset($_POST['db_name'])){
 			$errors[] = 'Please manually copy the ci_index.php file from /install directory to the root of your Reatha folder.';
 		}
 
-		//moving .htaccess to the root
-		if(!copy('./ci_.htaccess','../.htaccess')){
-			$errors[] = 'Please manually copy the ci_.htaccess file from /install directory to .htaccess in the root of your Reatha folder .';
-		}
+		
 		
 		//removing default index.html
 		if( !unlink('../index.html')){
