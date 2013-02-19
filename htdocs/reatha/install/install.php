@@ -93,8 +93,8 @@ if(isset($_POST['db_user']) && isset($_POST['db_name'])){
 		}
 
 		//moving .htaccess to the root
-		if(!copy('./.htaccess','../.htaccess')){
-			$errors[] = 'Please manually copy the .htaccess file from /install directory to the root of your Reatha folder.';
+		if(!copy('./ci_.htaccess','../.htaccess')){
+			$errors[] = 'Please manually copy the ci_.htaccess file from /install directory to .htaccess in the root of your Reatha folder .';
 		}
 		
 		//removing default index.html
