@@ -1,5 +1,7 @@
 #user-device-wrapper{
 	cursor: pointer;
+	font-size: 22px;
+	line-height: 30px;
 }
 
 #user-device-variables{
@@ -26,4 +28,27 @@
 
 .td-login-copyright{
 	font-size: 12px;
+}
+
+#user-devices-list{
+	width: 550px;
+	margin-left: auto;
+	margin-right: auto;
+	float: none;
+}
+
+#user-device-notification-setup{
+	margin-top: 5px;
+}
+
+#user-device-data{
+	width: 450px;
+	margin-left: auto;
+	margin-right: auto;
+	float: none;	
+}
+
+#user-device-data-title{
+	text-align: center;
+	font-size: 18px;
 }

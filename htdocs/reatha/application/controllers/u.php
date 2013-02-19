@@ -20,6 +20,18 @@ class U extends CI_Controller{
 		$this->load->view('u_view',$data);
 	}
 
+	function device($device_id){
+		$device = new Device($device_id);
+		if($device->exists()){
+			$user = new User($this->tank_auth->get_user_id());
+			if($user->has_device($device->id)){
+				$data['user'] 	= $user;
+				$data['device'] = $device;
+				$this->load->view('u_device_view',$data);
+			}
+		}		
+	}
+
 	function get_devices_power_status(){
 		$user = new User($this->tank_auth->get_user_id());
 		$return = array(); $power = '';
