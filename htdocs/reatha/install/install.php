@@ -110,7 +110,7 @@ if(isset($_POST['db_user']) && isset($_POST['db_name'])){
 	if(empty($errors)){ ?>
 		<div class='alert alert-success'>
 			Reatha was successfully installed.
-			<form action="install1.php" method="POST">
+			<form action="finish.php" method="POST">
 				<input type="hidden" name="delete_install" value="1" />
 				<input type="submit" class="btn" value="Complete Installation" />
 			</form>
