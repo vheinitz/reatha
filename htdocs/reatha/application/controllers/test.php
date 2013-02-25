@@ -117,6 +117,25 @@ class Test extends CI_Controller{
 		echo $text;
 	}
 
+	function find_views(){
+		$text = "status is {view:test} and temperature is {view:temperature}";
+		preg_match_all("/\{(view:[A-Za-z0-9]+)\}/U", $text, $result);
+		$views = $result[1];	
+		$device = new Device(1);	
+		foreach($views as $view_name){
+        	$view_name = explode(":", $view_name);
+        	$view_name = $view_name[1];
+        	log_message('info','test/find_views | view: '.$view_name);
+        	if($device->has_view($view_name)){
+        		log_message('info','test/find_views | device has view: '.$view_name);
+        		$view = $device->views->where('name',$view_name)->get(1);
+        		$text = str_replace('{view:'.$view_name.'}', "<a href='$view->id'>$view_name</a>", $text);
+        	}
+		}
+
+		echo $text;
+	}	
+
 	function run_query(){
 		$this->db->query("CREATE TABLE IF NOT EXISTS `views` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

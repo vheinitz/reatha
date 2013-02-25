@@ -20,13 +20,14 @@ class U extends CI_Controller{
 		$this->load->view('u_view',$data);
 	}
 
-	function device($device_id){
+	function device($device_id, $view_name = "main"){
 		$device = new Device($device_id);
 		if($device->exists()){
 			$user = new User($this->tank_auth->get_user_id());
 			if($user->has_device($device->id)){
 				$data['user'] 	= $user;
 				$data['device'] = $device;
+				$data['view'] = $device->view->where('name',$view_name)->get(1);
 				$this->load->view('u_device_view',$data);
 			}
 		}		
@@ -59,6 +60,16 @@ class U extends CI_Controller{
 			}
 		} else {
 			log_message('error',"u/get_device_vars | device does not exist: $device_id");			
+		}
+	}
+
+	function get_device_view($view_id){
+		$view = new View($view_id);
+		if($view->exists()){
+			$user = new User($this->tank_auth->get_user_id());
+			if($user->has_device($view->device->id)){
+				echo $view->process_vars();
+			}
 		}
 	}
 
@@ -144,14 +155,15 @@ class U extends CI_Controller{
 				}
 			} else {
 				log_message('error','u/edit_notification_rule | user has no rights to device, device id: '.$rule->device->id);
-				$this->session->set_flashdata('message',array('type'=>'error','message'=>'You do not have enough rights to perform this action.'));					
+				$this->session->set_flashdata('message',array('type'=>'error','message'=>'You do not have enough rights to perform this action.'));		
+				redirect('u/notifications/'.$device_id);			
 			}
 		} else {
 			log_message('error','u/edit_notification_rule | no such rule, id: '.$rule_id);
-			$this->session->set_flashdata('message',array('type'=>'error','message'=>'This notification rule does not exist.'));				
+			$this->session->set_flashdata('message',array('type'=>'error','message'=>'This notification rule does not exist.'));
+			redirect('u/notifications/'.$device_id);				
 		}
 
-		// redirect('u/notifications/'.$device_id);		
 	}
 
 	function delete_notification_rule($rule_id){

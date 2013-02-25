@@ -1,7 +1,7 @@
 <?php
 class Device extends Datamapper{
 	var $table = "devices";
-	var $has_many = array('user','variable','notification_rule','view');
+	var $has_many = array('user','variable','notification_rule','view','transformation');
 	var $has_one = array('domain');
     var $auto_populate_has_one = TRUE;
     var $auto_populate_has_many = TRUE;	
@@ -80,17 +80,23 @@ class Device extends Datamapper{
     function valid_variable_name($var, $haystack){
         if(!$this->db->where('device_id',$this->id)->where('name',$var)->count_all_results('variables')){
             return true;
-       /*     $values_count = array_count_values($haystack);            
-            if($values_count[$var] > 1){
-                log_message('info',"device/valid_variable_name | var $var is dupl in arra");                
-            }*/
         }
         return false;
     }
 
-    function _process_view_vars($var,$value){
-        $view = $var->view->body;
-        return str_replace('{'.$var->name.'}', $value, $view);
+    function valid_view_name($name){
+        if(!$this->db->where('device_id',$this->id)->where('name',$name)->count_all_results('views')){
+            return true;
+        }
+        return false;        
+    }
+
+    function has_main_view(){
+        return $this->db->where('device_id',$this->id)->where('name','main')->count_all_results('views');            
+    }
+
+    function has_view($view_name){
+        return $this->db->where('device_id',$this->id)->where('name',$view_name)->count_all_results('views');        
     }
 
 }

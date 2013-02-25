@@ -9,10 +9,16 @@
 			    </tr>
 			</thead>
 			<tbody> 
-		<?php foreach($devices as $device){ ?>
+		<?php foreach($devices as $device){
+			$onclick=""; $class=""; 
+			if($device->has_main_view()){
+				$onclick = "onclick=\"window.location.href = '".base_url()."u/device/$device->id'\"";
+				$class = "class = 'user-device-has-view'";
+			}
+			?>
 		<tr>
 			<td>
-				<div id="user-device-wrapper" onclick="window.location.href = '<?php echo base_url(); ?>u/device/<?php echo $device->id; ?>'">
+				<div id="user-device-wrapper" <?php echo $class." ". $onclick; ?>>
 					<?php echo "<b>Name: </b>".$device->name; ?><br/>
 					<?php echo "<b>Location: </b>".$device->location; ?><br/>
 					<b>Power: </b><span id="power_<?php echo $device->id; ?>"></span><br/>

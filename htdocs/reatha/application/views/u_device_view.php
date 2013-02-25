@@ -17,7 +17,7 @@
 	</div>
 
 	<script type="text/javascript">
-		show_device_vars('<?php echo $device->id; ?>','<?php echo base_url(); ?>')
+		show_device_view('<?php echo $view->id; ?>','<?php echo base_url(); ?>')
 	</script>
 
 <?php $this->load->view('footer_view'); ?>

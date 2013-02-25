@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
     <head>
-        <meta charset="utf-8"/>            
+        <meta charset="utf-8"/> 
+        <meta name="viewport" content="width=device-width" />
+        <meta name="viewport" content="width=240, height=320, user-scalable=yes, initial-scale=0.7, maximum-scale=5.0, minimum-scale=1.0" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />                    
         <link href="<?php echo base_url(); ?>css/bootstrap.min.css" rel="stylesheet" media="screen" />       
         <link href="<?php echo base_url(); ?>css/style.css" rel="stylesheet" />
         <script type="text/javascript" src="<?php echo base_url(); ?>js/jquery.1.9.0.min.js"></script>

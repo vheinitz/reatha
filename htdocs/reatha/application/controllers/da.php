@@ -282,6 +282,7 @@ class Da extends CI_Controller{
 				$data['user'] = $user;
 				$data['device'] = $device;
 				$data['views'] = $device->views->get();
+				$data['domains'] = $user->domains->get();
 				$this->load->view('da_edit_views_view',$data);
 			} else {
 				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you don't have enough rights to perform this action"));
@@ -296,24 +297,102 @@ class Da extends CI_Controller{
 	function add_view(){
 		$this->load->library('form_validation');
 		$this->form_validation->set_rules('device_id','Device id','required|trim|xss_clean');
-		$this->form_validation->set_rules('variable_id','Variable id','required|trim|xss_clean');
-		$this->form_validation->set_rules('view','View','required|trim|xss_clean');
+		$this->form_validation->set_rules('name','Name','required|trim|xss_clean|alpha_numeric|callback__valid_view_name['.$this->input->post('device_id',true).']');
+		$this->form_validation->set_rules('view','View','required|trim|callback__check_view_variables['.$this->input->post('device_id',true).']');
+		$this->form_validation->set_message('_valid_view_name','This view name is already in use with this device.');
 		if($this->form_validation->run()){
-			$view = new View();
-			$view->device_id 	= $this->form_validation->set_value('device_id');
-			$view->variable_id 	= $this->form_validation->set_value('variable_id');
-			$view->body 		= $this->form_validation->set_value('view');
-			$view->save();
-			$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"View saved."));
-			redirect('da/edit_views/'.$view->device_id);
+			$device = new Device($this->form_validation->set_value('device_id'));
+			//check if device exists
+			if($device->exists()){
+				$user = new User($this->tank_auth->get_user_id());
+				//check if user is the admin of the device's domain
+				if($user->is_admin_of($device->domain->id)){
+					//save view
+					$view = new View();
+					$view->device_id 	= $device->id;
+					$view->name 		= $this->form_validation->set_value('name');
+					$view->body 		= $this->form_validation->set_value('view');
+					if($view->save()){
+						$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"View successfully saved."));
+					} else {
+						log_message('error',"da/add_view | could not save view for device_id: $device->id");
+						$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Could not create view, please try again"));
+					}
+				} else {
+					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you don't have enough rights to perform this action"));
+					log_message('error',"da/add_view | user is not the devices's domain admin; device_id: $device->id");				
+				}
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this device doesn't exist"));
+				log_message('error',"da/add_view | device does not exist, device_id:$device->id");			
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));			
 		}
+		redirect('da/edit_views/'.$this->form_validation->set_value('device_id'));		
+	}
+
+	function edit_single_view($view_id){
+		$view = new View($view_id);
+		if($view->exists()){
+			$device_id = $view->device->id;			
+			$user = new User($this->tank_auth->get_user_id());
+			//check if user is the admin of the device's domain
+			if($user->is_admin_of($view->device->domain->id)){
+				$this->load->library('form_validation');
+				$this->form_validation->set_rules('name','Name','required|trim|xss_clean|alpha_numeric');
+				$this->form_validation->set_rules('view','View','required|trim|callback__check_view_variables['.$device_id.']');
+				$this->form_validation->set_message('_valid_view_name','This view name is already in use with this device.');
+				if($this->form_validation->run()){
+					$view->name 		= $this->form_validation->set_value('name');
+					$view->body 		= $this->form_validation->set_value('view');
+					if($view->save()){
+						$this->session->set_flashdata('message',array('type'=>'success','message'=>'View successfully edited'));
+						redirect($this->uri->uri_string());						
+					}
+				} else {
+					if(validation_errors()){
+						//redirect so that we can show errors						
+						$this->session->set_flashdata('message',array('type'=>'error','message'=>validation_errors()));
+						redirect($this->uri->uri_string());
+					}
+					$data['user'] = $user;
+					$data['view'] = $view;
+					$this->load->view('da_edit_single_view_view',$data);
+				}
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you don't have enough rights to perform this action"));
+				log_message('error',"da/edit_single_view | user is not the devices's domain admin; device_id: ".$view->device->id);	
+				redirect('da/edit_views/'.$device_id);			
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this view doesn't exist"));
+			log_message('error',"da/edit_single_view | view doesn't exist, view_id: $view_id");
+			redirect('da/edit_views/'.$device_id);			
+		}	
 	}
 
 	function delete_view($view_id){
 		$view = new View($view_id);
-		$device_id = $view->device_id;
-		$view->delete();
-		$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"View deleted"));
+		if($view->exists()){
+			$device_id = $view->device->id;			
+			$user = new User($this->tank_auth->get_user_id());
+			//check if user is the admin of the device's domain
+			if($user->is_admin_of($view->device->domain->id)){
+				if($view->delete()){
+					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"View successfully deleted"));
+				} else {
+					log_message('error',"da/delete_view | could not delete view, view_id: $view_id");
+					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, view could not be deleted, please try again."));					
+				}
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you don't have enough rights to perform this action"));
+				log_message('error',"da/delete_view | user is not the devices's domain admin; device_id: ".$view->device->id);				
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this view doesn't exist"));
+			log_message('error',"da/delete_view | view doesn't exist, view_id: $view_id");			
+		}
 		redirect('da/edit_views/'.$device_id);
 	}
 
@@ -500,6 +579,40 @@ class Da extends CI_Controller{
 			return TRUE;
 		}
 	}
+
+	function _valid_view_name($name, $device_id){
+		$device = new Device($device_id);
+		if($device->exists()){
+			return $device->valid_view_name($name);
+		} else {
+			log_message('error',"da/_check_view_variables | device id $device_id doesn't exist. View not saved.");
+			$this->form_validation->set_message('_check_view_variables',"This device doesn't exist");
+			return FALSE;
+		}		
+	}
+
+	function _check_view_variables($string, $device_id){
+		$device = new Device($device_id);
+		if($device->exists()){
+			preg_match_all("/\{(.+)\}/U", $string, $var_names);			
+			$var_names = $var_names[1];		
+			foreach($var_names as $var_name){
+				if((strpos($var_name,"view:") === false)){ 
+					$var = $device->variables->where('name',$var_name)->get();
+					if(!$var->exists()){
+						log_message('error',"da/_check_view_variables | Variable $var_name doesn't exist for device id: $device_id. Notification_rule not saved.");
+						$this->form_validation->set_message('_check_view_variables',"Variable $var_name doesn't exist for this device. View not saved.");
+						return FALSE;
+					}
+				}
+			}
+			return TRUE;						
+		} else {
+			log_message('error',"da/_check_view_variables | device id $device_id doesn't exist. View not saved.");
+			$this->form_validation->set_message('_check_view_variables',"This device doesn't exist");
+			return FALSE;
+		}
+	}	
 
 	function _send_email($type, $email, &$data)
 	{

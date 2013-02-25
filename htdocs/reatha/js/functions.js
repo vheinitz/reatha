@@ -17,21 +17,17 @@
 		});			
 	}
 
-	function get_device_vars($device_id, $base_url){
-		$.getJSON($base_url+"u/get_device_vars/"+$device_id, function(variables) {
-			$variable_data = "";
-			$.each(variables, function(i, variable){
-				$variable_data += '<b>'+variable.name+':</b> '+variable.value+'<br/>';
-			});
-			$('#user-device-variables').html($variable_data);
+	function get_device_view($view_id, $base_url){
+		$.get($base_url+"u/get_device_view/"+$view_id, function($view) {
+			$('#user-device-variables').html($view);
 		});			
 	}
 
-	function show_device_vars($device_id, $base_url){	
+	function show_device_view($view_id, $base_url){	
 		clearInterval(window.device_vars_interval);
-		get_device_vars($device_id, $base_url);			
+		get_device_view($view_id, $base_url);			
 		window.device_vars_interval = setInterval(function(){
-			get_device_vars($device_id, $base_url);
+			get_device_view($view_id, $base_url);
 		}, 2000);		
 	}
 
