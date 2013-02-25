@@ -271,6 +271,52 @@ class Da extends CI_Controller{
 		}		
 	}
 
+	function edit_views($device_id){
+		$device = new Device($device_id);
+
+		//check if device exists
+		if($device->exists()){
+			$user = new User($this->tank_auth->get_user_id());
+			//check if user is the admin of the device's domain
+			if($user->is_admin_of($device->domain->id)){
+				$data['user'] = $user;
+				$data['device'] = $device;
+				$data['views'] = $device->views->get();
+				$this->load->view('da_edit_views_view',$data);
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you don't have enough rights to perform this action"));
+				log_message('error',"da/delete_device | user is not the devices's domain admin; device_id: $device_id");				
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this device doesn't exist"));
+			log_message('error',"da/delete_device | device does not exist, device_id:$device_id");			
+		}	
+	}
+
+	function add_view(){
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('device_id','Device id','required|trim|xss_clean');
+		$this->form_validation->set_rules('variable_id','Variable id','required|trim|xss_clean');
+		$this->form_validation->set_rules('view','View','required|trim|xss_clean');
+		if($this->form_validation->run()){
+			$view = new View();
+			$view->device_id 	= $this->form_validation->set_value('device_id');
+			$view->variable_id 	= $this->form_validation->set_value('variable_id');
+			$view->body 		= $this->form_validation->set_value('view');
+			$view->save();
+			$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"View saved."));
+			redirect('da/edit_views/'.$view->device_id);
+		}
+	}
+
+	function delete_view($view_id){
+		$view = new View($view_id);
+		$device_id = $view->device_id;
+		$view->delete();
+		$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"View deleted"));
+		redirect('da/edit_views/'.$device_id);
+	}
+
 	function delete_var($var_id){
 		$var = new Variable($var_id);
 		if($var->exists()){

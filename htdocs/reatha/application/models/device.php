@@ -1,7 +1,7 @@
 <?php
 class Device extends Datamapper{
 	var $table = "devices";
-	var $has_many = array('user','variable','notification_rule');
+	var $has_many = array('user','variable','notification_rule','view');
 	var $has_one = array('domain');
     var $auto_populate_has_one = TRUE;
     var $auto_populate_has_many = TRUE;	
@@ -38,7 +38,13 @@ class Device extends Datamapper{
     }
 
     function update_variables($key,$value){
-        $this->variable->where('device_id',$this->id)->where('name',$key)->update('value',$value);
+        //check if variable has a view
+        $var = $this->variables->where('name',$key)->get();
+        if($var->view->exists()){
+            $value = $this->_process_view_vars($var,$value);
+        }
+
+        $this->variable->where('name',$key)->update('value',$value);
         return $this->db->affected_rows();
     }
 
@@ -80,6 +86,11 @@ class Device extends Datamapper{
             }*/
         }
         return false;
+    }
+
+    function _process_view_vars($var,$value){
+        $view = $var->view->body;
+        return str_replace('{'.$var->name.'}', $value, $view);
     }
 
 }

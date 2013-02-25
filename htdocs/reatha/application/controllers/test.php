@@ -117,6 +117,16 @@ class Test extends CI_Controller{
 		echo $text;
 	}
 
+	function run_query(){
+		$this->db->query("CREATE TABLE IF NOT EXISTS `views` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `device_id` int(11) NOT NULL,
+  `variable_id` int(11) NOT NULL,
+  `body` varchar(500) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6");
+	}
+
 
 }
 
