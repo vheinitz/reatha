@@ -46,6 +46,17 @@ class Da extends CI_Controller{
 		$this->load->view('da_users_view',$data);
 	}
 
+	function images(){
+		$user = new User($this->tank_auth->get_user_id());
+		$domain = new Domain($this->session->userdata('managing_domain_id'));
+
+		$data['user'] = $user;
+		$data['domain'] = $domain;
+		$data['domains'] = $user->domains->get();
+		$data['images'] = $domain->images->get();
+		$this->load->view('da_images_view',$data);		
+	}
+
 	function add_device(){
 		$user = new User($this->tank_auth->get_user_id());
 		$this->load->library('form_validation');
@@ -358,6 +369,7 @@ class Da extends CI_Controller{
 					}
 					$data['user'] = $user;
 					$data['view'] = $view;
+					$data['domains'] = $user->domains->get();
 					$this->load->view('da_edit_single_view_view',$data);
 				}
 			} else {
@@ -470,6 +482,64 @@ class Da extends CI_Controller{
 			log_message('error',"da/get_device_key | device doesn't exist, device_id: $device_id");					
 		}
 		echo json_encode($return);
+	}
+
+	function delete_image($image_id){
+		$image = new Image($image_id);
+		if($image->exists()){
+			$user = new User($this->tank_auth->get_user_id());
+			if($user->is_admin_of($image->domain->id)){
+				if(file_exists('assets/'.$image->domain->name.'/'.$image->file)){
+					if(unlink('assets/'.$image->domain->name.'/'.$image->file)){
+						if($image->delete()){
+							$this->session->set_flashdata('message', array('type'=>'success','message'=>"Image successfully deleted"));
+						} else {
+							log_message('error','da/delete_image | could not delete image from database, image id: '.$image_id);
+							$this->session->set_flashdata('message', array('type'=>'error','message'=>"Could not fully delete this image."));
+						}
+					} else {
+						log_message('error','da/delete_image | could not delete image from disk, image id: '.$image_id);
+						$this->session->set_flashdata('message', array('type'=>'error','message'=>"Could not delete this image."));						
+					}
+				} else {
+					log_message('error','da/delete_image | image does not exist on disk, image name: '.$image->name);
+					$this->session->set_flashdata('message', array('type'=>'error','message'=>"This image does not exist on disk"));					
+				}
+			} else {
+				log_message('error','da/delete_image | user is not an admin of image domain, image id: '.$image_id.', user id: '.$user->id);
+				$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, you do not have enough rights to delete this image."));				
+			}
+		} else {
+			log_message('error','da/delete_image | image does not exist in database, image id: '.$image_id);
+			$this->session->set_flashdata('message', array('type'=>'error','message'=>"This image does not exist"));			
+		}
+		redirect('da/images');
+	}
+
+	function upload_image(){
+		if(isset($_FILES['image'])){
+			$image = new Image();
+			$domain = new Domain($this->session->userdata('managing_domain_id'));
+			$result = $image->process_image($_FILES['image'],$domain->name);
+			if($result['type'] == 'success'){
+				$image->file = $result['body'];
+				$image->domain_id = $domain->id;
+				if($image->save()){
+					$this->session->set_flashdata('message', array('type'=>'success','message'=>"Image successfully uploaded"));					
+				} else {
+					log_message('error','da/upload_image | could not save image, image name: '.$result['body']);
+					$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, something went wrong"));					
+				}
+			} else {
+				log_message('error','da/upload_image | could not upload image, error: '.$result['body']);
+				$this->session->set_flashdata('message', array('type'=>'error','message'=>"Error: ".$result['body']));				
+			}
+		} else {
+			log_message('error','da/upload_image | function accesed with empty file');
+			$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, we had nothing to upload"));
+		}
+
+		redirect('da/images');		
 	}
 
 	function generate_device_key($device_id){
@@ -594,13 +664,30 @@ class Da extends CI_Controller{
 	function _check_view_variables($string, $device_id){
 		$device = new Device($device_id);
 		if($device->exists()){
+
+			//check references to other views - if such views exist
+	        preg_match_all("/\{(view:[A-Za-z0-9]+)\}/U", $string, $views);
+	        $views = $views[1];
+	        if(!empty($views)){
+	        	foreach($views as $view_name){
+	        		$view_name = explode(":", $view_name);
+	        		$view_name = $view_name[1];
+	        		if(!$device->has_view($view_name)){
+						log_message('error',"da/_check_view_variables | View $view_name doesn't exist for device id: $device_id. View not saved.");
+						$this->form_validation->set_message('_check_view_variables',"View $view_name doesn't exist for this device. View not saved.");
+						return FALSE;	        			
+	        		}
+	        	}
+	        }			
+
+	        //check vars
 			preg_match_all("/\{(.+)\}/U", $string, $var_names);			
 			$var_names = $var_names[1];		
 			foreach($var_names as $var_name){
 				if((strpos($var_name,"view:") === false)){ 
 					$var = $device->variables->where('name',$var_name)->get();
 					if(!$var->exists()){
-						log_message('error',"da/_check_view_variables | Variable $var_name doesn't exist for device id: $device_id. Notification_rule not saved.");
+						log_message('error',"da/_check_view_variables | Variable $var_name doesn't exist for device id: $device_id. View not saved.");
 						$this->form_validation->set_message('_check_view_variables',"Variable $var_name doesn't exist for this device. View not saved.");
 						return FALSE;
 					}

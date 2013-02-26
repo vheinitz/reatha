@@ -60,3 +60,17 @@ textarea#view-body{
 	width: 400px;
 	height: 100px;
 }
+
+.da-image{
+	width: 160px;
+}
+
+.da-td-view-name{
+	text-align: center;
+	width: 18%;
+}
+
+.da-td-view-actions{
+	width: 15%;
+	text-align: center;
+}

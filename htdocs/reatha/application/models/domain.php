@@ -2,7 +2,7 @@
 class Domain extends Datamapper{
 	var $table = "domains";
 	var $has_many = array(
-        'device',
+        'device','image',
         'domain_admin' => array(
             'class'         => 'user',
             'other_field'   => 'domain',

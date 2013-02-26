@@ -5,6 +5,18 @@
 	<h4>Edit Notification</h4>
 	<form class="form-horizontal" action="<?php echo base_url(); ?>u/edit_notification_rule/<?php echo $notification_rule->id; ?>" method="POST">
 		<div class="control-group">
+			<label class="control-label" for="name">Name</label>
+			<div class="controls">
+				<input type="text" id="name" name="name" value="<?php echo $notification_rule->name; ?>"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="description">Description</label>
+			<div class="controls">
+				<textarea id="description" name="description"><?php echo $notification_rule->description; ?></textarea>
+			</div>
+		</div>		
+		<div class="control-group">
 			<label class="control-label" for="variable">Variable</label>
 			<div class="controls">
 				<select id="variable" name="variable">

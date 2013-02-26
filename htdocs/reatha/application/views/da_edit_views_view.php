@@ -7,18 +7,18 @@
 <table class="table table-striped table-bordered">
   	<thead>
 	    <tr>
-		    <th style="text-align: center">Name</th>
+		    <th class="da-td-view-name">Name</th>
 		    <th style="text-align: center">View</th>
-	        <th style="text-align: center">Action</th>
+	        <th class="da-td-view-actions">Action</th>
 	    </tr>
 	</thead>
 	<tbody> 
 
 <?php foreach($views as $view){ ?>
 	<tr>
-		<td><?php echo $view->name; ?></td>
+		<td class="da-td-view-name"><?php echo $view->name; ?></td>
 		<td><?php echo htmlentities($view->body); ?></td>
-		<td>
+		<td class="da-td-view-actions">
 			<a class="btn btn-small" href="<?php echo base_url(); ?>da/edit_single_view/<?php echo $view->id; ?>"><i class="icon-pencil"></i> Edit</a><br/>
 			<a class="btn btn-small" href="<?php echo base_url(); ?>da/delete_view/<?php echo $view->id; ?>"><i class="icon-remove"></i> Delete</a>
 		</td>
@@ -48,6 +48,19 @@
 					} ?>			
 				</small>
 			</div>
+			<?php
+			$images = $device->domain->images->get();
+			if(!empty($images)){ ?>
+				<div>
+					<small>
+						Available images: 
+						<?php foreach ($images as $image){
+							echo $image->file." ";
+						}
+						?>
+					</small
+				</div>
+			<?php } ?>
 		</div>
 	</div>	
 	<div class="control-group">

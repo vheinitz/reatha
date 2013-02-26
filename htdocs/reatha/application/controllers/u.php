@@ -87,6 +87,8 @@ class U extends CI_Controller{
 
 	function add_notification_rule(){
 		$this->load->library('form_validation');
+		$this->form_validation->set_rules('name','Name','required|trim|xss_clean');		
+		$this->form_validation->set_rules('description','Description','required|trim|xss_clean');
 		$this->form_validation->set_rules('variable','Variable','required|trim|xss_clean');
 		$this->form_validation->set_rules('condition','Condition','required|trim|xss_clean');
 		$this->form_validation->set_rules('interval','Interval','required|trim|numeric|xss_clean');
@@ -102,6 +104,8 @@ class U extends CI_Controller{
 					$rule->user_id = $user->id;
 					$rule->device_id = $device->id;
 					$rule->variable_id = $this->form_validation->set_value('variable');
+					$rule->name = $this->form_validation->set_value('name');
+					$rule->description = $this->form_validation->set_value('description');
 					$rule->condition = $this->form_validation->set_value('condition');
 					$rule->message = strip_tags($this->form_validation->set_value('message'),"<br><br/><p><i>");
 					$rule->subject = $this->form_validation->set_value('subject');
@@ -128,6 +132,8 @@ class U extends CI_Controller{
 			$user = new User($this->tank_auth->get_user_id());
 			if($user->has_device($rule->device->id)){
 				$this->load->library('form_validation');
+				$this->form_validation->set_rules('name','Name','required|trim|xss_clean');		
+				$this->form_validation->set_rules('description','Description','required|trim|xss_clean');				
 				$this->form_validation->set_rules('variable','Variable','required|trim|xss_clean');
 				$this->form_validation->set_rules('condition','Condition','required|trim|xss_clean');
 				$this->form_validation->set_rules('interval','Interval','required|trim|numeric|xss_clean');
@@ -135,6 +141,8 @@ class U extends CI_Controller{
 				$this->form_validation->set_rules('subject','Subject','required|trim|xss_clean|callback__check_message_variables['.$rule->device_id.']');	
 				if($this->form_validation->run()){
 					$rule->variable_id = $this->form_validation->set_value('variable');
+					$rule->name = $this->form_validation->set_value('name');
+					$rule->description = $this->form_validation->set_value('description');					
 					$rule->condition = $this->form_validation->set_value('condition');
 					$rule->message = strip_tags($this->form_validation->set_value('message'),"<br><br/><p><i>");
 					$rule->subject = $this->form_validation->set_value('subject');

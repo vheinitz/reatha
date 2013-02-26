@@ -25,6 +25,9 @@ class View extends Datamapper{
         	}
         }
 
+        //process {files}
+        $text = str_replace('{files}', base_url().'assets/'.$this->device->domain->name, $text);
+
         //process vars
         preg_match_all("/\{(.+)\}/U", $text, $var_names);
         $var_names = $var_names[1];

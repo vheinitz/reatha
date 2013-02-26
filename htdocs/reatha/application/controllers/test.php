@@ -137,13 +137,48 @@ class Test extends CI_Controller{
 	}	
 
 	function run_query(){
-		$this->db->query("CREATE TABLE IF NOT EXISTS `views` (
+		$this->db->query("CREATE TABLE IF NOT EXISTS `images` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `device_id` int(11) NOT NULL,
-  `variable_id` int(11) NOT NULL,
-  `body` varchar(500) NOT NULL,
+  `domain_id` int(11) NOT NULL,
+  `file` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6");
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3;");
+	}
+
+	function image_upload(){
+		$this->load->view('image_upload_view');
+	}
+
+	function handle_image_upload(){
+		if(isset($_FILES['image'])){
+			log_message('info','test/handle_image_upload | enetered function, post: '.$_FILES['image']);
+			$image = new Image();
+			$result = $image->process_image($_FILES['image'],'forest');
+			if($result['type'] == 'success'){
+				$image->file = $result['body'];
+				$image->domain_id = 1;
+				$image->save();
+			}
+			var_dump($result);
+		} else {
+			echo "no image";
+		}
+	}
+
+	function image_exists(){
+		$image = new Image(2);
+		$file = 'assets/'.$image->domain->name.'/'.$image->file;
+		echo $file;
+		if(file_exists('assets/'.$image->domain->name.'/'.$image->file)){
+			echo "image exists";
+		}
+	}
+
+	function find_view_files(){
+		$text = "status is <img src='{files}/ok.png' /> and temperature is {view:temperature}";
+		$text = str_replace('{files}', base_url().'assets/forest', $text);
+
+		echo htmlentities($text);		
 	}
 
 

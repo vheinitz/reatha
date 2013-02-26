@@ -3,11 +3,6 @@
 		<div class="span12" id="user-device-data">
 			<i class="icon icon-arrow-left"></i> <a href="<?php echo base_url(); ?>u">Back to device list</a><br/><br/>
 			<table class="table table-bordered">
-			  	<thead>
-				    <tr>
-					    <th id="user-device-data-title"><?php echo $device->name; ?> data:</th>
-				    </tr>
-				</thead>
 				<tbody>
 					<td id="user-device-variables">
 					</td>

@@ -38,12 +38,7 @@ class Device extends Datamapper{
     }
 
     function update_variables($key,$value){
-        //check if variable has a view
-        $var = $this->variables->where('name',$key)->get();
-        if($var->view->exists()){
-            $value = $this->_process_view_vars($var,$value);
-        }
-
+    log_message('info','device/update_variables | entered function'); 
         $this->variable->where('name',$key)->update('value',$value);
         return $this->db->affected_rows();
     }
