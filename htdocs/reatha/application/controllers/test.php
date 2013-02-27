@@ -181,6 +181,14 @@ class Test extends CI_Controller{
 		echo htmlentities($text);		
 	}
 
+	function eval_math(){
+/*		include('application/libraries/evalmath.class.php');
+		$e = new EvalMath();
+		echo $e->evaluate("lala");*/
+
+		echo eval("return 1<2?'yes':'no';");
+	}
+
 
 }
 

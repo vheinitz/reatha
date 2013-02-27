@@ -415,7 +415,13 @@ class Da extends CI_Controller{
 			$user = new User($this->tank_auth->get_user_id());
 			if($user->is_admin_of($var->device->domain->id)){
 				$device_id = $var->device->id;
-				if($var->delete()){
+				if(
+					$var->transformations->delete_all() && 
+					$this->db->where('export_var_id',$var_id)->delete('transformations') && 
+					$var->delete()
+					){
+
+					$this->db->where('export_var_id',$var_id)->delete('transformations');
 					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Variable successfully deleted"));						
 				} else {
 					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, we were not able to delete this variabe. Please try again."));						
@@ -617,11 +623,146 @@ class Da extends CI_Controller{
 				}
 			} else {
 				$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, this device does not seem to exist"));	
-				log_message('error',"da/change_device_description | device doesn't exist, device_id: $device->id");					
+				log_message('error',"da/change_device_description | device doesn't exist, device_id: $device->id");
 			}
 		}
 
 		redirect('da/edit_device/'.$device->id);
+	}
+
+	function add_transformation(){
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('variable_id','Variable id','required|trim|xss_clean');
+		$this->form_validation->set_rules('transformation','Transformation','required|trim|xss_clean|callback__check_view_variables['.$this->input->post('device_id').']');
+		$this->form_validation->set_rules('export_variable_name','Export Variable Name','required|trim|xss_clean');
+		$this->form_validation->set_rules('device_id','Device id','required|trim|xss_clean');
+		if($this->form_validation->run()){
+			$device = new Device($this->form_validation->set_value('device_id'));
+			if($device->exists()){
+				$user = new User($this->tank_auth->get_user_id());
+				if($user->is_admin_of($device->domain->id)){
+					$var = new Variable($this->form_validation->set_value('variable_id'));
+					if($var->exists()){
+						//check if export_variable_name is a valid var namer, i.e. such var doesn't exists with this device
+						$export_variable_name = $this->form_validation->set_value('export_variable_name');
+						if($device->valid_variable_name($export_variable_name)){
+							//create the export var
+							$export_var = new Variable();
+							$export_var->device_id = $device->id;
+							$export_var->name = $export_variable_name;
+							if($export_var->save()){
+								//export variable saved, now create the transformation
+								$t = new Transformation();							
+								$t->device_id = $device->id;
+								$t->variable_id = $var->id;
+								$t->export_var_id = $export_var->id;
+								$t->body = $this->form_validation->set_value('transformation');
+								if($t->save()){
+									$this->session->set_flashdata('message', array('type'=>'success','message'=>"Transformation successfully saved"));										
+								} else {
+									$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, transformation could not be saved"));	
+									log_message('error',"da/add_transformation | transformation could not be saved for device id: $device->id");
+								}
+							} else {
+								$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, something went wrong, please try again."));	
+								log_message('error',"da/add_transformation | could not save export_var, export_var name: $export_variable_name, device id: $device->id");								
+							}
+						} else {
+							$this->session->set_flashdata('message', array('type'=>'error','message'=>"This export variable name is already in use."));	
+							log_message('error',"da/add_transformation | export variable name already in use, var name: $export_variable_name, device id: $device->id");							
+						}
+					} else {
+						$this->session->set_flashdata('message', array('type'=>'error','message'=>"This variable doesn't exist"));	
+						log_message('error',"da/add_transformation | variable doesn't exist, var id: ".$this->form_validation->set_value('variable_id'));						
+					}
+				} else {
+					$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, you don't have enough rights to perform this action."));	
+					log_message('error',"da/add_transformation | user not an admin of domain id: ".$device->domain->id.", user id: $user->id");				
+				}
+			} else {
+				$this->session->set_flashdata('message', array('type'=>'error','message'=>"This device doesn't exist."));	
+				log_message('error',"da/add_transformation | device doesn't exist, device id: ".$this->form_validation->set_value('device_id'));				
+			}
+		} else {
+			$this->session->set_flashdata('message', array('type'=>'error','message'=>validation_errors()));			
+		}
+		redirect('da/edit_device/'.$this->input->post('device_id'));
+	}
+
+	function delete_transformation($t_id){
+		$t = new Transformation($t_id);
+		if($t->exists()){
+			$device_id = $t->device_id;
+			$user = new User($this->tank_auth->get_user_id());
+			if($user->is_admin_of($t->device->domain->id)){
+				if($t->delete()){
+					$this->session->set_flashdata('message', array('type'=>'success','message'=>"Transformation successfully deleted"));					
+				} else {
+					$this->session->set_flashdata('message', array('type'=>'error','message'=>"Could not delete transformation, please try again."));	
+					log_message('error',"da/delete_transformation | could not delete transformation, transformation id: $t->id");					
+				}
+			} else {
+				$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, you don't have enough rights to perform this action."));	
+				log_message('error',"da/delete_transformation | user not an admin of domain id: ".$t->device->domain->id.", user id: $user->id");	
+			}
+		} else {
+			$this->session->set_flashdata('message', array('type'=>'error','message'=>"This transformation doesn't exist."));	
+			log_message('error',"da/delete_transformation | transformation does not exist, t id: $t_id");				
+		}
+		redirect('da/edit_device/'.$device_id);
+	}
+
+	function edit_transformation($t_id){
+		$t = new Transformation($t_id);
+		if($t->exists()){
+			$device_id = $t->device_id;
+			$user = new User($this->tank_auth->get_user_id());
+			if($user->is_admin_of($t->device->domain->id)){
+				$this->load->library('form_validation');
+				$this->form_validation->set_rules('variable_id','Variable id','required|trim|xss_clean');
+				$this->form_validation->set_rules('transformation','Transformation','required|trim|xss_clean|callback__check_view_variables['.$this->input->post('device_id').']');
+				$this->form_validation->set_rules('export_variable_name','Export Variable Name','required|trim|xss_clean');
+				if($this->form_validation->run()){
+					$device = new Device($device_id);
+					$export_variable_name = $this->form_validation->set_value('export_variable_name');
+					$current_export_var = new Variable($t->export_var_id);
+
+					//if new export variable entered
+					if($current_export_var->name != $export_variable_name){
+						if($device->valid_variable_name($export_variable_name)){
+							//create the export var
+							$export_var = new Variable();
+							$export_var->device_id = $device->id;
+							$export_var->name = $export_variable_name;
+							if($export_var->save()){
+								//export variable saved, now update the transformation						
+								$t->variable_id = $var->id;
+								$t->export_var_id = $export_var->id;
+								$t->body = $this->form_validation->set_value('transformation');
+								if($t->save()){
+									$this->session->set_flashdata('message', array('type'=>'success','message'=>"Transformation successfully saved"));										
+								} else {
+									$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, transformation could not be saved"));	
+									log_message('error',"da/edit_transformation | transformation could not be saved for device id: $device->id");
+								}
+							} 							
+						}
+					}
+					redirect($this->uri->uri_string());
+				} else {
+					$data['user'] 		= $user;
+					$data['domains']	= $user->domains->get();						
+					$data['t'] = $t;
+					$this->load->view('da_edit_transformation_view',$data);	
+				}			
+			} else {
+				$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, you don't have enough rights to perform this action."));	
+				log_message('error',"da/delete_transformation | user not an admin of domain id: ".$t->device->domain->id.", user id: $user->id");	
+			}
+		} else {
+			$this->session->set_flashdata('message', array('type'=>'error','message'=>"This transformation doesn't exist."));	
+			log_message('error',"da/delete_transformation | transformation does not exist, t id: $t_id");				
+		}	
 	}	
 
 	function change_managing_domain($domain_id){

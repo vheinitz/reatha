@@ -1,5 +1,5 @@
 <?php 
-class Tranformation extends Datamapper{
+class Transformation extends Datamapper{
 	var $table = "transformations";
 	var $has_one = array('variable','device');
 	var $auto_populate_has_one = TRUE;

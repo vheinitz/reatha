@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `devices` (
   `life_check` tinyint(1) NOT NULL DEFAULT '1',
   `updated` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 DROP TABLE IF EXISTS `devices_users`;
 CREATE TABLE IF NOT EXISTS `devices_users` (
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `domains` (
   `name` varchar(150) NOT NULL,
   `description` varchar(250) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 DROP TABLE IF EXISTS `domain_admin_domains`;
 CREATE TABLE IF NOT EXISTS `domain_admin_domains` (
@@ -88,14 +88,15 @@ CREATE TABLE IF NOT EXISTS `notification_rules` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
-DROP TABLE IF EXISTS `tranformations`;
-CREATE TABLE IF NOT EXISTS `tranformations` (
+DROP TABLE IF EXISTS `transformations`;
+CREATE TABLE IF NOT EXISTS `transformations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `device_id` int(11) NOT NULL,
   `variable_id` int(11) NOT NULL,
+  `export_var_id` int(11) NOT NULL,
   `body` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
@@ -117,7 +118,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=7 ;
 
 DROP TABLE IF EXISTS `user_autologin`;
 CREATE TABLE IF NOT EXISTS `user_autologin` (
@@ -136,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `user_profiles` (
   `first_name` varchar(100) NOT NULL,
   `last_name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 DROP TABLE IF EXISTS `variables`;
 CREATE TABLE IF NOT EXISTS `variables` (
@@ -146,7 +147,7 @@ CREATE TABLE IF NOT EXISTS `variables` (
   `value` varchar(50) NOT NULL,
   `updated` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
 
 DROP TABLE IF EXISTS `views`;
 CREATE TABLE IF NOT EXISTS `views` (
@@ -155,4 +156,4 @@ CREATE TABLE IF NOT EXISTS `views` (
   `name` varchar(50) NOT NULL,
   `body` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;

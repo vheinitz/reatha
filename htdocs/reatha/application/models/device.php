@@ -38,8 +38,35 @@ class Device extends Datamapper{
     }
 
     function update_variables($key,$value){
-    log_message('info','device/update_variables | entered function'); 
-        $this->variable->where('name',$key)->update('value',$value);
+        log_message('info','device/update_variables | entered function'); 
+        $var = $this->variable->where('name',$key)->get();
+        if($var->where('id',$var->id)->update('value',$value)){
+            //check if var has transformations
+            if($var->has_transformations()){
+                log_message('info','device/update_variables | var has transformations');
+                //loop through each transformation
+                foreach ($var->transformations as $t) {
+                    //replace {var} placeholders with actual values
+                    $body = $this->_process_transformation_vars($t->body);
+                    log_message('info',"device/update_variables | body: $body");
+
+                    //load evalmath library and evaluate the body
+                    require_once('application/libraries/evalmath.class.php');
+                    $e = new EvalMath();
+                    $evaluated_body = $e->evaluate($body);                    
+                    // $evaluated_body = eval('return '.$body.';');
+                    
+                    log_message('info',"device/update_variables |eval  body: $evaluated_body");
+
+                    //save transformation value in db
+                    $export_var = new Variable($t->export_var_id);
+                    $export_var->where('id',$export_var->id)->update('value',$evaluated_body);
+                }
+            } else {
+                log_message('info','device/update_variables | var has no transformations');
+            }
+        }
+
         return $this->db->affected_rows();
     }
 
@@ -72,7 +99,7 @@ class Device extends Datamapper{
     	return $this->delete();
     }
 
-    function valid_variable_name($var, $haystack){
+    function valid_variable_name($var, $haystack=''){
         if(!$this->db->where('device_id',$this->id)->where('name',$var)->count_all_results('variables')){
             return true;
         }
@@ -93,6 +120,17 @@ class Device extends Datamapper{
     function has_view($view_name){
         return $this->db->where('device_id',$this->id)->where('name',$view_name)->count_all_results('views');        
     }
+
+    function _process_transformation_vars($text){
+        preg_match_all("/\{(.+)\}/U", $text, $var_names);
+        $var_names = $var_names[1];
+        foreach($var_names as $var_name){
+            $var = $this->variables->where('name',$var_name)->get();
+            if(empty($var->value)) $var->value = 0;
+            $text = str_replace('{'.$var_name.'}', $var->value, $text);
+        }
+        return $text;
+    }    
 
 }
 

@@ -63,7 +63,7 @@ class Main extends CI_Controller{
 						}
 					}
 				} else {
-					log_message('info','main/post_variables | variable has no rules');
+					log_message('info','main/post_variables | variable has no notification rules');
 				}
 			}
 		}

@@ -22,7 +22,17 @@
 			}
 		 ?></td>
 		<td><a href="#device-add-variables" data-toggle="modal" role="button">Add Variables</a></td>
-	</tr>	
+	</tr>
+	<tr>
+		<td>Transformations:</td>
+		<td><?php 
+			foreach($device->transformations as $transformation){
+				$var = new Variable($transformation->export_var_id);
+				echo "Trigger: ".$transformation->variable->name."; ".$var->name." = ".$transformation->body." (<a href='".base_url()."da/edit_transformation/$transformation->id/'>Edit</a>) (<a href='".base_url()."da/delete_transformation/$transformation->id/'>Delete</a>)<br/>";
+			}
+		 ?></td>
+		<td><a href="#device-add-transformation" data-toggle="modal" role="button">Add Transformation</a></td>
+	</tr>		
 	<tr>
 		<td>Key:</td>
 		<td><a href="#" onclick="show_device_key(<?php echo $device->id; ?>,'<?php echo base_url(); ?>');" >Show</a></td>
@@ -76,6 +86,32 @@
 		<div class="modal-body">
 			<label>Variables (comma separated): </label>		
 			<input type="text" name="variables" maxlength=50 placeholder="e.g: status, temperature, color" />
+			<input type="hidden" name="device_id" value="<?php echo $device->id; ?>" />
+		</div>
+		<div class="modal-footer">
+			<button type="submit" class="btn btn-primary">Add</button>
+		</div>
+	</div>
+</form>
+
+<!--Add new transformation modal -->
+<form action="<?php echo base_url(); ?>da/add_transformation" method="post" class="form">
+	<div id="device-add-transformation" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3>Add Transformation</h3>
+		</div>
+		<div class="modal-body">
+			<label>Variable: </label>		
+			<select name="variable_id">
+				<?php foreach ($device->variables as $var){ ?> 
+					<option value="<?php echo $var->id; ?>"><?php echo $var->name; ?></option>
+				<?php } ?>
+			</select>
+			<label>Transformation: </label>
+			<input type="text" name="transformation" /> &nbsp;&nbsp;<small>Example: ({var1}+{var2}) * 10}</small>
+			<label>Export Variable Name: </label>
+			<input type="text" name="export_variable_name" /> &nbsp;&nbsp;<small>New variable name for holding transformation value</small>			
 			<input type="hidden" name="device_id" value="<?php echo $device->id; ?>" />
 		</div>
 		<div class="modal-footer">
