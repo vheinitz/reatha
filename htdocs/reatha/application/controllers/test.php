@@ -175,8 +175,8 @@ class Test extends CI_Controller{
 	}
 
 	function find_view_files(){
-		$text = "status is <img src='{files}/ok.png' /> and temperature is {view:temperature}";
-		$text = str_replace('{files}', base_url().'assets/forest', $text);
+		$text = "status is <img src='{:files}/ok.png' /> and temperature is {view:temperature}";
+		$text = str_replace('{:files}', base_url().'assets/forest', $text);
 
 		echo htmlentities($text);		
 	}

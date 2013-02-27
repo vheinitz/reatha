@@ -825,7 +825,7 @@ class Da extends CI_Controller{
 			preg_match_all("/\{(.+)\}/U", $string, $var_names);			
 			$var_names = $var_names[1];		
 			foreach($var_names as $var_name){
-				if((strpos($var_name,"view:") === false)){ 
+				if((strpos($var_name,"view:") === false) && (strpos($var_name,":files") === false)){ 
 					$var = $device->variables->where('name',$var_name)->get();
 					if(!$var->exists()){
 						log_message('error',"da/_check_view_variables | Variable $var_name doesn't exist for device id: $device_id. View not saved.");
