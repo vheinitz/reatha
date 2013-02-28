@@ -454,7 +454,7 @@ class Da extends CI_Controller{
 				if($user->is_admin_of($device->domain->id)){
 					$result = $device->add_variables($variables);
 					if($result['type']=='success'){
-						$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device successfully created."));				
+						$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Variable successfully created."));				
 					} else {
 						$this->session->set_flashdata('message',array('type'=>'error', 'message'=>$result['message']));					
 					}					
@@ -720,7 +720,7 @@ class Da extends CI_Controller{
 			if($user->is_admin_of($t->device->domain->id)){
 				$this->load->library('form_validation');
 				$this->form_validation->set_rules('variable_id','Variable id','required|trim|xss_clean');
-				$this->form_validation->set_rules('transformation','Transformation','required|trim|xss_clean|callback__check_view_variables['.$this->input->post('device_id').']');
+				$this->form_validation->set_rules('transformation','Transformation','required|trim|xss_clean|callback__check_view_variables['.$device_id.']');
 				$this->form_validation->set_rules('export_variable_name','Export Variable Name','required|trim|xss_clean');
 				if($this->form_validation->run()){
 					$device = new Device($device_id);
@@ -735,21 +735,29 @@ class Da extends CI_Controller{
 							$export_var->device_id = $device->id;
 							$export_var->name = $export_variable_name;
 							if($export_var->save()){
-								//export variable saved, now update the transformation						
-								$t->variable_id = $var->id;
-								$t->export_var_id = $export_var->id;
-								$t->body = $this->form_validation->set_value('transformation');
-								if($t->save()){
-									$this->session->set_flashdata('message', array('type'=>'success','message'=>"Transformation successfully saved"));										
-								} else {
-									$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, transformation could not be saved"));	
-									log_message('error',"da/edit_transformation | transformation could not be saved for device id: $device->id");
-								}
+								//set new export var in transformation
+								$t->export_var_id = $export_var->id;								
 							} 							
 						}
 					}
+
+					//update transformation						
+					$t->variable_id = $this->form_validation->set_value('variable_id');
+					$t->body = $this->form_validation->set_value('transformation');
+					if($t->save()){
+						$this->session->set_flashdata('message', array('type'=>'success','message'=>"Transformation successfully saved"));										
+					} else {
+						$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, transformation could not be saved"));	
+						log_message('error',"da/edit_transformation | transformation could not be saved for device id: $device->id");
+					}
+
 					redirect($this->uri->uri_string());
 				} else {
+					if(validation_errors()){
+						//redirect to show errors
+						$this->session->set_flashdata('message',array('type'=>'error','message'=>validation_errors()));
+						redirect($this->uri->uri_string());						
+					}
 					$data['user'] 		= $user;
 					$data['domains']	= $user->domains->get();						
 					$data['t'] = $t;
