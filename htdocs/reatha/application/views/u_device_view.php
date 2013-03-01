@@ -12,7 +12,11 @@
 	</div>
 
 	<script type="text/javascript">
-		show_device_view('<?php echo $view->id; ?>','<?php echo base_url(); ?>')
+		<?php if($view->exists()) { ?>
+ 			show_device_view('<?php echo $view->id; ?>','<?php echo base_url(); ?>')			
+		 <?php } else {?> 
+ 			show_device_vars('<?php echo $device->id; ?>','<?php echo base_url(); ?>')		 	
+		 	<?php }?>
 	</script>
 
 <?php $this->load->view('footer_view'); ?>

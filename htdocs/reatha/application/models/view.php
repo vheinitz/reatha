@@ -9,7 +9,7 @@ class View extends Datamapper{
 	}
 
     function process_vars(){
-        $text = $this->body;
+        if(empty($text)) $text = $this->body;
 
         //process references to other views
         preg_match_all("/\{(view:[A-Za-z0-9]+)\}/U", $text, $views);

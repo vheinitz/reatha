@@ -1,6 +1,7 @@
 #user-device-wrapper{
 	font-size: 22px;
 	line-height: 30px;
+	cursor: pointer;
 }
 
 .user-device-has-view{
@@ -9,6 +10,40 @@
 
 #user-device-variables{
 	height: 200px;
+}
+
+.table-user-notification-list{
+	width: 450px;
+	display: inline-block;
+}
+
+#td-notification-list-checkbox{
+	width: 20px;
+	height: 20px;
+	background: #fff;
+}
+
+.td-notification-list-name{
+	width: 50%;
+}
+
+.td-notification-list-toggle{
+	width: 1%;
+}
+
+.user-notification-indicator{
+	width: 25px;
+	height: 25px;
+	background: #c3c3c3;
+	border-radius: 12px;
+}
+
+.triggered{
+	background: #ed1c24;
+}
+
+.td-notification-list-reset{
+	width: 2%;
 }
 
 .td-notification-list-row-caption{
@@ -58,7 +93,7 @@
 
 textarea#view-body{
 	width: 400px;
-	height: 100px;
+	height: 150px;
 }
 
 .da-image{
@@ -73,4 +108,9 @@ textarea#view-body{
 .da-td-view-actions{
 	width: 15%;
 	text-align: center;
+}
+
+#view-preview{
+	width: 450px;
+	overflow: hidden;
 }

@@ -771,6 +771,176 @@ class Da extends CI_Controller{
 			$this->session->set_flashdata('message', array('type'=>'error','message'=>"This transformation doesn't exist."));	
 			log_message('error',"da/delete_transformation | transformation does not exist, t id: $t_id");				
 		}	
+	}
+
+	function view_preview(){
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('view','View','required|trim');
+		$this->form_validation->set_rules('device_id','Device id','required|trim');
+		if($this->form_validation->run()){
+			$device = new Device($this->form_validation->set_value('device_id'));
+			if($device->exists()){
+				$view = new View();
+				$view->body = $this->form_validation->set_value('view');
+				$view->device = $device;
+				echo $view->process_vars();
+			}
+		}
+	}
+
+	function notifications($device_id){
+		$device = new Device($device_id);
+		if($device->exists()){
+			$user = new User($this->tank_auth->get_user_id());
+			if($user->is_admin_of($device->domain->id)){
+				$data['user'] 	= $user;
+				$data['device'] = $device;
+				$this->load->view('da_notifications_view',$data);
+			}
+		}
+	}
+
+	function add_notification_rule(){
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('name','Name','required|trim|xss_clean');		
+		$this->form_validation->set_rules('description','Description','required|trim|xss_clean');
+		$this->form_validation->set_rules('variable','Variable','required|trim|xss_clean');
+		$this->form_validation->set_rules('condition','Condition','required|trim|xss_clean');
+		$this->form_validation->set_rules('interval','Interval','required|trim|numeric|xss_clean');
+		$this->form_validation->set_rules('message','Message','required|trim|xss_clean|callback__check_message_variables['.$this->input->post('device_id').']');	
+		$this->form_validation->set_rules('subject','Subject','required|trim|xss_clean|callback__check_message_variables['.$this->input->post('device_id').']');
+		$this->form_validation->set_rules('device_id','device','required|trim|xss_clean');
+		$device = new Device($this->input->post('device_id',true));		
+		if($this->form_validation->run()){
+			if($device->exists()){
+				$user = new User($this->tank_auth->get_user_id());
+				if($user->is_admin_of($device->domain->id)){
+					$rule = new Notification_rule();
+					$rule->user_id = $device->user->id;
+					$rule->device_id = $device->id;
+					$rule->variable_id = $this->form_validation->set_value('variable');
+					$rule->name = $this->form_validation->set_value('name');
+					$rule->description = $this->form_validation->set_value('description');
+					$rule->condition = $this->form_validation->set_value('condition');
+					$rule->message = strip_tags($this->form_validation->set_value('message'),"<br><br/><p><i>");
+					$rule->subject = $this->form_validation->set_value('subject');
+					$rule->interval = $this->form_validation->set_value('interval');
+					if($rule->save()){
+						$this->session->set_flashdata('message',array('type'=>'success','message'=>'Notification successfully saved'));						
+					}
+				} else {
+					//todo log error
+				}
+			} else {
+				//todo log error
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error','message'=>validation_errors()));
+		}
+		redirect('da/notifications/'.$device->id);	
+	}	
+
+	function edit_notification_rule($rule_id){
+		$rule = new Notification_rule($rule_id);
+		if($rule->exists()){
+			$device_id = $rule->device->id;
+			$user = new User($this->tank_auth->get_user_id());
+			if($user->is_admin_of($rule->device->domain->id)){
+				$this->load->library('form_validation');
+				$this->form_validation->set_rules('name','Name','required|trim|xss_clean');		
+				$this->form_validation->set_rules('description','Description','required|trim|xss_clean');				
+				$this->form_validation->set_rules('variable','Variable','required|trim|xss_clean');
+				$this->form_validation->set_rules('condition','Condition','required|trim|xss_clean');
+				$this->form_validation->set_rules('interval','Interval','required|trim|numeric|xss_clean');
+				$this->form_validation->set_rules('message','Message','required|trim|xss_clean|callback__check_message_variables['.$rule->device_id.']');
+				$this->form_validation->set_rules('subject','Subject','required|trim|xss_clean|callback__check_message_variables['.$rule->device_id.']');	
+				if($this->form_validation->run()){
+					$rule->variable_id = $this->form_validation->set_value('variable');
+					$rule->name = $this->form_validation->set_value('name');
+					$rule->description = $this->form_validation->set_value('description');					
+					$rule->condition = $this->form_validation->set_value('condition');
+					$rule->message = strip_tags($this->form_validation->set_value('message'),"<br><br/><p><i>");
+					$rule->subject = $this->form_validation->set_value('subject');
+					$rule->interval = $this->form_validation->set_value('interval');
+					if($rule->save()){
+						$this->session->set_flashdata('message',array('type'=>'success','message'=>'Notification successfully saved'));
+						redirect($this->uri->uri_string());						
+					}
+				} else {
+					if(validation_errors()){
+						//redirect so that we can show errors						
+						$this->session->set_flashdata('message',array('type'=>'error','message'=>validation_errors()));
+						redirect($this->uri->uri_string());
+					}
+					$data['user'] = $user;
+					$data['notification_rule'] = $rule;
+					$this->load->view('da_edit_notifications_view',$data);
+				}
+			} else {
+				log_message('error','u/edit_notification_rule | user has no rights to device, device id: '.$rule->device->id);
+				$this->session->set_flashdata('message',array('type'=>'error','message'=>'You do not have enough rights to perform this action.'));		
+				redirect('da/notifications/'.$device_id);			
+			}
+		} else {
+			log_message('error','u/edit_notification_rule | no such rule, id: '.$rule_id);
+			$this->session->set_flashdata('message',array('type'=>'error','message'=>'This notification rule does not exist.'));
+			redirect('da/notifications/'.$device_id);				
+		}
+
+	}
+
+	function delete_notification_rule($rule_id){
+		$rule = new Notification_rule($rule_id);
+		if($rule->exists()){
+			$device_id = $rule->device->id;
+			$user = new User($this->tank_auth->get_user_id());
+			if($user->is_admin_of($rule->device->domain->id)){
+				if($rule->delete()){
+					$this->session->set_flashdata('message',array('type'=>'success','message'=>'Notification successfully deleted.'));						
+				} else {
+					log_message('error','u/delete_notification_rule | could not delete notification_rule, id: '.$rule_id);
+					$this->session->set_flashdata('message',array('type'=>'error','message'=>'Something went wrong, please try again.'));					
+				}
+			} else {
+				log_message('error','u/delete_notification_rule | user has no rights to device, device id: '.$rule->device->id);
+				$this->session->set_flashdata('message',array('type'=>'error','message'=>'You do not have enough rights to perform this action.'));					
+			}
+		} else {
+			log_message('error','u/delete_notification_rule | no such rule, id: '.$rule_id);
+			$this->session->set_flashdata('message',array('type'=>'error','message'=>'This notification rule does not exist.'));				
+		}
+
+		redirect('da/notifications/'.$device_id);
+	}
+
+	function toggle_notification_status($rule_id,$flag){
+		$rule = new Notification_rule($rule_id);
+		if($rule->exists()){
+			$device_id = $rule->device->id;
+			$user = new User($this->tank_auth->get_user_id());
+			if($user->is_admin_of($rule->device->id)){
+				if(in_array($flag, array('0','1'))){
+					if($rule->where('id',$rule->id)->update('activated',$flag)){
+						$this->session->set_flashdata('message',array('type'=>'success','message'=>'Notification successfully updated.'));							
+					} else {
+						log_message('error','u/toggle_notification_status | could not update rule flag, rule id:'.$rule->id);
+						$this->session->set_flashdata('message',array('type'=>'error','message'=>'Something went wrong. Please try again'));							
+					}
+				} else {
+					log_message('error','u/toggle_notification_status | Provided flag is not valid:'.$flag.', rule id: '.$rule->id);
+					$this->session->set_flashdata('message',array('type'=>'error','message'=>'Something went wrong. Please try again'));					
+				}
+	
+			} else {
+				log_message('error','u/toggle_notification_status | user has no rights to device, device id: '.$rule->device->id);
+				$this->session->set_flashdata('message',array('type'=>'error','message'=>'You do not have enough rights to perform this action.'));					
+			}
+		} else {
+			log_message('error','u/toggle_notification_status | no such rule, id: '.$rule_id);
+			$this->session->set_flashdata('message',array('type'=>'error','message'=>'This notification rule does not exist.'));				
+		}
+
+		redirect('da/notifications/'.$device_id);		
 	}	
 
 	function change_managing_domain($domain_id){
