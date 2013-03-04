@@ -815,8 +815,10 @@ class Da extends CI_Controller{
 			if($device->exists()){
 				$user = new User($this->tank_auth->get_user_id());
 				if($user->is_admin_of($device->domain->id)){
+					$notification_rule_save_result = true;
+
+					//saving notification rule 
 					$rule = new Notification_rule();
-					$rule->user_id = $device->user->id;
 					$rule->device_id = $device->id;
 					$rule->variable_id = $this->form_validation->set_value('variable');
 					$rule->name = $this->form_validation->set_value('name');
@@ -826,13 +828,29 @@ class Da extends CI_Controller{
 					$rule->subject = $this->form_validation->set_value('subject');
 					$rule->interval = $this->form_validation->set_value('interval');
 					if($rule->save()){
-						$this->session->set_flashdata('message',array('type'=>'success','message'=>'Notification successfully saved'));						
-					}
+						//adding notification rule to each user assigned to device
+						foreach($device->user as $user){						
+							if(!$user->save($rule)){
+								$notification_rule_save_result = false;
+								break;						
+							}
+						}
+						if($notification_rule_save_result){
+							$this->session->set_flashdata('message',array('type'=>'success','message'=>'Notification successfully saved'));						
+						} else {
+							$this->session->set_flashdata('message',array('type'=>'error','message'=>'Something went wrong, please try again'));							
+						}
+					} else {
+						$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, something went wrong, please try again"));	
+						log_message('error',"da/add_notification_rule | could not save notification_rule in database, variable_id: ".$this->form_validation->set_value('variable'));
+					}					
 				} else {
-					//todo log error
+					$this->session->set_flashdata('message', array('type'=>'error','message'=>"You don't have enough rights to perform this action"));	
+					log_message('error',"da/add_notification_rule | device doesn't exist, device_id: ".$this->input->post('device_id',true));
 				}
 			} else {
-				//todo log error
+				$this->session->set_flashdata('message', array('type'=>'error','message'=>"This device doesn't exist"));	
+				log_message('error',"da/add_notification_rule | could not save notification_rule in database, variable_id: ".$this->form_validation->set_value('variable'));
 			}
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error','message'=>validation_errors()));

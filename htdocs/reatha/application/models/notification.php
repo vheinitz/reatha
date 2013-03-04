@@ -11,12 +11,12 @@ class Notification extends Datamapper{
 	}
 
 	// save notification and email it. Params: rule - notification rule, var - variable that triggered the notification
-	function save_and_email($rule, $var){
+	function save_and_email($rule, $var, $user){
 		log_message('info',"notification/save_and_email | entering fucntion");
 		$this->body = $this->_process_message_vars($rule,'body');
 		$this->subject = $this->_process_message_vars($rule,'subject');
-		if($this->save(array($rule, $rule->user))){
-			$this->_send_email();
+		if($this->save(array($rule, $user))){
+			$this->_send_email($user);
 		}
 	}
 
@@ -37,15 +37,15 @@ class Notification extends Datamapper{
 		return $text;
 	}
 
-	function _send_email(){
+	function _send_email($user){
 		$ci = &get_instance();
 		$ci->lang->load('notifications');
 		$ci->load->library('email');
 
-		$message = sprintf($ci->lang->line('email_notification'), $this->user->username, $this->body);
+		$message = sprintf($ci->lang->line('email_notification'), $user->username, $this->body);
 
 		$ci->email->from('noreply@reatha.de','Reatha');
-		$ci->email->to($this->user->email);
+		$ci->email->to($user->email);
 
 		$ci->email->subject($this->subject);
 		$ci->email->message($message);

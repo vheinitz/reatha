@@ -189,6 +189,18 @@ class Test extends CI_Controller{
 		echo eval("return 1<2?'yes':'no';");
 	}
 
+	function notif_rule(){
+		$r = new Notification_rule();
+		$r->name = "ok";
+		$user = new User(10);
+		$r->save($user);
+	}
+
+	function success(){
+		$this->session->set_flashdata('message',array('type'=>'success','message'=>'ok'));
+		redirect('u/notifications/3');
+	}
+
 
 }
 

@@ -17,6 +17,7 @@ class U extends CI_Controller{
 		$user = new User($this->tank_auth->get_user_id());
 		$data['user'] 		= $user;
 		$data['devices']	= $user->devices->get();
+		$data['hide_success_message'] = 1;
 		$this->load->view('u_view',$data);
 	}
 
@@ -28,6 +29,8 @@ class U extends CI_Controller{
 				$data['user'] 	= $user;
 				$data['device'] = $device;
 				$data['view'] = $device->view->where('name',$view_name)->get(1);
+				$data['hide_navbar'] = 1;
+				$data['hide_success_message'] = 1;
 				$this->load->view('u_device_view',$data);
 			}
 		}		
@@ -73,6 +76,11 @@ class U extends CI_Controller{
 		}
 	}
 
+	function get_notifications_data($device_id){
+		$user = new User($this->tank_auth->get_user_id());
+		echo "hi";
+	}
+
 	function notifications($device_id){
 		$device = new Device($device_id);
 		if($device->exists()){
@@ -80,6 +88,8 @@ class U extends CI_Controller{
 			if($user->has_device($device->id)){
 				$data['user'] 	= $user;
 				$data['device'] = $device;
+				$data['hide_navbar'] = 1;
+				$data['hide_success_message'] = 1;
 				$this->load->view('u_notifications_view',$data);
 			}
 		}
@@ -93,9 +103,10 @@ class U extends CI_Controller{
 			if($user->has_device($rule->device->id)){
 				
 				//if 1 then 0, if 0 then 1
-				$flag = abs($rule->activated-1);
+				$current_flag = $rule->is_activated_for_user_id($user->id);
+				$flag = abs($current_flag-1);
 
-				if($rule->where('id',$rule->id)->update('activated',$flag)){
+				if($this->db->where('notification_rule_id',$rule->id)->where('user_id',$user->id)->update('notification_rules_users', array('activated'=>$flag))){
 					$return = array('type'=>'success','message'=>'Notification successfully updated.');							
 				} else {
 					log_message('error','u/toggle_notification_status | could not update rule flag, rule id:'.$rule->id);

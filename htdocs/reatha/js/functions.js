@@ -61,7 +61,17 @@
 		});
 	}
 
-	function reset_notification($base_url, $id){
-		alert($id);
-	}	
+	function get_notifications_data($base_url, $device_id){
+		$.get($base_url+"u/get_notifications_data/"+$device_id, function($data) {
+			$('#user-notifications').html($data);
+		});			
+	}
+
+	function update_notifications_view($base_url, $device_id){
+		clearInterval(window.update_notifications_interval);
+		get_notifications_data($base_url, $device_id);			
+		window.update_notifications_interval = setInterval(function(){
+			get_notifications_data($base_url, $device_id);
+		}, 5000);	
+	}
 
