@@ -25,7 +25,9 @@ class U extends CI_Controller{
 		$device = new Device($device_id);
 		if($device->exists()){
 			$user = new User($this->tank_auth->get_user_id());
-			if($user->has_device($device->id)){
+			if($user->has_device($device->id)){				
+				//saving view name in session - for checking whether we should switch views
+				$this->session->set_userdata('current_view_name',$view_name);
 				$data['user'] 	= $user;
 				$data['device'] = $device;
 				$data['view'] = $device->view->where('name',$view_name)->get(1);
@@ -55,7 +57,8 @@ class U extends CI_Controller{
 			if($user->has_device($device_id)){
 				//get variables for each device
 				foreach ($device->variable as $var) {
-					$vars.= "<b>$var->name: </b>$var->value<br/>";
+					if($var->name != "view")
+						$vars.= "<b>$var->name: </b>$var->value<br/>";
 				}
 				echo ($vars);				
 			} else {
@@ -71,7 +74,20 @@ class U extends CI_Controller{
 		if($view->exists()){
 			$user = new User($this->tank_auth->get_user_id());
 			if($user->has_device($view->device->id)){
-				echo $view->process_vars();
+				//check if we must change the view
+				$current_view = $this->session->userdata('current_view_name');			
+				$new_view = $view->device->get_view_name();
+				if($new_view != $current_view){
+					//check if new view exists and is valid
+					if($device->has_view($new_view)){
+						echo json_encode(array('new_view_url'=>base_url()."u/device/".$view->device->id."/".$new_view));
+					} else {
+						log_message('error',"u/get_device_view | submitted view name is not valid, view name: $new_view, device id: $device->id");
+						echo $view->process_vars();
+					}
+				} else {				
+					echo $view->process_vars();
+				}
 			}
 		}
 	}

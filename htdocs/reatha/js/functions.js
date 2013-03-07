@@ -19,7 +19,18 @@
 
 	function get_device_view($view_id, $base_url){
 		$.get($base_url+"u/get_device_view/"+$view_id, function($view) {
-			$('#user-device-variables').html($view);
+			//check if view is json, and if so - redirect to view url
+			$is_json = true;
+			try{
+				$response = $.parseJSON($view);
+			} catch($err){
+				$is_json = false;
+			}
+			if(!$is_json){
+				$('#user-device-variables').html($view);
+			} else {
+				window.location.replace($response.new_view_url);				
+			}
 		});			
 	}
 

@@ -324,6 +324,13 @@ class Da extends CI_Controller{
 					$view->name 		= $this->form_validation->set_value('name');
 					$view->body 		= $this->form_validation->set_value('view');
 					if($view->save()){
+						//saving "view" variable that controls which view to display
+						if(!$device->has_view_variable()){
+							$var = new Variable();
+							$var->name 	= "view";
+							$var->value = "main";
+							$var->save($device);
+						}
 						$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"View successfully saved."));
 					} else {
 						log_message('error',"da/add_view | could not save view for device_id: $device->id");

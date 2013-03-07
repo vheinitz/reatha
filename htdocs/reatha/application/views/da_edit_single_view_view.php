@@ -20,7 +20,8 @@
 						<small>
 							Available variables:
 							<?php foreach ($view->device->variable as $var) {
-								echo '{'.$var->name.'} ';
+								if($var->name != 'view')
+									echo '{'.$var->name.'} ';
 							} ?>			
 						</small>
 					</div>	

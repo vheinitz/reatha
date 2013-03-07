@@ -201,6 +201,11 @@ class Test extends CI_Controller{
 		redirect('u/notifications/3');
 	}
 
+	function db_view_name(){
+		$d = new Device(4);
+		echo $d->get_view_name();
+	}
+
 
 }
 
