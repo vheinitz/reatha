@@ -79,7 +79,7 @@ class U extends CI_Controller{
 				$new_view = $view->device->get_view_name();
 				if($new_view != $current_view){
 					//check if new view exists and is valid
-					if($device->has_view($new_view)){
+					if($view->device->has_view($new_view)){
 						echo json_encode(array('new_view_url'=>base_url()."u/device/".$view->device->id."/".$new_view));
 					} else {
 						log_message('error',"u/get_device_view | submitted view name is not valid, view name: $new_view, device id: $device->id");
