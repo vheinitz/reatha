@@ -20,7 +20,8 @@
 		<tr>
 			<td>
 				<?php
-					//if user has device_list_view - process it, if not - show default view
+					//VH: Not exactly: if user has device_list_view - process it, if not - show default view
+					//VH: If DEVICE has a view called "list" show it as this  as LIST ITEM , if not show default item.fiew
 					$list_view = $user->device_list_view->get();
 					if($list_view->exists()){
 						echo $list_view->process_placeholders($device);
