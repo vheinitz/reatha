@@ -63,6 +63,13 @@
 		} )
 	}
 
+	function device_list_preview($base_url){
+		$view = $('textarea#device-list-view-body').val();
+		$.post($base_url+'da/device_list_view_preview',{view: $view}, function($result){
+			$('#view-preview').html($result);
+		} )
+	}	
+
 	function toggle_notification_status($base_url, $id){
 		$.get($base_url+'u/toggle_notification_status/'+$id, function($result){
 			$result = $.parseJSON($result);

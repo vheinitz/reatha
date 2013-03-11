@@ -30,6 +30,7 @@ class Device extends Datamapper{
                 $return['message'] .= "Duplicate variable name found: $device_variable. Variable will not be saved.<br/>";
             }
         }
+
         if($return['type'] != 'error'){
             $return = array('type'=>'success','message'=>'Variables saved.');
         }
@@ -102,6 +103,12 @@ class Device extends Datamapper{
     }
 
     function valid_variable_name($var, $haystack=''){
+        //check if var is not a reserved var
+        $reserved_vars = array('_deviceName','_deviceInfo','_deviceLocation','_deviceOn','_alarmLevel');
+        if(in_array($var, $reserved_vars)){
+            return false;
+        }
+
         if(!$this->db->where('device_id',$this->id)->where('name',$var)->count_all_results('variables')){
             return true;
         }

@@ -83,10 +83,10 @@ class U extends CI_Controller{
 						echo json_encode(array('new_view_url'=>base_url()."u/device/".$view->device->id."/".$new_view));
 					} else {
 						log_message('error',"u/get_device_view | submitted view name is not valid, view name: $new_view, device id: $device->id");
-						echo $view->process_vars();
+						echo $view->process_placeholders();
 					}
 				} else {				
-					echo $view->process_vars();
+					echo $view->process_placeholders();
 				}
 			}
 		}
