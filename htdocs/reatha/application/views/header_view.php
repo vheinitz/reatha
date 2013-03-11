@@ -12,6 +12,7 @@
         <script type="text/javascript" src="<?php echo base_url(); ?>js/functions.js"></script>
     </head>
     <body>
+        <?php if(!isset($hide_navbar)) { ?> 
         <div class="navbar">
             <div class="navbar-inner">
                 <a class="brand" href="#">Reatha</a>
@@ -57,10 +58,12 @@
                         </ul>                    
                 <? } ?>
             </div>
-        </div>         
+        </div> 
+        <?php } ?>        
     <div class="container">       
     <?php 
   	$message = $this->session->flashdata('message');   
-	if(!empty($message)){?>
-	<div class="alert alert-<?php echo $message['type']; ?>"><?php echo $message['message']; ?></div>
-	<?php }  	
+	if(!empty($message)){
+        if(!(isset($hide_success_message) && $message['type'] == 'success')){ ?>
+	       <div class="alert alert-<?php echo $message['type']; ?>"><?php echo $message['message']; ?></div>
+	<?php }  }	

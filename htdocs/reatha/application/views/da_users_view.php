@@ -28,7 +28,10 @@
 		<button type="submit" class="btn">Assign</button>
 	</form>	
 	</td>
-	<td><a href="<?php echo base_url(); ?>da/delete_user/<?php echo $domain_user->id; ?>" onclick="return confirm('Are you sure?')">Delete User</a></td>
+	<td>
+		<a href="<?php echo base_url(); ?>da/customize_device_list/<?php echo $domain_user->id; ?>" >Customize Device List View</a><br/>
+		<a href="<?php echo base_url(); ?>da/delete_user/<?php echo $domain_user->id; ?>" onclick="return confirm('Are you sure?')">Delete User</a>
+	</td>
 </tr>
 <?php } ?>
 </tbody>

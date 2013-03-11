@@ -324,6 +324,13 @@ class Da extends CI_Controller{
 					$view->name 		= $this->form_validation->set_value('name');
 					$view->body 		= $this->form_validation->set_value('view');
 					if($view->save()){
+						//saving "view" variable that controls which view to display
+						if(!$device->has_view_variable()){
+							$var = new Variable();
+							$var->name 	= "view";
+							$var->value = "main";
+							$var->save($device);
+						}
 						$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"View successfully saved."));
 					} else {
 						log_message('error',"da/add_view | could not save view for device_id: $device->id");
@@ -783,7 +790,7 @@ class Da extends CI_Controller{
 				$view = new View();
 				$view->body = $this->form_validation->set_value('view');
 				$view->device = $device;
-				echo $view->process_vars();
+				echo $view->process_placeholders();
 			}
 		}
 	}
@@ -815,8 +822,10 @@ class Da extends CI_Controller{
 			if($device->exists()){
 				$user = new User($this->tank_auth->get_user_id());
 				if($user->is_admin_of($device->domain->id)){
+					$notification_rule_save_result = true;
+
+					//saving notification rule 
 					$rule = new Notification_rule();
-					$rule->user_id = $device->user->id;
 					$rule->device_id = $device->id;
 					$rule->variable_id = $this->form_validation->set_value('variable');
 					$rule->name = $this->form_validation->set_value('name');
@@ -826,13 +835,29 @@ class Da extends CI_Controller{
 					$rule->subject = $this->form_validation->set_value('subject');
 					$rule->interval = $this->form_validation->set_value('interval');
 					if($rule->save()){
-						$this->session->set_flashdata('message',array('type'=>'success','message'=>'Notification successfully saved'));						
-					}
+						//adding notification rule to each user assigned to device
+						foreach($device->user as $user){						
+							if(!$user->save($rule)){
+								$notification_rule_save_result = false;
+								break;						
+							}
+						}
+						if($notification_rule_save_result){
+							$this->session->set_flashdata('message',array('type'=>'success','message'=>'Notification successfully saved'));						
+						} else {
+							$this->session->set_flashdata('message',array('type'=>'error','message'=>'Something went wrong, please try again'));							
+						}
+					} else {
+						$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, something went wrong, please try again"));	
+						log_message('error',"da/add_notification_rule | could not save notification_rule in database, variable_id: ".$this->form_validation->set_value('variable'));
+					}					
 				} else {
-					//todo log error
+					$this->session->set_flashdata('message', array('type'=>'error','message'=>"You don't have enough rights to perform this action"));	
+					log_message('error',"da/add_notification_rule | device doesn't exist, device_id: ".$this->input->post('device_id',true));
 				}
 			} else {
-				//todo log error
+				$this->session->set_flashdata('message', array('type'=>'error','message'=>"This device doesn't exist"));	
+				log_message('error',"da/add_notification_rule | could not save notification_rule in database, variable_id: ".$this->form_validation->set_value('variable'));
 			}
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error','message'=>validation_errors()));
@@ -918,7 +943,7 @@ class Da extends CI_Controller{
 		if($rule->exists()){
 			$device_id = $rule->device->id;
 			$user = new User($this->tank_auth->get_user_id());
-			if($user->is_admin_of($rule->device->id)){
+			if($user->is_admin_of($rule->device->domain->id)){
 				if(in_array($flag, array('0','1'))){
 					if($rule->where('id',$rule->id)->update('activated',$flag)){
 						$this->session->set_flashdata('message',array('type'=>'success','message'=>'Notification successfully updated.'));							
@@ -941,7 +966,53 @@ class Da extends CI_Controller{
 		}
 
 		redirect('da/notifications/'.$device_id);		
-	}	
+	}
+
+	function customize_device_list($user_id){		
+		$user = new User($this->tank_auth->get_user_id());
+		$view = new Device_list_view();
+		$view->get_by_user_id($user_id);
+		$data['user'] = $user;
+		$data['domains'] = $user->domains->get();
+		$data['view'] = $view;
+		$data['device_list_user_id'] = $user_id;
+		$this->load->view('da_customize_device_list_view',$data);
+	}
+
+	function device_list_view_preview(){
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('view','View','required|trim');
+		if($this->form_validation->run()){
+			$view = new Device_list_view();
+			$view->body = $this->form_validation->set_value('view');
+			echo $view->process_placeholders();
+		}
+	}
+
+	function edit_device_list_view(){
+		$this->load->library('form_validation');		
+		$this->form_validation->set_rules('view','View','required|trim|xss_clean');			
+		$this->form_validation->set_rules('user_id','User id','required|trim|xss_clean');
+		if($this->form_validation->run()){
+			$view = new Device_list_view();
+			$user_id = $this->form_validation->set_value('user_id');
+			$body = $this->form_validation->set_value('view');
+			$view->get_by_user_id($user_id);
+
+			$view->user_id = $user_id;
+			$view->body = $body;
+
+			if($view->save()){
+				$this->session->set_flashdata('message',array('type'=>'success','message'=>'Device list view successfully saved'));										
+			} else {
+				log_message('error','da/edit_device_list_view | could not save view');
+				$this->session->set_flashdata('message',array('type'=>'error','message'=>'Something went wrong, please try again'));						
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error','message'=>validation_errors()));
+		}
+		redirect('da/customize_device_list/'.$domain_id.'/'.$user_id);
+	}
 
 	function change_managing_domain($domain_id){
 		$user = new User($this->tank_auth->get_user_id());

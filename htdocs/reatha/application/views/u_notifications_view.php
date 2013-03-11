@@ -11,7 +11,7 @@
 			<tr>
 				<td class="td-notification-list-toggle">
 					<?php 
-						$checked = $notification_rule->activated?"checked='checked'":"";
+						$checked = $notification_rule->is_activated_for_user_id($user->id)?"checked='checked'":"";
 					?>
 					<input type="checkbox" id="td-notification-list-checkbox" <?php echo $checked; ?> onclick='toggle_notification_status("<?php echo base_url(); ?>",<?php echo $notification_rule->id; ?>)' />
 				</td>
@@ -51,6 +51,7 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		$('#notification-description').popover();
+		update_notifications_view('<?php echo base_url(); ?>','<?php echo $device->id; ?>');
 	});
 </script>
 

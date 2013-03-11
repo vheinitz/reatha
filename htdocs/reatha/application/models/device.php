@@ -30,6 +30,7 @@ class Device extends Datamapper{
                 $return['message'] .= "Duplicate variable name found: $device_variable. Variable will not be saved.<br/>";
             }
         }
+
         if($return['type'] != 'error'){
             $return = array('type'=>'success','message'=>'Variables saved.');
         }
@@ -96,10 +97,18 @@ class Device extends Datamapper{
     }    
 
     function delete_device(){
+        $this->variables->delete_all();
+        $this->views->delete_all();
     	return $this->delete();
     }
 
     function valid_variable_name($var, $haystack=''){
+        //check if var is not a reserved var
+        $reserved_vars = array('_deviceName','_deviceInfo','_deviceLocation','_deviceOn','_alarmLevel');
+        if(in_array($var, $reserved_vars)){
+            return false;
+        }
+
         if(!$this->db->where('device_id',$this->id)->where('name',$var)->count_all_results('variables')){
             return true;
         }
@@ -119,6 +128,15 @@ class Device extends Datamapper{
 
     function has_view($view_name){
         return $this->db->where('device_id',$this->id)->where('name',$view_name)->count_all_results('views');        
+    }
+
+    function has_view_variable(){
+        return $this->db->where('device_id',$this->id)->where('name','view')->count_all_results('variables');        
+    }
+
+    function get_view_name(){
+        $view = $this->variables->where('name','view')->get(1);
+        return $view->value;
     }
 
     function _process_transformation_vars($text){

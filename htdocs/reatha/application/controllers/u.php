@@ -17,6 +17,7 @@ class U extends CI_Controller{
 		$user = new User($this->tank_auth->get_user_id());
 		$data['user'] 		= $user;
 		$data['devices']	= $user->devices->get();
+		$data['hide_success_message'] = 1;
 		$this->load->view('u_view',$data);
 	}
 
@@ -24,10 +25,14 @@ class U extends CI_Controller{
 		$device = new Device($device_id);
 		if($device->exists()){
 			$user = new User($this->tank_auth->get_user_id());
-			if($user->has_device($device->id)){
+			if($user->has_device($device->id)){				
+				//saving view name in session - for checking whether we should switch views
+				$this->session->set_userdata('current_view_name',$view_name);
 				$data['user'] 	= $user;
 				$data['device'] = $device;
 				$data['view'] = $device->view->where('name',$view_name)->get(1);
+				$data['hide_navbar'] = 1;
+				$data['hide_success_message'] = 1;
 				$this->load->view('u_device_view',$data);
 			}
 		}		
@@ -52,7 +57,8 @@ class U extends CI_Controller{
 			if($user->has_device($device_id)){
 				//get variables for each device
 				foreach ($device->variable as $var) {
-					$vars.= "<b>$var->name: </b>$var->value<br/>";
+					if($var->name != "view")
+						$vars.= "<b>$var->name: </b>$var->value<br/>";
 				}
 				echo ($vars);				
 			} else {
@@ -68,9 +74,27 @@ class U extends CI_Controller{
 		if($view->exists()){
 			$user = new User($this->tank_auth->get_user_id());
 			if($user->has_device($view->device->id)){
-				echo $view->process_vars();
+				//check if we must change the view
+				$current_view = $this->session->userdata('current_view_name');			
+				$new_view = $view->device->get_view_name();
+				if($new_view != $current_view){
+					//check if new view exists and is valid
+					if($view->device->has_view($new_view)){
+						echo json_encode(array('new_view_url'=>base_url()."u/device/".$view->device->id."/".$new_view));
+					} else {
+						log_message('error',"u/get_device_view | submitted view name is not valid, view name: $new_view, device id: $device->id");
+						echo $view->process_placeholders();
+					}
+				} else {				
+					echo $view->process_placeholders();
+				}
 			}
 		}
+	}
+
+	function get_notifications_data($device_id){
+		$user = new User($this->tank_auth->get_user_id());
+		echo "hi";
 	}
 
 	function notifications($device_id){
@@ -80,6 +104,8 @@ class U extends CI_Controller{
 			if($user->has_device($device->id)){
 				$data['user'] 	= $user;
 				$data['device'] = $device;
+				$data['hide_navbar'] = 1;
+				$data['hide_success_message'] = 1;
 				$this->load->view('u_notifications_view',$data);
 			}
 		}
@@ -93,9 +119,10 @@ class U extends CI_Controller{
 			if($user->has_device($rule->device->id)){
 				
 				//if 1 then 0, if 0 then 1
-				$flag = abs($rule->activated-1);
+				$current_flag = $rule->is_activated_for_user_id($user->id);
+				$flag = abs($current_flag-1);
 
-				if($rule->where('id',$rule->id)->update('activated',$flag)){
+				if($this->db->where('notification_rule_id',$rule->id)->where('user_id',$user->id)->update('notification_rules_users', array('activated'=>$flag))){
 					$return = array('type'=>'success','message'=>'Notification successfully updated.');							
 				} else {
 					log_message('error','u/toggle_notification_status | could not update rule flag, rule id:'.$rule->id);

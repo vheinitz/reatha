@@ -14,7 +14,7 @@
 
 .table-user-notification-list{
 	width: 450px;
-	display: inline-block;
+	display: block;
 }
 
 #td-notification-list-checkbox{

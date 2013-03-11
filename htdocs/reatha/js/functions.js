@@ -19,7 +19,18 @@
 
 	function get_device_view($view_id, $base_url){
 		$.get($base_url+"u/get_device_view/"+$view_id, function($view) {
-			$('#user-device-variables').html($view);
+			//check if view is json, and if so - redirect to view url
+			$is_json = true;
+			try{
+				$response = $.parseJSON($view);
+			} catch($err){
+				$is_json = false;
+			}
+			if(!$is_json){
+				$('#user-device-variables').html($view);
+			} else {
+				window.location.replace($response.new_view_url);				
+			}
 		});			
 	}
 
@@ -52,6 +63,13 @@
 		} )
 	}
 
+	function device_list_preview($base_url){
+		$view = $('textarea#device-list-view-body').val();
+		$.post($base_url+'da/device_list_view_preview',{view: $view}, function($result){
+			$('#view-preview').html($result);
+		} )
+	}	
+
 	function toggle_notification_status($base_url, $id){
 		$.get($base_url+'u/toggle_notification_status/'+$id, function($result){
 			$result = $.parseJSON($result);
@@ -61,7 +79,17 @@
 		});
 	}
 
-	function reset_notification($base_url, $id){
-		alert($id);
-	}	
+	function get_notifications_data($base_url, $device_id){
+		$.get($base_url+"u/get_notifications_data/"+$device_id, function($data) {
+			$('#user-notifications').html($data);
+		});			
+	}
+
+	function update_notifications_view($base_url, $device_id){
+		clearInterval(window.update_notifications_interval);
+		get_notifications_data($base_url, $device_id);			
+		window.update_notifications_interval = setInterval(function(){
+			get_notifications_data($base_url, $device_id);
+		}, 5000);	
+	}
 
