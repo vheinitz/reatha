@@ -63,9 +63,9 @@
 		} )
 	}
 
-	function device_list_preview($base_url){
+	function device_list_preview($base_url, $device_id){
 		$view = $('textarea#device-list-view-body').val();
-		$.post($base_url+'da/device_list_view_preview',{view: $view}, function($result){
+		$.post($base_url+'da/device_list_view_preview',{view: $view, device_id: $device_id}, function($result){
 			$('#view-preview').html($result);
 		} )
 	}	
@@ -80,8 +80,16 @@
 	}
 
 	function get_notifications_data($base_url, $device_id){
-		$.get($base_url+"u/get_notifications_data/"+$device_id, function($data) {
-			$('#user-notifications').html($data);
+		$.get($base_url+"u/get_notifications_data/"+$device_id, function($json) {
+			$result = $.parseJSON($json);
+			$.each($result, function(i, val){
+				//indicator class
+				$('table#'+val.id+' .user-notification-indicator').attr('class','').addClass('user-notification-indicator '+val.indicator_class);
+
+				//button class/href
+				$('table#'+val.id+' a.btn').attr('class','').addClass('btn '+val.button_class).attr('href',val.button_href);
+			})
+			// $('#user-notifications').html($data);
 		});			
 	}
 

@@ -2,7 +2,7 @@
 class Device extends Datamapper{
 	var $table = "devices";
 	var $has_many = array('user','variable','notification_rule','view','transformation');
-	var $has_one = array('domain');
+	var $has_one = array('domain','device_list_view');
     var $auto_populate_has_one = TRUE;
     var $auto_populate_has_many = TRUE;	
     var $default_order_by = array('id'=>'desc');

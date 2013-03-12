@@ -94,7 +94,26 @@ class U extends CI_Controller{
 
 	function get_notifications_data($device_id){
 		$user = new User($this->tank_auth->get_user_id());
-		echo "hi";
+		if($user->has_device($device_id)){
+			$r = new Notification_rule();
+			$r->where('device_id',$device_id)->get();
+			foreach($r as $rule){
+				$indicator_class="";
+				if(!empty($rule->notification->created)){ 
+				 	$indicator_class=" triggered"; 
+				}
+				if(empty($indicator_class)){
+					$button_class=" disabled";
+					$button_href="#";
+				} else {
+					$button_class="";
+					$button_href=base_url()."u/reset_notification/".$rule->id;
+				}			
+
+				$return[] = array('id'=>$rule->id, 'indicator_class'=>$indicator_class, 'button_class'=>$button_class, 'button_href'=>$button_href);
+			}
+			echo json_encode($return);
+		}
 	}
 
 	function notifications($device_id){

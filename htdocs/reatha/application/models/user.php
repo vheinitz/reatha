@@ -9,7 +9,7 @@ class User extends Datamapper{
             'join_other_as' => 'domain',
             'join_table'    => 'domain_admin_domains'
             ));
-    var $has_one = array('user_profile','device_list_view');
+    var $has_one = array('user_profile');
     var $auto_populate_has_one = TRUE;
     var $auto_populate_has_many = TRUE;
     var $default_order_by = array('id'=>'desc');

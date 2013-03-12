@@ -32,11 +32,14 @@ class View extends Datamapper{
     /**  process references to reserved views */
     function _process_reserved_view_references($text){
 
-        //{view:_devicelist} - returns to device list
-        $text = str_replace('{view:_devicelist}', base_url().'u/', $text);
+        //{view:_deviceList} - returns to device list
+        $text = str_replace('{view:_deviceList}', base_url().'u/', $text);
 
         //{view:_notifications} - goes to device notification list.
         $text = str_replace('{view:_notifications}', base_url().'u/notifications/'.$this->device->id, $text);
+
+        //{view:_deviceView} - goes to device view
+        $text = str_replace('{view:_deviceView}', base_url().'u/device/'.$this->device->id, $text);           
 
         return $text;
     }    
@@ -81,7 +84,18 @@ class View extends Datamapper{
         $power_status = ($time - $this->device->updated) > 10 ? $power = '0' : $power = '1';
         $text = str_replace('{_deviceOn}', $power_status, $text);
 
-
+        //{_alarmLevel} - if one of the device's notification rules has triggered a notification which has not been reset yet then display "1", otherwise - "0"
+        if(strpos($text, '{_alarmLevel}')!== FALSE){
+            $level = '0';
+            foreach($this->device->notification_rules as $rule){
+                if(!empty($rule->notification->created)){
+                    //device has at least one triggered notification
+                    $level = '1';
+                    break;
+                }
+            }
+            $text = str_replace('{_alarmLevel}', $level, $text);
+        }
         return $text;
     }
 

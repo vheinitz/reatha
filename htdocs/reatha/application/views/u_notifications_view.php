@@ -6,7 +6,7 @@
 
 
 <?php foreach ($device->notification_rules as $notification_rule) { ?>
-	<table class="table table-bordered table-user-notification-list">
+	<table class="table table-bordered table-user-notification-list" id="<?php echo $notification_rule->id; ?>">
 		<tbody>
 			<tr>
 				<td class="td-notification-list-toggle">

@@ -20,10 +20,10 @@
 		<tr>
 			<td>
 				<?php
-					//if user has device_list_view - process it, if not - show default view
-					$list_view = $user->device_list_view->get();
+					//if device has device_list_view - process it, if not - show default view
+					$list_view = $device->device_list_view->get();
 					if($list_view->exists()){
-						echo $list_view->process_placeholders($device);
+						echo $list_view->process_placeholders();
 					} else {
 				?>
 				<div id="user-device-wrapper" onclick="window.location.href='<?php echo base_url()."u/device/$device->id"; ?>'">

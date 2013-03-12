@@ -25,6 +25,11 @@
 							} ?>			
 						</small>
 					</div>	
+					<div>
+						<small>
+							Available reserved variables: {_deviceName} {_deviceInfo} {_deviceLocation} {_deviceOn} {_alarmLevel}			
+						</small>
+					</div>					
 					<?php
 					$images = $view->device->domain->images->get();
 					if(!empty($images)){ ?>

@@ -91,7 +91,7 @@
 	font-size: 18px;
 }
 
-textarea#view-body{
+textarea#view-body, textarea#device-list-view-body{
 	width: 400px;
 	height: 150px;
 }

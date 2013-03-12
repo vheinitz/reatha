@@ -32,6 +32,11 @@
 			}
 		 ?></td>
 		<td><a href="#device-add-transformation" data-toggle="modal" role="button">Add Transformation</a></td>
+	</tr>
+	<tr>
+		<td>List View</td>
+		<td><?php echo htmlspecialchars($device->device_list_view->body); ?></td>
+		<td><a href="<?php echo base_url()."da/customize_device_list/".$device->id; ?>">Change</a></td>
 	</tr>		
 	<tr>
 		<td>Key:</td>

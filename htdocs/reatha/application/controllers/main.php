@@ -39,7 +39,15 @@ class Main extends CI_Controller{
 			//check if this is a life check post
 			if(isset($variables['lc'])){
 				// log_message('info','main/post_variables | life check');
-				$device->update_life_check();				
+				$device->update_life_check();
+
+				//send back device vars, as described in issue #46
+				$device_vars = array();
+				foreach($device->variables as $var){
+					$device_vars[] = array($var->name => $var->value);
+				}
+				// log_message('info','main/post_variables | returning json to life_check: '.json_encode($device_vars));
+				echo json_encode($device_vars);				
 			}
 			
 			//traverse the post array and attemt to update variables in database

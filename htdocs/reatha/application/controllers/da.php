@@ -968,22 +968,24 @@ class Da extends CI_Controller{
 		redirect('da/notifications/'.$device_id);		
 	}
 
-	function customize_device_list($user_id){		
+	function customize_device_list($device_id){		
 		$user = new User($this->tank_auth->get_user_id());
 		$view = new Device_list_view();
-		$view->get_by_user_id($user_id);
+		$view->get_by_device_id($device_id);
 		$data['user'] = $user;
 		$data['domains'] = $user->domains->get();
+		$data['device_id'] = $device_id;
 		$data['view'] = $view;
-		$data['device_list_user_id'] = $user_id;
 		$this->load->view('da_customize_device_list_view',$data);
 	}
 
 	function device_list_view_preview(){
 		$this->load->library('form_validation');
 		$this->form_validation->set_rules('view','View','required|trim');
+		$this->form_validation->set_rules('device_id','Device id','required|trim|xss_clean');
 		if($this->form_validation->run()){
 			$view = new Device_list_view();
+			$view->device = new Device($this->form_validation->set_value('device_id'));
 			$view->body = $this->form_validation->set_value('view');
 			echo $view->process_placeholders();
 		}
@@ -991,15 +993,15 @@ class Da extends CI_Controller{
 
 	function edit_device_list_view(){
 		$this->load->library('form_validation');		
-		$this->form_validation->set_rules('view','View','required|trim|xss_clean');			
-		$this->form_validation->set_rules('user_id','User id','required|trim|xss_clean');
+		$this->form_validation->set_rules('view','View','required|trim');			
+		$this->form_validation->set_rules('device_id','Device id','required|trim|xss_clean');
 		if($this->form_validation->run()){
 			$view = new Device_list_view();
-			$user_id = $this->form_validation->set_value('user_id');
+			$device_id = $this->form_validation->set_value('device_id');
 			$body = $this->form_validation->set_value('view');
-			$view->get_by_user_id($user_id);
+			$view->get_by_device_id($device_id);
 
-			$view->user_id = $user_id;
+			$view->device_id = $device_id;
 			$view->body = $body;
 
 			if($view->save()){
@@ -1011,7 +1013,7 @@ class Da extends CI_Controller{
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error','message'=>validation_errors()));
 		}
-		redirect('da/customize_device_list/'.$domain_id.'/'.$user_id);
+		redirect('da/customize_device_list/'.$device_id);
 	}
 
 	function change_managing_domain($domain_id){
@@ -1074,7 +1076,8 @@ class Da extends CI_Controller{
 			preg_match_all("/\{(.+)\}/U", $string, $var_names);			
 			$var_names = $var_names[1];		
 			foreach($var_names as $var_name){
-				if((strpos($var_name,"view:") === false) && (strpos($var_name,":files") === false)){ 
+				//filter out views, :files placeholder, and reserved vars (they start with _ ) and then check if such var exists
+				if((strpos($var_name,"view:") === false) && (strpos($var_name,":files") === false) && ($var_name[0]!="_")){ 
 					$var = $device->variables->where('name',$var_name)->get();
 					if(!$var->exists()){
 						log_message('error',"da/_check_view_variables | Variable $var_name doesn't exist for device id: $device_id. View not saved.");
