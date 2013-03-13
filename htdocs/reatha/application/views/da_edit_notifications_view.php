@@ -41,6 +41,20 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label" for="interval">Severity Level</label>
+			<div class="controls">
+				<label class="radio inline" >
+					<input type="radio" name="severity_level" value="1" <?php if($notification_rule->severity_level == "1") echo "checked='checked'"; ?>/>Info
+				</label>
+				<label class="radio inline" >
+					<input type="radio" name="severity_level" value="2" <?php if($notification_rule->severity_level == "2") echo "checked='checked'"; ?>/>Warning
+				</label>
+				<label class="radio inline" >
+					<input type="radio" name="severity_level" value="3" <?php if($notification_rule->severity_level == "3") echo "checked='checked'"; ?>/>Error
+				</label>
+			</div>
+		</div>		
+		<div class="control-group">
 			<label class="control-label" for="text">Message</label>
 			<div class="controls">
 				<textarea id="text" name="message"><?php echo $notification_rule->message; ?></textarea>

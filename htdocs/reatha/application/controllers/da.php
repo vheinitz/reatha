@@ -814,6 +814,7 @@ class Da extends CI_Controller{
 		$this->form_validation->set_rules('variable','Variable','required|trim|xss_clean');
 		$this->form_validation->set_rules('condition','Condition','required|trim|xss_clean');
 		$this->form_validation->set_rules('interval','Interval','required|trim|numeric|xss_clean');
+		$this->form_validation->set_rules('severity_level','Severity Level','required|trim|xss_clean');
 		$this->form_validation->set_rules('message','Message','required|trim|xss_clean|callback__check_message_variables['.$this->input->post('device_id').']');	
 		$this->form_validation->set_rules('subject','Subject','required|trim|xss_clean|callback__check_message_variables['.$this->input->post('device_id').']');
 		$this->form_validation->set_rules('device_id','device','required|trim|xss_clean');
@@ -834,6 +835,7 @@ class Da extends CI_Controller{
 					$rule->message = strip_tags($this->form_validation->set_value('message'),"<br><br/><p><i>");
 					$rule->subject = $this->form_validation->set_value('subject');
 					$rule->interval = $this->form_validation->set_value('interval');
+					$rule->severity_level = $this->form_validation->set_value('severity_level');
 					if($rule->save()){
 						//adding notification rule to each user assigned to device
 						foreach($device->user as $user){						
@@ -877,6 +879,7 @@ class Da extends CI_Controller{
 				$this->form_validation->set_rules('variable','Variable','required|trim|xss_clean');
 				$this->form_validation->set_rules('condition','Condition','required|trim|xss_clean');
 				$this->form_validation->set_rules('interval','Interval','required|trim|numeric|xss_clean');
+				$this->form_validation->set_rules('severity_level','Severity Level','required|trim|numeric|xss_clean');
 				$this->form_validation->set_rules('message','Message','required|trim|xss_clean|callback__check_message_variables['.$rule->device_id.']');
 				$this->form_validation->set_rules('subject','Subject','required|trim|xss_clean|callback__check_message_variables['.$rule->device_id.']');	
 				if($this->form_validation->run()){
@@ -887,6 +890,7 @@ class Da extends CI_Controller{
 					$rule->message = strip_tags($this->form_validation->set_value('message'),"<br><br/><p><i>");
 					$rule->subject = $this->form_validation->set_value('subject');
 					$rule->interval = $this->form_validation->set_value('interval');
+					$rule->severity_level = $this->form_validation->set_value('severity_level');
 					if($rule->save()){
 						$this->session->set_flashdata('message',array('type'=>'success','message'=>'Notification successfully saved'));
 						redirect($this->uri->uri_string());						

@@ -70,6 +70,9 @@ class View extends Datamapper{
     /**  process references to reserved vars */
     function _process_reserved_vars($text){
 
+        //{_deviceId} - id of current device
+        $text = str_replace('{_deviceId}', $this->device->id, $text);
+
         //{_deviceName} - name of current device.
         $text = str_replace('{_deviceName}', $this->device->name, $text); 
 
@@ -96,6 +99,10 @@ class View extends Datamapper{
             }
             $text = str_replace('{_alarmLevel}', $level, $text);
         }
+
+        //{_setVariable} - used as form action. This form will update a variable's value in db
+        $text = str_replace('{_setVariables}', base_url().'u/set_variables', $text);
+
         return $text;
     }
 

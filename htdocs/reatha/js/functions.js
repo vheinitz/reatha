@@ -29,6 +29,7 @@
 			if(!$is_json){
 				$('#user-device-variables').html($view);
 			} else {
+				console.log($response);
 				window.location.replace($response.new_view_url);				
 			}
 		});			

@@ -40,6 +40,14 @@ class Notification_rule extends Datamapper{
         } else {
             return '0';
         }
+    }
+
+    function get_severity_level(){
+    	switch($this->severity_level){
+    		case "1": return "Info"; break;
+    		case "2": return "Warning"; break;
+    		case "3": return "Error"; break;
+    	}
     }	
 
 }

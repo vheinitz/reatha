@@ -28,6 +28,10 @@ class U extends CI_Controller{
 			if($user->has_device($device->id)){				
 				//saving view name in session - for checking whether we should switch views
 				$this->session->set_userdata('current_view_name',$view_name);
+
+				//updating "view" variable in db
+				$device->variable->where('name','view')->update('value',$view_name);
+
 				$data['user'] 	= $user;
 				$data['device'] = $device;
 				$data['view'] = $device->view->where('name',$view_name)->get(1);
@@ -75,14 +79,17 @@ class U extends CI_Controller{
 			$user = new User($this->tank_auth->get_user_id());
 			if($user->has_device($view->device->id)){
 				//check if we must change the view
-				$current_view = $this->session->userdata('current_view_name');			
+				$current_view = $this->session->userdata('current_view_name');
+				// log_message('info','u/get_device_view | current_view_name: '.$current_view);			
 				$new_view = $view->device->get_view_name();
+				// log_message('info','u/get_device_view | view_name from db: '.$new_view);	
 				if($new_view != $current_view){
 					//check if new view exists and is valid
 					if($view->device->has_view($new_view)){
+						// log_message('info','u/get_device_view | outputing json for new view: ');	
 						echo json_encode(array('new_view_url'=>base_url()."u/device/".$view->device->id."/".$new_view));
 					} else {
-						log_message('error',"u/get_device_view | submitted view name is not valid, view name: $new_view, device id: $device->id");
+						log_message('error',"u/get_device_view | submitted view name is not valid, view name: $new_view, device id: ".$view->device->id);
 						echo $view->process_placeholders();
 					}
 				} else {				
@@ -182,6 +189,36 @@ class U extends CI_Controller{
 		}
 
 		redirect('u/notifications/'.$device_id);	
+	}
+
+	function set_variables(){
+		$user = new User($this->tank_auth->get_user_id());
+		$variables = $this->input->post(NULL, true);
+		$return_view = $variables['reutrn_view'];
+		$device_id = $variables['device_id'];
+		$device = new Device($device_id);
+
+		if($device->exists()){
+			if($user->has_device($device->id)){
+				unset($variables['return_view']);
+				unset($variables['device_id']);
+
+				//traversing post array
+				foreach ($variables as $name=>$value) {
+					if(!$device->update_variables($name,$value)){
+						log_message('error','u/set_variables | could not update variable: '.$name.', device id: '.$device->id);
+					}
+				}
+			} else {
+				log_message('error',"u/set_variables | user id: $user->id not assigned to device id: $device->id");
+				$this->session->set_flashdata('message', array('type'=>'error','message'=>"You do not have enough rights to perform this action."));
+			}
+		} else {
+			log_message('error',"u/set_variables | device id: $device->id does not exist");
+			$this->session->set_flashdata('message', array('type'=>'error','message'=>"Something went wrong, please try again"));			
+		}
+
+		redirect('u/device/'.$device_id.'/'.$return_view);
 	}
 
 	function _check_message_variables($msg, $device_id){

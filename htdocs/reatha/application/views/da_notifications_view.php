@@ -10,7 +10,7 @@
 		<tbody>
 			<tr>
 				<td class="td-notification-list-row-caption">Name:</td><td><?php echo $notification_rule->name;?></td>
-				<td rowspan="8" class="td-notification-list-action">
+				<td rowspan="9" class="td-notification-list-action">
 					<?php if($notification_rule->activated) { ?>
 						<a href="<?php echo base_url(); ?>da/toggle_notification_status/<?php echo $notification_rule->id."/0"; ?>" class="btn btn-small" id="notification-list-action"><i class="icon-pause"></i> Deactivate</a><br/>
 					<?php } else { ?>
@@ -24,6 +24,7 @@
 			<tr><td>Variable:</td><td><?php echo $notification_rule->variable->name;?></td></tr>			
 			<tr><td>Condition:</td><td><?php echo $notification_rule->condition;?></td></tr>
 			<tr><td>Min. Interval:</td><td><?php echo $notification_rule->interval;?></td></tr>
+			<tr><td>Severity Level:</td><td><?php echo $notification_rule->get_severity_level();?></td></tr>
 			<tr><td>Message:</td><td><?php echo $notification_rule->message;?></td></tr>
 			<tr><td>Email Subject:</td><td><?php echo $notification_rule->subject;?></td></tr>
 			<tr><td>Activated:</td><td><?php echo $notification_rule->activated?"Yes":"No";?></td></tr>			
@@ -69,6 +70,14 @@
 			<input type="text" id="interval" name="interval"/>
 		</div>
 	</div>
+	<div class="control-group">
+		<label class="control-label" for="interval">Severity Level</label>
+		<div class="controls">
+			<label class="radio inline" ><input type="radio" name="severity_level" value="1"/>Info</label>
+			<label class="radio inline" ><input type="radio" name="severity_level" value="2"/>Warning</label>
+			<label class="radio inline" ><input type="radio" name="severity_level" value="3"/>Error</label>
+		</div>
+	</div>	
 	<div class="control-group">
 		<label class="control-label" for="text">Message</label>
 		<div class="controls">
