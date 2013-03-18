@@ -158,6 +158,10 @@ class Da extends CI_Controller{
 			$user = new User($user_id);
 			if($user->has_device($device_id)){
 				if($user->unnassign_device($device_id)){
+					//unsubscribe user to device notification rules
+					foreach ($device->notification_rule as $rule) {
+						$user->delete($rule);
+					}					
 					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device unnassigned"));					
 				} else {
 					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Device could not be unnassigned. Please try again"));	
@@ -190,6 +194,10 @@ class Da extends CI_Controller{
 				$user = new User($user_id);
 				if(!$user->has_device($device_id)){
 					if($user->assign_device($device_id)){
+						//subscribe user to device notification rules
+						foreach ($device->notification_rule as $rule) {
+							$user->save($rule);
+						}
 						$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device assigned"));					
 					} else {
 						$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Device could not be assigned. Please try again"));	
@@ -280,6 +288,98 @@ class Da extends CI_Controller{
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this device doesn't exist"));
 			log_message('error',"da/delete_device | device does not exist, device_id:$device_id");			
 		}		
+	}
+
+	function clone_device($device_id){
+		$device = new Device($device_id);
+
+		//check if device exists
+		if($device->exists()){
+			$user = new User($this->tank_auth->get_user_id());
+			//check if user is the admin of the device's domain
+			if($user->is_admin_of($device->domain->id)){
+				$cloned_device = $device->get_copy();
+
+				//count the amount of devices with this name, so that we can do device_1, device_2 etc
+				$device_count = $device->where('cloned_from_device_id',$device->id)->count();
+				$cloned_device->name 	= $device->name.'_'.($device_count+1);
+
+				// Hash device key using phpass
+				require_once('application/libraries/phpass-0.1/PasswordHash.php');
+				$hasher 	= new PasswordHash(6,FALSE);
+				$cloned_device_key = $hasher->HashPassword($cloned_device->name);
+				$cloned_device->key	= $cloned_device_key;	
+				$cloned_device->cloned_from_device_id = $device->id;			
+
+				if($cloned_device->save()){
+					//now clone relationships
+					//assign users to cloned device
+					foreach($device->users as $user){
+						$user->assign_device($cloned_device->id);
+					}
+
+					//clone variables
+					$cloned_variables = $device->variables->get();
+					foreach ($cloned_variables as $cloned_variable) {
+						$var = $cloned_variable->get_copy();						
+						$var->device_id = $cloned_device->id;
+						if($var->save()){
+							//clone var transformations
+							$cloned_transformations = $cloned_variable->transformations->get();
+							foreach ($cloned_transformations as $t) {
+								$t->id = "";
+								$t->device_id = $cloned_device->id;
+								$t->variable_id = $var->id;
+								$t->save_as_new();	
+							}
+
+							//clone notification rules
+							$cloned_rules = $cloned_variable->notification_rule->get();
+							foreach ($cloned_rules as $cloned_rule) {
+								$cloned_rule->id = "";
+								$cloned_rule->device_id = $cloned_device->id;
+								$cloned_rule->variable_id = $var->id;
+								if($cloned_rule->save_as_new()){
+									//adding cloned notification rule to each user assigned to device
+									foreach($cloned_device->user as $user){						
+										$user->save($cloned_rule);
+
+									}									
+								}
+							}
+
+							//clone device list view
+							$cloned_view = $device->device_list_view->get();
+							$cloned_view->id = "";
+							$cloned_view->device_id = $cloned_device->id;
+							$cloned_view->save_as_new();
+						}
+					}
+
+					//clone views
+					$cloned_views = $device->views->get();
+					foreach ($cloned_views as $view) {
+						$view->id = "";
+						$view->device_id = $cloned_device->id;
+						$view->save_as_new();
+					}					
+
+					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device successfully cloned;"));
+				} else {
+					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, something went wrong, please try again"));
+					log_message('error',"da/delete_device | could not save clonned device from device id:  $device->id");					
+				}
+
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, you don't have enough rights to perform this action"));
+				log_message('error',"da/delete_device | user is not the devices's domain admin; device_id: $device_id");				
+			}
+		} else {
+			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this device doesn't exist"));
+			log_message('error',"da/delete_device | device does not exist, device_id:$device_id");			
+		}
+
+		redirect('da');			
 	}
 
 	function edit_views($device_id){

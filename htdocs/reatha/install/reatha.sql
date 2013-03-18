@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS `devices`;
 CREATE TABLE IF NOT EXISTS `devices` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain_id` int(11) NOT NULL,
+  `cloned_from_device_id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `description` varchar(250) NOT NULL,
   `location` varchar(150) NOT NULL,
@@ -22,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `devices` (
   `life_check` tinyint(1) NOT NULL DEFAULT '1',
   `updated` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=42 ;
 
 DROP TABLE IF EXISTS `devices_users`;
 CREATE TABLE IF NOT EXISTS `devices_users` (
@@ -36,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `device_list_views` (
   `device_id` int(11) NOT NULL,
   `body` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=98 ;
 
 DROP TABLE IF EXISTS `domains`;
 CREATE TABLE IF NOT EXISTS `domains` (
@@ -44,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `domains` (
   `name` varchar(150) NOT NULL,
   `description` varchar(250) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
 
 DROP TABLE IF EXISTS `domain_admin_domains`;
 CREATE TABLE IF NOT EXISTS `domain_admin_domains` (
@@ -78,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   `subject` varchar(160) NOT NULL,
   `created` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 DROP TABLE IF EXISTS `notification_rules`;
 CREATE TABLE IF NOT EXISTS `notification_rules` (
@@ -94,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `notification_rules` (
   `interval` int(11) NOT NULL,
   `activated` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
 
 DROP TABLE IF EXISTS `notification_rules_users`;
 CREATE TABLE IF NOT EXISTS `notification_rules_users` (
@@ -111,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `transformations` (
   `export_var_id` int(11) NOT NULL,
   `body` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=26 ;
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
@@ -133,7 +134,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=20 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=23 ;
 
 DROP TABLE IF EXISTS `user_autologin`;
 CREATE TABLE IF NOT EXISTS `user_autologin` (
@@ -152,7 +153,7 @@ CREATE TABLE IF NOT EXISTS `user_profiles` (
   `first_name` varchar(100) NOT NULL,
   `last_name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
 
 DROP TABLE IF EXISTS `variables`;
 CREATE TABLE IF NOT EXISTS `variables` (
@@ -162,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `variables` (
   `value` varchar(50) NOT NULL,
   `updated` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=28 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=128 ;
 
 DROP TABLE IF EXISTS `views`;
 CREATE TABLE IF NOT EXISTS `views` (
@@ -171,4 +172,4 @@ CREATE TABLE IF NOT EXISTS `views` (
   `name` varchar(50) NOT NULL,
   `body` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=67 ;

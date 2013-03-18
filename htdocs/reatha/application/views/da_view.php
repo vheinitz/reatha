@@ -26,6 +26,7 @@
 		<a href="<?php echo base_url(); ?>da/edit_views/<?php echo $device->id; ?>">Views</a><br/>
 		<a href="<?php echo base_url(); ?>da/notifications/<?php echo $device->id; ?>">Notifications</a><br/>
 		<a href="<?php echo base_url(); ?>da/edit_device/<?php echo $device->id; ?>">Edit Device</a><br/>
+		<a href="<?php echo base_url(); ?>da/clone_device/<?php echo $device->id; ?>">Clone Device</a><br/>
 		<a href="<?php echo base_url(); ?>da/delete_device/<?php echo $device->id; ?>" onclick="return confirm('Are you sure?')">Delete Device</a>
 		<!-- <button class="btn btn-mini" onclick="show_device_key(<?php echo $device->id; ?>);">Show Key</button> -->
 	</td>

@@ -99,6 +99,7 @@ class Device extends Datamapper{
     function delete_device(){
         $this->variables->delete_all();
         $this->views->delete_all();
+        $this->notification_rules->delete_all();
     	return $this->delete();
     }
 

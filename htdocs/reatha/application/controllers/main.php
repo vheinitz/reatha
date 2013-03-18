@@ -61,10 +61,12 @@ class Main extends CI_Controller{
 					$var = new variable();
 					$var->where('name',$name)->where('device_id',$device->id)->get();
 					if($var->notification_rule->exists()){
+						log_message('info','main/post_variables | var has notification_rule');
 						foreach($var->notification_rule as $rule){
 							foreach($rule->user as $user){
 								if($rule->must_send_notification($var, $user)){
 									//must send new notification
+									log_message('info','main/post_variables | must send notification');
 									$n = new Notification();
 									$n->save_and_email($rule, $var, $user);
 								} else {
