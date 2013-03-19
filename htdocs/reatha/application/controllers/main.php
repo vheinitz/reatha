@@ -102,6 +102,43 @@ class Main extends CI_Controller{
 			echo validation_errors();
 		}
 	}
+
+	function get_device_key(){
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('username','Username','required|trim|xss_clean|max_length[25]');
+		$this->form_validation->set_rules('password','Username','required|trim');
+		$this->form_validation->set_rules('device_name','Device Name','required|trim|xss_clean|');
+		if($this->form_validation->run()){		
+			$username = $this->form_validation->set_value('username');
+			$password = $this->form_validation->set_value('password');
+
+			//temporarily allowing plain-text passwords; if pwd length == 60 then it is a hashed pwd 
+			if(strlen($password) == 60){
+				$user = new User();
+				$user->where('username',$username)->where('password',$password)->get(1);
+			} else {
+				$this->tank_auth->login($username,$password,false,true,false);
+				$user = new User($this->tank_auth->get_user_id());				
+			}
+
+			if($user->exists()){
+				$device_name = $this->form_validation->set_value('device_name');
+				$device = $user->devices->where('name',$device_name)->get();
+				if($device->exists()){
+					$return = array('key'=>$device->key);
+				} else {
+					log_message('error',"main/get_device_key | user is not assigned to such device, user id $user->id, device name: $device_name");
+					$return = array('error'=>'User does not have such device assigned.');
+				}
+			} else {
+				log_message('error',"main/get_device_key | Incorrect username/password combination");
+				$return = array('error'=>'Incorrect username/password combination');
+			}			
+		} else {
+			$return = array('error'=>validation_errors());
+		}
+		echo json_encode($return);
+	}
 }
 
 
