@@ -15,7 +15,12 @@
         <?php if(!isset($hide_navbar)) { ?> 
         <div class="navbar">
             <div class="navbar-inner">
-                <a class="brand" href="#">Reatha</a>
+                <?php if(isset($user) && ($user->role == 3)){ //if user role = 3 (simple user) then show domain name in header
+                    $domain = new Domain($user->belongs_to_domain_id); ?>
+                <a class="brand" href="#"><?php echo $domain->name; ?></a>
+                <?php } else { ?>
+                    <a class="brand" href="#">Reatha</a>                
+                <?php } ?>
                 <?php if(isset($user)){ 
                     if($user->role == '1'){ ?>
                         <ul class="nav">
