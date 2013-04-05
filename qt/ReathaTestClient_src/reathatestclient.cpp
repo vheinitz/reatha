@@ -12,7 +12,7 @@
 #include <QNetworkReply>
 #include "help.h"
 
-const QString ReathaTestClientVersion="0.0.4";
+const QString ReathaTestClientVersion="0.0.5";
 
 ReathaTestClient::ReathaTestClient(QWidget *parent) :
     QMainWindow(parent),
@@ -138,22 +138,16 @@ void ReathaTestClient::startRequest()
 void ReathaTestClient::httpFinished()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
-    if (!reply) return;
-    static bool failedOnce=false;
-    return;
-    if ( !failedOnce && reply->error()) {
-        failedOnce=true;
-        QMessageBox::information(this, tr("RM Error"),
-                              tr("RM Access failed: %1.")
-                              .arg(reply->errorString()));
-    }
+    if (!reply) 
+		return;
+    
     reply->deleteLater();
 }
 
  void ReathaTestClient::httpReadyRead()
  {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
-    reply->readAll();
+    ui->eLog->appendPlainText( "GOT DATA: " + reply->readAll() );
  }
 
 void ReathaTestClient::on_bSend_clicked()
