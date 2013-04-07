@@ -48,7 +48,7 @@
 	setInterval(function(){
 		window.location.reload();
 		//get_devices_power_status('<?php echo base_url(); ?>');
-	}, 10000)
+	}, 5000)
 </script>
 
 
