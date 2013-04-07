@@ -173,3 +173,21 @@ The notifications should be defned in a separate device-notification config view
 This UI should be accessible by user from menu or an icon-link in context of device-view.
 In the same manner as admin adds and deletes devices or users, the user should be able to add and delete notification items.
 	
+Views
+=====
+Views are customizable UIs visible by monitoring-user. One device may define many views.
+Views are implemented as HTML-code containing placeholders for variables. These variables are either reserved or defined by user.
+The placeholders of the form {<Variable name>} will be replaced by corresponding variable name at view-time.
+Reserved variables are:
+ * {:files} - path to domain's uploaded files (e.g. images)
+   Example: Switch between domain-images device0.png device1.png 
+    <img src="{:files}/device{_deviceOn}.png"/>
+ * {_deviceName}
+ * {_deviceInfo}
+ * {_deviceLocation}
+ * {_deviceOn}
+ * {_alarmLevel}
+ * {view:_deviceList} - URL of user's device list
+ * {view:_notifications} - URL of user's notifications
+ * {view:_deviceView} - URL of device view TODO:???
+         
