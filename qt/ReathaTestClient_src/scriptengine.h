@@ -19,6 +19,8 @@ private:
 public:
 
     ScriptData(QString name, int timeStep, QStringList values);
+	~ScriptData();
+
     void start();
     void stop();
     void setHandler( QObject* h );

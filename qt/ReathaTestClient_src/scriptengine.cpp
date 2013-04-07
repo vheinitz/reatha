@@ -27,3 +27,8 @@ void ScriptData::onTimeout(  )
    if ( _currentIdx >= _values.size() )
        _currentIdx = 0;
 }
+
+ScriptData::~ScriptData()
+{
+	stop();
+}

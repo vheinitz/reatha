@@ -38,6 +38,7 @@ ReathaTestClient::ReathaTestClient(QWidget *parent) :
     ui->tvCurrentValues->setModel(&_currentValues);
 	this->setWindowTitle(QString("Reatha Device Simulator. Version: %1").arg(ReathaTestClientVersion) );
     _currentValues.setColumnCount(2);
+    _currentValues.setHorizontalHeaderLabels(QStringList()<<tr("Var. name")<<tr("Value"));
 }
 
 void ReathaTestClient::onVarValueChanges(QString var, QVariant val)
@@ -182,7 +183,8 @@ void ReathaTestClient::on_bRunStopScript_clicked(bool checked)
 			ScriptData * sd = new ScriptData( var, timeStep, toks );
 			connect(sd,SIGNAL(valueChanged(QString,QVariant)), this, SLOT(onVarValueChanges(QString,QVariant)));
 			sd->start();
-			_script[toks.at(0)] = PScriptData(sd);
+
+			_script[var] = PScriptData(sd);
         }
     }
     else
