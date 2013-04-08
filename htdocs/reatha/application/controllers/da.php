@@ -286,7 +286,7 @@ class Da extends CI_Controller{
 			}
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, this device doesn't exist"));
-			log_message('error',"da/delete_device | device does not exist, device_id:$device_id");			
+			log_message('error',"da/edit_device | device does not exist, device_id:$device_id");			
 		}		
 	}
 
@@ -631,6 +631,12 @@ class Da extends CI_Controller{
 
 	function upload_image(){
 		if(isset($_FILES['image'])){
+			$redirect = $this->input->post('redirect');
+			if(empty($redirect)){
+				$redirect = "images";
+			}
+
+			// log_message('info','da/upload_image | redirect: '.$redirect);
 			$image = new Image();
 			$domain = new Domain($this->session->userdata('managing_domain_id'));
 			$result = $image->process_image($_FILES['image'],$domain->name);
@@ -652,7 +658,7 @@ class Da extends CI_Controller{
 			$this->session->set_flashdata('message', array('type'=>'error','message'=>"Sorry, we had nothing to upload"));
 		}
 
-		redirect('da/images');		
+		redirect('da/'.$redirect);		
 	}
 
 	function generate_device_key($device_id){
@@ -1078,7 +1084,7 @@ class Da extends CI_Controller{
 		$view->get_by_device_id($device_id);
 		$data['user'] = $user;
 		$data['domains'] = $user->domains->get();
-		$data['device_id'] = $device_id;
+		$data['device'] = new Device($device_id);
 		$data['view'] = $view;
 		$this->load->view('da_customize_device_list_view',$data);
 	}
@@ -1118,6 +1124,25 @@ class Da extends CI_Controller{
 			$this->session->set_flashdata('message',array('type'=>'error','message'=>validation_errors()));
 		}
 		redirect('da/customize_device_list/'.$device_id);
+	}
+
+	function design(){
+		$domain_id = $this->session->userdata('managing_domain_id');
+		$user = new User($this->tank_auth->get_user_id());
+		$data['domain'] = new Domain($domain_id);
+		$data['domains'] = $user->domains->get();		
+		$this->load->view('da_domain_design_view',$data);
+
+	}
+
+	function edit_design(){
+		$this->load->library('form_validation');
+		$this->form_validation->set_value('header_title','Header Title','trim|xss_clean');
+		$this->form_validation->set_value('header_color','Header Color','trim|xss_clean');
+		$this->form_validation->set_value('domain_id','Domain id','trim|xss_clean');
+		if($this->form_validation->run()){
+			//todo
+		}
 	}
 
 	function change_managing_domain($domain_id){

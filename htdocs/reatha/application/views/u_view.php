@@ -18,21 +18,8 @@
 
 			?>
 		<tr>
-			<td>
-				<?php
-					//if device has device_list_view - process it, if not - show default view
-					$list_view = $device->device_list_view->get();
-					if($list_view->exists()){
-						echo $list_view->process_placeholders();
-					} else {
-				?>
-				<div id="user-device-wrapper" onclick="window.location.href='<?php echo base_url()."u/device/$device->id"; ?>'">
-					<?php echo "<b>".$device->name."</b>"; ?><hr/>
-					<?php echo "<b>Location: </b>".$device->location; ?><br/>
-					<b>Power: </b><span id="power_<?php echo $device->id; ?>"></span><br/>
-				</div>
-				<a class="btn" id="user-device-notification-setup" href="<?php echo base_url(); ?>u/notifications/<?php echo $device->id; ?>" ><i class="icon-envelope"></i> Notifications</a>		
-				<?php } ?>
+			<td id="<?php echo $device->id; ?>">
+				<!-- this section will be filled by  get_devices_list_view() -->
 			</td>
 		</tr>			
 		<?php } ?>
@@ -43,11 +30,10 @@
 
 
 <script type="text/javascript">
-	get_devices_power_status('<?php echo base_url(); ?>');
+	get_devices_list_view('<?php echo base_url(); ?>');
 
-	setInterval(function(){
-		window.location.reload();
-		//get_devices_power_status('<?php echo base_url(); ?>');
+	setInterval(function(){		
+		get_devices_list_view('<?php echo base_url(); ?>');
 	}, 5000)
 </script>
 

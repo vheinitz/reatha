@@ -59,7 +59,7 @@
 					<?php
 					$images = $device->domain->images->get();
 					if(!empty($images)){ ?>
-						<div>
+						<div>						
 							<small>
 								Available images: 
 								<?php foreach ($images as $image){
@@ -79,6 +79,14 @@
 				</div>
 			</div>				
 		</form>
+		<small><b>Upload New Image:</b></small>
+		<form action="<?php echo base_url(); ?>da/upload_image" method="post" enctype="multipart/form-data">
+			<fieldset>
+				<input type="hidden" name="redirect" value="edit_views/<?php echo $device->id; ?>" />
+				<input type="file" name="image" />&nbsp;										
+				<input type="submit" class="btn" value="Add" />
+			</fieldset>
+		</form>			
 	</div>
 	<div class="span5">
 		<h4>View Preview</h4>

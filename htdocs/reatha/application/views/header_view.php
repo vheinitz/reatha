@@ -47,6 +47,7 @@
                             <li><a href="<?php echo base_url(); ?>da">Devices</a></li>
                             <li><a href="<?php echo base_url(); ?>da/users">Users</a></li>
                             <li><a href="<?php echo base_url(); ?>da/images">Images</a></li>
+                            <li><a href="<?php echo base_url(); ?>da/design">Design</a></li>
                         </ul>                         
                     <?php } ?>
                         <ul class="nav pull-right">

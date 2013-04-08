@@ -89,6 +89,21 @@
 		<div class="controls">
 			<input type="text" id="subject" name="subject" value="You have a new notification" />
 		</div>
+	</div>
+	<div class="control-group">
+		<label></label>
+		<div class="controls">
+			<small>
+				Available variables:
+				<?php foreach ($device->variable as $var) {
+					if($var->name != 'view')
+						echo '{'.$var->name.'} ';
+				} ?>			
+			</small><br/>			
+			<small>
+				Available reserved variables: {_deviceName} {_deviceInfo} {_deviceLocation} {_deviceOn} {_alarmLevel}			
+			</small>			
+		</div>		
 	</div>	
 	<div class="control-group">
 		<div class="controls">

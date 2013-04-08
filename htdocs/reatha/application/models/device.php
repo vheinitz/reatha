@@ -140,6 +140,29 @@ class Device extends Datamapper{
         return $view->value;
     }
 
+    function get_power_status(){
+        $time = time();
+        ($time - $this->updated) > 10 ? $power = 'OFF' : $power = 'ON';
+        return $power;        
+    }
+
+    function get_list_view(){
+        //if device has device_list_view - process it, if not - show default view
+        $list_view = $this->device_list_view->get();
+        if($list_view->exists()){
+            return $list_view->process_placeholders();
+        } else {
+            $return = "
+            <div id='user-device-wrapper' onclick='window.location.href=\"".base_url()."u/device/$this->id\"'>
+                <b>$this->name</b><hr/>
+                <b>Location: </b>$this->location<br/>
+                <b>Power: </b><span id='power_$this->id'>".$this->get_power_status()."</span><br/>
+            </div>
+            <a class='btn' id='user-device-notification-setup' href='".base_url()."u/notifications/$this->id' ><i class='icon-envelope'></i> Notifications</a>";
+            return $return;      
+        }        
+    }
+
     function _process_transformation_vars($text){
         preg_match_all("/\{(.+)\}/U", $text, $var_names);
         $var_names = $var_names[1];
