@@ -10,16 +10,31 @@
         <script type="text/javascript" src="<?php echo base_url(); ?>js/jquery.1.9.0.min.js"></script>
         <script type="text/javascript" src="<?php echo base_url(); ?>js/bootstrap.min.js"></script>
         <script type="text/javascript" src="<?php echo base_url(); ?>js/functions.js"></script>
+        <?php if(isset($user) && ($user->role == 3)){
+            $domain = new Domain($user->belongs_to_domain_id); ?>
+            <style type="text/CSS">
+                <!-- 
+                .navbar-inner{background: <?php echo $domain->header_color; ?>} 
+                .navbar-inner a.brand, .navbar .nav>li>a {color: <?php echo $domain->header_text_color; ?>; text-shadow:none;} 
+                -->
+            </style>        
+        <?php } ?>
     </head>
     <body>
-        <?php if(!isset($hide_navbar)) { ?> 
+        <?php if(!isset($hide_navbar))
+            if(isset($user) && ($user->role == 3)) {
+                $domain = new Domain($user->belongs_to_domain_id);
+                $header_title = $domain->header_title?$domain->header_title:$domain->name;
+                $header_color = $domain->header_color?$domain->header_color:'';
+                $header_text_color = $domain->header_text_color?$domain->header_text_color:'';
+                ?>
         <div class="navbar">
-            <div class="navbar-inner">
-                <?php if(isset($user) && ($user->role == 3)){ //if user role = 3 (simple user) then show domain name in header
-                    $domain = new Domain($user->belongs_to_domain_id); ?>
-                <a class="brand" href="#"><?php echo $domain->name; ?></a>
+            <div class="navbar-inner" <?php if($header_color) echo "style='background:$header_color; color:$header_text_color; navbar-inner a{color: #header_text_color}'"; ?>>
+                <a class="brand" href="#"><?php echo $header_title; ?></a>
                 <?php } else { ?>
-                    <a class="brand" href="#">Reatha</a>                
+        <div class="navbar">
+                    <div class="navbar-inner">                
+                        <a class="brand" href="#">Reatha</a>                
                 <?php } ?>
                 <?php if(isset($user)){ 
                     if($user->role == '1'){ ?>
@@ -64,8 +79,7 @@
                         </ul>                    
                 <? } ?>
             </div>
-        </div> 
-        <?php } ?>        
+        </div>        
     <div class="container">       
     <?php 
   	$message = $this->session->flashdata('message');   

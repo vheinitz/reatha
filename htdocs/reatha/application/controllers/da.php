@@ -1136,13 +1136,39 @@ class Da extends CI_Controller{
 	}
 
 	function edit_design(){
+		// echo $this->input->post('domain_id');
 		$this->load->library('form_validation');
-		$this->form_validation->set_value('header_title','Header Title','trim|xss_clean');
-		$this->form_validation->set_value('header_color','Header Color','trim|xss_clean');
-		$this->form_validation->set_value('domain_id','Domain id','trim|xss_clean');
-		if($this->form_validation->run()){
-			//todo
+		$this->form_validation->set_rules('header_title','Header Title','trim|xss_clean');
+		$this->form_validation->set_rules('header_color','Header Color','trim|xss_clean');
+		$this->form_validation->set_rules('header_text_color','Header Text Color','trim|xss_clean');
+		$this->form_validation->set_rules('footer_text','Footer Text','trim|xss_clean');
+		$this->form_validation->set_rules('footer_color','Footer Color','trim|xss_clean');
+		$this->form_validation->set_rules('footer_text_color','Footer Text Color','trim|xss_clean');		
+		$this->form_validation->set_rules('domain_id','Domain id','required|trim|xss_clean');
+		if($this->form_validation->run() == true){
+			$domain_id = $this->form_validation->set_value('domain_id');
+			$domain = new Domain($domain_id);
+			if($domain->exists()){
+				$domain->header_title = $this->form_validation->set_value('header_title');
+				$domain->header_color = $this->form_validation->set_value('header_color');
+				$domain->header_text_color = $this->form_validation->set_value('header_text_color');
+				$domain->footer_text = $this->form_validation->set_value('footer_text');
+				$domain->footer_color = $this->form_validation->set_value('footer_color');
+				$domain->footer_text_color = $this->form_validation->set_value('footer_text_color');				
+				if($domain->save()){
+					$this->session->set_flashdata('message',array('type'=>'success','message'=>'Design parameters successfully saved.'));
+				} else {
+					log_message('error','da/edit_design | could not update domain');
+					$this->session->set_flashdata('message',array('type'=>'error','message'=>'Something went wrong, please try again'));						
+				}
+			} else {
+				log_message('error','da/edit_design | domain doesnt exist');
+				$this->session->set_flashdata('message',array('type'=>'error','message'=>'This domain doesnt exist, domain id: '.$domain_id));				
+			}
+		} else {			
+			$this->session->set_flashdata('message',array('type'=>'error','message'=>validation_errors()));			
 		}
+		redirect('da/design');
 	}
 
 	function change_managing_domain($domain_id){
