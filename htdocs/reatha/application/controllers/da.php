@@ -1129,6 +1129,7 @@ class Da extends CI_Controller{
 	function design(){
 		$domain_id = $this->session->userdata('managing_domain_id');
 		$user = new User($this->tank_auth->get_user_id());
+		$data['user'] = $user;
 		$data['domain'] = new Domain($domain_id);
 		$data['domains'] = $user->domains->get();		
 		$this->load->view('da_domain_design_view',$data);

@@ -5,17 +5,19 @@ error_reporting(E_ERROR | E_PARSE | E_NOTICE);
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
     <head>
-        <meta charset="utf-8"/>            
+        <meta charset="utf-8"/> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />           
         <link href="../css/bootstrap.min.css" rel="stylesheet" media="screen" />          
+        <link href="../css/style.css" rel="stylesheet" media="screen" />
     </head>
-    <body>
-        <div class="navbar">
+    <body id="main-body">
+        <div class="navbar" id="install-navbar">
             <div class="navbar-inner">
                 <a class="brand" href="#">Reatha</a>
             </div>
         </div>         
-    <div class="container">
-    	<div style="width:400px; text-align: center; margin-left: auto; margin-right: auto"> 
+    <div class="container" id="main-container">
+    	<div class="install-wrapper"> 
     		<h2>Reatha Installer</h2>   		
 
 <?php
@@ -189,25 +191,25 @@ if(!isset($config['db_name'])){
 	<hr/>	
 	<form class="form-horizontal" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
 		<div class="control-group">
-			<label class="control-label" for="input_dbhost">Database Host: </label>
+			<label class="install-label control-label" for="input_dbhost">Database Host: </label>
 			<div class="controls">
 				<input type="text" name="db_host" id="input_dbhost" value="<?php echo $config['db_host']; ?>">
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label" for="input_dbuser">Database Username:</label>
+			<label class="install-label control-label" for="input_dbuser">Database Username:</label>
 			<div class="controls">
 				<input type="text" name="db_user" id="input_dbuser" value="<?php echo $config['db_user']; ?>" />
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label" for="input_dbpass">Database Password:</label>
+			<label class="install-label control-label" for="input_dbpass">Database Password:</label>
 			<div class="controls">
 				<input type="password" name="db_pass" id="input_dbpass" value="<?php echo $config['db_pass']; ?>" />
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label" for="input_dbname">Database Name:</label>
+			<label class="install-label control-label" for="input_dbname">Database Name:</label>
 			<div class="controls">
 				<input type="text" name="db_name" id="input_dbname" value="<?php echo $config['db_name']; ?>" />
 			</div>
@@ -217,19 +219,19 @@ if(!isset($config['db_name'])){
 		<h4>Admin Data</h4>
 		<hr/>
 		<div class="control-group">
-			<label class="control-label" for="input_admin_username">Username:</label>
+			<label class="install-label control-label" for="input_admin_username">Username:</label>
 			<div class="controls">
 				<input type="text" name="admin_username" id="input_admin_username" value="">
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label" for="input_admin_password">Password:</label>
+			<label class="install-label control-label" for="input_admin_password">Password:</label>
 			<div class="controls">
 				<input type="password" name="admin_password" id="input_admin_password" value="">
 			</div>
 		</div>	
 		<div class="control-group">
-			<label class="control-label" for="input_admin_email">Email:</label>
+			<label class="install-label control-label" for="input_admin_email">Email:</label>
 			<div class="controls">
 				<input type="text" name="admin_email" id="input_admin_email" value="">
 			</div>

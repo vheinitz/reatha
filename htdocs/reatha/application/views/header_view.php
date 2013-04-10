@@ -2,8 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
     <head>
         <meta charset="utf-8"/> 
-        <meta name="viewport" content="width=device-width" />
-        <meta name="viewport" content="width=240, height=320, user-scalable=yes, initial-scale=0.7, maximum-scale=5.0, minimum-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- <meta name="viewport" content="width=240, height=320, user-scalable=yes, initial-scale=0.7, maximum-scale=5.0, minimum-scale=1.0" /> -->
         <meta name="apple-mobile-web-app-capable" content="yes" />                    
         <link href="<?php echo base_url(); ?>css/bootstrap.min.css" rel="stylesheet" media="screen" />       
         <link href="<?php echo base_url(); ?>css/style.css" rel="stylesheet" />
@@ -20,21 +20,21 @@
             </style>        
         <?php } ?>
     </head>
-    <body>
-        <?php if(!isset($hide_navbar))
+    <body id="main-body">
+        <?php if(!isset($hide_navbar)){
             if(isset($user) && ($user->role == 3)) {
                 $domain = new Domain($user->belongs_to_domain_id);
                 $header_title = $domain->header_title?$domain->header_title:$domain->name;
                 $header_color = $domain->header_color?$domain->header_color:'';
                 $header_text_color = $domain->header_text_color?$domain->header_text_color:'';
                 ?>
-        <div class="navbar">
+        <div class="navbar" id="main-navbar">
             <div class="navbar-inner" <?php if($header_color) echo "style='background:$header_color; color:$header_text_color; navbar-inner a{color: #header_text_color}'"; ?>>
                 <a class="brand" href="#"><?php echo $header_title; ?></a>
                 <?php } else { ?>
-        <div class="navbar">
+        <div class="navbar" id="main-navbar">
                     <div class="navbar-inner">                
-                        <a class="brand" href="#">Reatha</a>                
+                        <a class="brand" href="#" id="main-brand">Reatha</a>                
                 <?php } ?>
                 <?php if(isset($user)){ 
                     if($user->role == '1'){ ?>
@@ -57,13 +57,27 @@
                                 </ul>
                             </li>
                             </ul>                        
-                        <ul class="nav">
+                        <ul class="nav" id="da-header-menu">
                             <li class="divider-vertical"></li>
                             <li><a href="<?php echo base_url(); ?>da">Devices</a></li>
                             <li><a href="<?php echo base_url(); ?>da/users">Users</a></li>
                             <li><a href="<?php echo base_url(); ?>da/images">Images</a></li>
                             <li><a href="<?php echo base_url(); ?>da/design">Design</a></li>
-                        </ul>                         
+                        </ul>
+                        <ul class="nav" id="da-header-menu-dropdown">
+                           <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <b>Section</b>
+                                <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="<?php echo base_url(); ?>da">Devices</a></li>
+                                    <li><a href="<?php echo base_url(); ?>da/users">Users</a></li>
+                                    <li><a href="<?php echo base_url(); ?>da/images">Images</a></li>
+                                    <li><a href="<?php echo base_url(); ?>da/design">Design</a></li>
+                                </ul>
+                            </li>
+                        </ul>                                                  
                     <?php } ?>
                         <ul class="nav pull-right">
                             <li class="dropdown">
@@ -79,8 +93,9 @@
                         </ul>                    
                 <? } ?>
             </div>
-        </div>        
-    <div class="container">       
+        </div>
+        <?php } ?>      
+    <div class="container" id="main-container">       
     <?php 
   	$message = $this->session->flashdata('message');   
 	if(!empty($message)){

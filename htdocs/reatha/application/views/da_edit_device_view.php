@@ -41,7 +41,7 @@
 	<tr>
 		<td>Key:</td>
 		<!-- <td><a href="#" onclick="show_device_key(<?php echo $device->id; ?>,'<?php echo base_url(); ?>');" >Show</a></td> -->
-		<td><?php echo $device->key; ?></td>
+		<td><textarea class="da-device-key" style="border:0px; wi"><?php echo $device->key; ?></textarea></td>
 		<td><a href="<?php echo base_url(); ?>da/generate_device_key/<?php echo $device->id; ?>">Re-generate</a></td>
 	</tr>	
 </table>

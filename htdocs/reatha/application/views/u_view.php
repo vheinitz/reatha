@@ -20,6 +20,7 @@
 		<tr>
 			<td id="<?php echo $device->id; ?>">
 				<!-- this section will be filled by  get_devices_list_view() -->
+				<?php echo $device->get_list_view(); ?>
 			</td>
 		</tr>			
 		<?php } ?>
@@ -34,7 +35,7 @@
 
 	setInterval(function(){		
 		get_devices_list_view('<?php echo base_url(); ?>');
-	}, 5000)
+	}, 5000);
 </script>
 
 
