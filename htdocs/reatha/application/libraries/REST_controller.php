@@ -991,14 +991,17 @@ abstract class REST_Controller extends CI_Controller
 			return false;
 		}
 		log_message('info',"rest_controller/tank_auth | username: $username password: $password");
+		
 		//loading tank_auth lib
 		$this->load->library('tank_auth');
-		if ($this->tank_auth->login(
-				$username,
-				$password,
-				false,
-				true,
-				false)){
+		require_once('phpass-0.1/PasswordHash.php');
+		$user = new User(); $user->get_by_username($username);
+		
+		// Does password match hash in database?
+		$hasher = new PasswordHash(
+				$this->config->item('phpass_hash_strength', 'tank_auth'),
+				$this->config->item('phpass_hash_portable', 'tank_auth'));
+		if ($hasher->CheckPassword($password, $user->password)) {
 			log_message('info','rest_controller/tank_auth | auth success');
 			return TRUE;
 		} else {
