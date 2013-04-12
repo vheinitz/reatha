@@ -25,10 +25,22 @@ class Api extends REST_controller{
         $domains->get();
         $return = array();
         foreach($domains as $domain){
+            //get domain admins
+            $domain_admins = array();
+            foreach ($domain->domain_admins as $domain_admin) {
+                $domain_admins[] = $domain_admin->id;
+            }
             $return[] = array(
-                'id'            => $domain->id,
-                'name'          => $domain->name,
-                'description'   => $domain->description
+                'id'                => $domain->id,
+                'name'              => $domain->name,
+                'description'       => $domain->description,
+                'header_title'      => $domain->header_title,
+                'header_color'      => $domain->header_color,
+                'header_text_color' => $domain->header_text_color,
+                'footer_text'       => $domain->footer_text,
+                'footer_color'      => $domain->footer_color,
+                'footer_text_color' => $domain->footer_text_color,
+                'domain_admins'     => $domain_admins
             );
         }
         $this->response($return, 200);            
@@ -66,6 +78,15 @@ class Api extends REST_controller{
                 $return = array();                
                 //traversing the device array
                 foreach ($domain->devices as $device) {
+                    
+                    //getting users assigned to this device
+                    $assigned_users = array();
+                    foreach($device->users as $user){
+                        $assigned_users[] = $user->id;
+                    }
+
+                    //device list view
+                    $list_view = $device->device_list_view->get();
                     $return[] = array(
                         'id'                    => $device->id,
                         'domain_id'             => $device->domain_id,
@@ -73,7 +94,9 @@ class Api extends REST_controller{
                         'name'                  => $device->name,
                         'description'           => $device->description,
                         'location'              => $device->location,
-                        'key'                   => $device->key
+                        'key'                   => $device->key,
+                        'list_view'             => $list_view->body,
+                        'assigned_users'        => $assigned_users
                     );
                 }
                 $this->response($return, 200);
@@ -95,7 +118,7 @@ class Api extends REST_controller{
                         'id'                    => $view->id,
                         'device_id'             => $view->device_id,
                         'name'                  => $view->name,
-                        'body'                  => $view->body
+                        'body'                  => urlencode($view->body)
                     );
                 }
                 $this->response($return, 200);
@@ -157,6 +180,11 @@ class Api extends REST_controller{
                 $return = array();                
                 //looping through the notification rules list
                 foreach ($device->notification_rules as $rule) {
+                    //get users assigned to this notification rule
+                    $assigned_users = array();
+                    foreach ($rule->users as $user) {
+                        $assigned_users[] = $user->id;
+                    }
                     $return[] = array(
                         'id'                    => $rule->id,
                         'device_id'             => $rule->device_id,
@@ -168,7 +196,8 @@ class Api extends REST_controller{
                         'message'               => $rule->message,
                         'subject'               => $rule->subject,
                         'interval'              => $rule->interval,
-                        'activated'             => $rule->activated
+                        'activated'             => $rule->activated,
+                        'assigned_users'        => $assigned_users
                     );
                 }
                 $this->response($return, 200);
@@ -176,6 +205,119 @@ class Api extends REST_controller{
         } else {
             log_message('info','api/list_notification_rules_get | no id provided');
             $this->response(NULL, 400); 
-        }         
-    }                    
+        }       
+    }
+
+    function list_images_get(){
+        if($this->get('domain_id')){  
+            $domain = new Domain($this->get('domain_id'));
+            if($domain->exists()){
+                $return = array();                
+                //traversing the device array
+                foreach ($domain->images as $image) {
+                    $image_as_base64 = base64_encode(file_get_contents('./assets/'.$domain->name.'/'.$image->file));
+                    $return[] = array(
+                        'id'                    => $image->id,
+                        'domain_id'             => $image->domain_id,
+                        'file'                  => $image->file,
+                        'file_as_base64'        => $image_as_base64,
+                        'created'               => $image->created
+                    );
+                }
+                $this->response($return, 200);
+            } 
+        } else {
+            log_message('info','api/list_devices_get | no id provided');
+            $this->response(NULL, 400); 
+        }  
+    } 
+
+    // PUT FUNCTIONS                       
+
+    function create_domains_put(){
+        $json = $this->put('domains');
+        if(!empty($json)){
+            //truncating the domains and domain_admins table, so that we start with a clean one
+            $this->db->truncate('domains');
+            $this->db->truncate('domain_admin_domains');
+            $domains = json_decode($json);
+            $success = false;
+            foreach($domains as $domain){
+                //inserting domain data
+                $result = $this->db->insert('domains',array(
+                    'id'                => $domain->id,
+                    'name'              => $domain->name,
+                    'description'       => $domain->description,
+                    'header_title'      => $domain->header_title,
+                    'header_color'      => $domain->header_color,
+                    'header_text_color' => $domain->header_text_color,
+                    'footer_text'       => $domain->footer_text,
+                    'footer_color'      => $domain->footer_color,
+                    'footer_text_color' => $domain->footer_text_color
+                ));
+                //if we had an error - exit the loop
+                if(!$result){                   
+                    break;
+                } else {
+                    $success = true;                    
+                }
+                //inserting domain admins
+                if(!empty($domain->domain_admins)){
+                    foreach ($domain->domain_admins as $domain_admin) {
+                        $result_da = $this->db->insert('domain_admin_domains',array(
+                            'da_id'     => $domain_admin,
+                            'domain_id' => $domain->id
+                        ));
+                        if($result_da){
+                            break;
+                        } else {
+                            $success = true;                            
+                        }
+                    }
+                }
+            }
+            if($success){
+                $this->response(array('type'=>'success'),200);
+            } else {
+                log_message('error','api/create_domains_put | success is false');
+                $this->response(array('type'=>'error', 'message'=>'Something went wrong, please try again'),200);                
+            }
+        } else {
+            log_message('error','api/create_domains_put | no json provided');
+            $this->response(NULL, 400);             
+        }
+    }
+
+    function create_views_put(){
+        $json = $this->put('views');
+        if(!empty($json)){
+            //truncating the views table
+            $this->db->truncate('views');
+            $views = json_decode($json);
+            $success = false;
+            foreach($views as $view){
+                //inserting view data
+                $result = $this->db->insert('views',array(
+                    'id'                => $view->id,
+                    'device_id'         => $view->device_id,
+                    'name'              => $view->name,
+                    'body'              => urldecode($view->body)
+                ));
+                //if we had an error - exit the loop
+                if(!$result){                   
+                    break;
+                } else {
+                    $success = true;                    
+                }
+            }
+            if($success){
+                $this->response(array('type'=>'success'),200);
+            } else {
+                $this->response(array('type'=>'error', 'message'=>'Something went wrong, please try again'),200);                
+            }
+        } else {
+            log_message('info','api/create_views_put | no json provided');
+            $this->response(NULL, 400);             
+        }
+    }
 }

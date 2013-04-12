@@ -217,6 +217,19 @@ class Test extends CI_Controller{
 		var_dump($json);
 	}
 
+	function api_create_domains(){
+		$data = array("domains" => '[{"id":10,"name":"forest","description":"forest","header_title":"Thit is title","header_color":"#8a0404","header_text_color":"#ace2f7","footer_text":"&copy; 2013","footer_color":"#480078","footer_text_color":"#ffffff","domain_admins":[33,30]}]');
+		$url = "http://127.0.0.1/htdocs/reatha/api/create_domains";
+		$ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($data));	
+		$json = curl_exec($ch);
+		curl_close($ch);
+		$result = json_decode($json);
+		var_dump($json);        	
+	}
+
 
 }
 
