@@ -191,3 +191,13 @@ Reserved variables are:
  * {view:_notifications} - URL of user's notifications
  * {view:_deviceView} - URL of device view TODO:???
          
+REST API
+========
+ *list domains      GET /api/list_domains
+ *list users        GET /api/list_users/domain_id/<domain_id>
+ *list devices      GET /api/list_devices/domain_id/<domain_id>
+ *list views        GET /api/list_views/device_id/<device_id>
+ *list variables    GET /api/list_variables/device_id/<device_id>
+ *list transformations     GET/api/list_transformations/device_id/<device_id>
+ *list notification rules  GET /api/list_notification_rules/device_id/<device_id>
+ 
