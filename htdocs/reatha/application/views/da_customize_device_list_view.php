@@ -1,6 +1,6 @@
 <?php $this->load->view('header_view'); ?>
 
-<i class="icon icon-arrow-left"></i> <a href="<?php echo base_url(); ?>da/edit_device/<?php echo $device_id; ?>">Back to Edit Device</a>
+<i class="icon icon-arrow-left"></i> <a href="<?php echo base_url(); ?>da/edit_device/<?php echo $device->id; ?>">Back to Edit Device</a>
 
 <h3>Custom List View</h3>
 
@@ -14,7 +14,7 @@
 					<div>
 						<small>
 							Available variables:
-							<?php foreach ($view->device->variable as $var) {
+							<?php foreach ($device->variable as $var) {
 								if($var->name != 'view')
 									echo '{'.$var->name.'} ';
 							} ?>			
@@ -31,7 +31,8 @@
 						</small>
 					</div>											
 					<?php
-					$images = $view->device->domain->images->get();
+					echo $view->device->id;
+					$images = $device->domain->images->get();
 					if(!empty($images)){ ?>
 						<div>
 							<small>
@@ -48,12 +49,20 @@
 			</div>	
 			<div class="control-group">
 				<div class="controls">
-					<a class="btn" href="javascript:void(0)" onclick="device_list_preview('<?php echo base_url(); ?>',<?php echo $device_id; ?>)">Preview</a>					
-					<input type="hidden" name="device_id" value="<?php echo $device_id; ?>" />
+					<a class="btn" href="javascript:void(0)" onclick="device_list_preview('<?php echo base_url(); ?>',<?php echo $device->id; ?>)">Preview</a>					
+					<input type="hidden" name="device_id" value="<?php echo $device->id; ?>" />
 					<button type="submit" class="btn">Save</button>
 				</div>
 			</div>				
 		</form>
+		<small><b>Upload New Image:</b></small>
+		<form action="<?php echo base_url(); ?>da/upload_image" method="post" enctype="multipart/form-data">
+			<fieldset>
+				<input type="hidden" name="redirect" value="customize_device_list/<?php echo $device->id; ?>" />
+				<input type="file" name="image" />&nbsp;										
+				<input type="submit" class="btn" value="Add" />
+			</fieldset>
+		</form>			
 	</div>
 	<div class="span5">
 		<h4>View Preview</h4>

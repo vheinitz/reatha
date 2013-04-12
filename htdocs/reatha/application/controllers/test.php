@@ -206,6 +206,17 @@ class Test extends CI_Controller{
 		echo $d->get_view_name();
 	}
 
+	function api_users(){
+		$url = "http://127.0.0.1/htdocs/reatha/api/list_users/domain_id/11";
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_USERPWD, "test:test"); 
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); 
+		$json = curl_exec($ch);
+		curl_close($ch);
+		$result = json_decode($json);
+		var_dump($json);
+	}
+
 
 }
 

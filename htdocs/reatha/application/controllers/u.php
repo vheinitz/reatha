@@ -53,6 +53,15 @@ class U extends CI_Controller{
 		echo json_encode($return);
 	}
 
+	function get_devices_list_view(){
+		$user = new User($this->tank_auth->get_user_id());
+		$return = array(); $power = '';
+		foreach($user->devices as $device){
+			$return[] = array('device_id'=>$device->id, 'view'=>$device->get_list_view());
+		}
+		echo json_encode($return);
+	}	
+
 	function get_device_vars($device_id){
 		$user = new User($this->tank_auth->get_user_id());
 		$device = new Device($device_id);

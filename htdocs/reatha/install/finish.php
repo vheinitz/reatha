@@ -13,6 +13,7 @@ if(isset($_POST['delete_install'])){
     <head>
         <meta charset="utf-8"/>            
         <link href="../css/bootstrap.min.css" rel="stylesheet" media="screen" />          
+        <link href="../css/style.css" rel="stylesheet" media="screen" />          
     </head>
     <body>
         <div class="navbar">
@@ -20,8 +21,8 @@ if(isset($_POST['delete_install'])){
                 <a class="brand" href="#">Reatha</a>
             </div>
         </div>         
-    <div class="container">
-    	<div style="width:400px; text-align: center; margin-left: auto; margin-right: auto"> 
+    <div class="container" id="main-container">
+    	<div style="text-align: center"> 
     		<h2>Reatha installation finished</h2>
 			<a href="..">Go to login...</a>
 		</div>

@@ -17,6 +17,14 @@
 		});			
 	}
 
+	function get_devices_list_view($base_url){
+		$.getJSON($base_url+"u/get_devices_list_view", function($result) {
+			$.each($result, function($i, $list_view){
+				$('#'+$list_view.device_id).html($list_view.view);
+			});
+		});			
+	}	
+
 	function get_device_view($view_id, $base_url){
 		$.get($base_url+"u/get_device_view/"+$view_id, function($view) {
 			//check if view is json, and if so - redirect to view url

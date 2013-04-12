@@ -3,6 +3,7 @@ class Image extends Datamapper{
 	var $table = "images";
 	var $has_one = array('domain');
 	var $auto_populate_has_one = true;
+    var $default_order_by = array("created" => "desc");
 
 	function __construnct($id = null){
 		parent:__construnct($id);

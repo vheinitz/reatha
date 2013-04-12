@@ -13,9 +13,13 @@
 
 	<script type="text/javascript">
 		<?php if($view->exists()) { ?>
- 			show_device_view('<?php echo $view->id; ?>','<?php echo base_url(); ?>')			
+		setTimeout(function(){
+ 			show_device_view('<?php echo $view->id; ?>','<?php echo base_url(); ?>');	
+		}, 10);					
 		 <?php } else {?> 
- 			show_device_vars('<?php echo $device->id; ?>','<?php echo base_url(); ?>')		 	
+		setTimeout(function(){
+ 			show_device_vars('<?php echo $device->id; ?>','<?php echo base_url(); ?>');				
+		}, 10);			 		 	
 		 	<?php }?>
 	</script>
 
