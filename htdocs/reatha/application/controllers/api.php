@@ -98,7 +98,7 @@ class Api extends REST_controller{
 				//device list view
 				$list_view = $device->device_list_view->get();
 				$return[] = array(
-//					'id'                    => $device->id,
+					'id'                    => $device->id,
 //					'domain_id'             => $device->domain_id,
 //					'cloned_from_device_id' => $device->cloned_from_device_id,
 					'name'                  => $device->name,
@@ -153,7 +153,33 @@ class Api extends REST_controller{
         }         
     }
 
-    function list_views_get(){
+    function list_views_post(){
+        if($this->post('device_id')){  
+            $device = new Device($this->post('device_id'));
+            if($device->exists()){
+                $return = array();                
+                //traversing the views array
+                foreach ($device->views as $view) {
+                    $return[] = array(
+                        'id'                    => $view->id,
+                        'device_id'             => $view->device_id,
+                        'name'                  => $view->name,
+                        'body'                  => urlencode($view->body)
+                    );
+                }
+                $this->response($return, 200);
+            }
+			else {
+            log_message('info','api/list_views_post | invalide device');
+            $this->response(NULL, 400); 
+        }  
+        } else {
+            log_message('info','api/list_views_post | invalide device');
+            $this->response(NULL, 400); 
+        }        
+    }
+	
+	function list_views_get(){
         if($this->get('device_id')){  
             $device = new Device($this->get('device_id'));
             if($device->exists()){
