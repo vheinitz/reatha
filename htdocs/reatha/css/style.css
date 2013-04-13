@@ -98,7 +98,7 @@ textarea#view-body, textarea#device-list-view-body{
 }
 
 .da-image{
-	width: 160px;
+	max-width: 160px;
 }
 
 .da-td-view-name{
