@@ -193,8 +193,14 @@ Reserved variables are:
          
 REST API
 ========
- *list domains      GET /api/list_domains
- *list users        GET /api/list_users/domain_id/<domain_id>
+ *list domains       	GET /api/list_domains
+						Return: array of {"name":"<Domain Name>","description":"<Domain description>"}
+ *list domain_admins    GET /api/list_domain_admins
+						Return: array of {"username":"<User Name>","password":"<password>","email":"Email"}
+ *list users            POST /api/list_users
+                        POST data: domain=<Domain Name>
+						Return: array of {"username":"<User Name>","password":"<password>","email":"Email"}
+						
  *list devices      GET /api/list_devices/domain_id/<domain_id>
  *list views        GET /api/list_views/device_id/<device_id>
  *list variables    GET /api/list_variables/device_id/<device_id>

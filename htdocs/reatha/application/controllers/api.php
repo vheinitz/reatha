@@ -20,7 +20,8 @@ class Api extends REST_controller{
         } 
 	}
 
-    function list_domains_get(){
+	//TODO requires reatha admin as min auth
+    function list_domains_post(){
         $domains = new Domain();
         $domains->get();
         $return = array();
@@ -31,44 +32,89 @@ class Api extends REST_controller{
                 $domain_admins[] = $domain_admin->id;
             }
             $return[] = array(
-                'id'                => $domain->id,
                 'name'              => $domain->name,
                 'description'       => $domain->description,
-                'header_title'      => $domain->header_title,
-                'header_color'      => $domain->header_color,
-                'header_text_color' => $domain->header_text_color,
-                'footer_text'       => $domain->footer_text,
-                'footer_color'      => $domain->footer_color,
-                'footer_text_color' => $domain->footer_text_color,
-                'domain_admins'     => $domain_admins
             );
         }
         $this->response($return, 200);            
     }
+	
+	function list_domain_admins_post(){
+        $domain_admins = new User();
+        $domain_admins->where('role','2')->get();
+        $return = array();
+        foreach($domain_admins as $domain_admin){            
+            $return[] = array(
+//                'id'           => $domain_admin->id,
+				'username'     => $domain_admin->username,
+                'password'     => $domain_admin->password,
+				'email'        => $domain_admin->email,
+//				'role'         => $domain_admin->role
+            );
+        }
+        $this->response($return, 200);            
+    }
+	
+    function list_users_post(){
+		$domainname = $this->post('domain');	
+		$domain = new Domain( );
+		$domain->where('name',$domainname)->get();
+		if($domain->exists()){
+			$return = array();                
+			$users = new User();
+			$users->where('belongs_to_domain_id',$domain->id)->get();
+			//traversing the users array
+			foreach ($users as $user) {
+				$return[] = array(
+					'username'  => $user->username,
+					'password'  => $user->password,
+					'email'     => $user->email,
+//                        'role'      => $user->role
+				);
+			}
+			$this->response($return, 200);
+		} 
+		else {
+			log_message('info','api/list_users_post | invalide domain provided');
+			$this->response(NULL, 400); 
+		}         
+    }
+	
+	function list_devices_post(){
+		$domainname = $this->post('domain');	
+		$domain = new Domain( );
+		$domain->where('name',$domainname)->get();
+		if($domain->exists()){
+			$return = array();                
+			//traversing the device array
+			foreach ($domain->devices as $device) {
+				
+				//getting users assigned to this device
+				$assigned_users = array();
+				foreach($device->users as $user){
+					$assigned_users[] = $user->id;
+				}
 
-    function list_users_get(){
-        if($this->get('domain_id')){  
-            $domain = new Domain($this->get('domain_id'));
-            if($domain->exists()){
-                $return = array();                
-                $users = new User();
-                $users->where('belongs_to_domain_id',$domain->id)->get();
-                //traversing the users array
-                foreach ($users as $user) {
-                    $return[] = array(
-                        'id'        => $user->id,
-                        'domain_id' => $user->belongs_to_domain_id,
-                        'password'  => $user->password,
-                        'email'     => $user->email,
-                        'role'      => $user->role
-                    );
-                }
-                $this->response($return, 200);
-            } 
-        } else {
-            log_message('info','api/list_users_get | no id provided');
-            $this->response(NULL, 400); 
-        }         
+				//device list view
+				$list_view = $device->device_list_view->get();
+				$return[] = array(
+//					'id'                    => $device->id,
+//					'domain_id'             => $device->domain_id,
+//					'cloned_from_device_id' => $device->cloned_from_device_id,
+					'name'                  => $device->name,
+					'description'           => $device->description,
+					'location'              => $device->location,
+					'key'                   => $device->key,
+//					'list_view'             => $list_view->body,
+//					'assigned_users'        => $assigned_users
+				);
+			}
+			$this->response($return, 200);
+		} 
+		else {
+			log_message('info','api/list_users_post | invalide domain provided');
+			$this->response(NULL, 400); 
+		}         
     }
 
     function list_devices_get(){
