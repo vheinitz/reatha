@@ -58,8 +58,8 @@ ReathaDesktop::ReathaDesktop(QWidget *parent) :
 
     _ItemDownloadAPI[EProject] << "POST: list_domains" << "POST: list_domain_admins";
     _ItemDownloadAPI[EDomain] << "POST domain=<name>: list_users" << "POST domain=<name>: list_devices";
-/*	_ItemDownloadAPI[EDevice] << ;
-	_ItemDownloadAPI[EView] = "View";
+    _ItemDownloadAPI[EDevice] << "POST device_id=<id>: list_views";
+/*	_ItemDownloadAPI[EView] = "View";
 	_ItemDownloadAPI[EVariable] = "Variable";
     _ItemDownloadAPI[ETransfformation] = "Transformation";
 	_ItemDownloadAPI[ENotificationRule] = "Notification Rule";
@@ -104,6 +104,7 @@ void ReathaDesktop::on_tvPrjView_customContextMenuRequested(const QPoint &pos)
 				ctx->addAction(ui->actionNew_View);
 				ctx->addAction(ui->actionNew_Variable);
 				ctx->addAction(ui->actionNew_Notification_Rule);
+                ctx->addAction(ui->actionDownload_Project);
             break;
             case EView:
             break;
@@ -281,7 +282,7 @@ void ReathaDesktop::startRequest(QString uuid, QString api, QString data)
 
 	QNetworkRequest request(url);
     //request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	ui->eLog->append( "TX: " + url.toString() );
+    ui->eLog->append( "TX: " + url.toString() + "POST: "+ data );
     QNetworkReply *reply = _qnam.post( request, data.toUtf8() );
 	reply->setProperty("APIRequest",api);
 	reply->setProperty("APICaller",uuid);
@@ -410,6 +411,28 @@ void ReathaDesktop::httpFinished()
         }
     }
 
+    else if ( apiRequest == "list_views" )
+    {
+        QJsonParseError err;
+        QJsonArray json = QJsonDocument::fromJson(response.toUtf8(), &err).array();
+
+        if ( err.error == QJsonParseError::NoError )
+        {
+
+            for (QJsonArray::iterator jit=json.begin(); jit != json.end();++jit)
+            {
+                QJsonObject jo;
+                jo =  (*jit).toObject() ;
+                if ( setCurrentItem( reply->property( "APICaller" ).toString() ) )
+                {
+                    QJsonDocument jd(jo);
+                    newItem( EView, jd.toJson() );
+                    on_actionDownload_Project_triggered();
+                }
+            }
+        }
+    }
+
  }
 void ReathaDesktop::on_actionDownload_Project_triggered()
 {
@@ -431,7 +454,13 @@ void ReathaDesktop::on_actionDownload_Project_triggered()
 
         foreach( QString pdi, postvars )
         {
-            postData = postData.replace(QString("<%1>").arg(pdi),jo.value(pdi).toString());
+            QString val;
+            if( jo.value(pdi).isDouble() )
+                val = QString("%1").arg( jo.value(pdi).toDouble() );
+            else
+                val = jo.value(pdi).toString();
+
+            postData = postData.replace(QString("<%1>").arg(pdi),val);
         }
 
         startRequest( uuid, url, postData );
