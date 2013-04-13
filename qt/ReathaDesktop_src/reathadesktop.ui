@@ -59,7 +59,7 @@
              <item>
               <widget class="QLineEdit" name="eProjectUrl">
                <property name="text">
-                <string>http://reatha.de/rm/api</string>
+                <string>http://reatha.de/rm/api/</string>
                </property>
               </widget>
              </item>
@@ -259,8 +259,14 @@
     <addaction name="actionNew_Notification_Rule"/>
     <addaction name="actionDownload_Project"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuCommands"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">

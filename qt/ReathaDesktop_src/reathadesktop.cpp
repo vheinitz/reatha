@@ -4,6 +4,9 @@
 #include <QMap>
 #include <QNetworkReply>
 #include <QUuid>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
 
 QMap <int,QString> _ItemNames;
 QMap <int,QWidget*> _ItemViews;
@@ -53,12 +56,12 @@ ReathaDesktop::ReathaDesktop(QWidget *parent) :
  *list notification rules  GET /api/list_notification_rules/device_id/<device_id>
 */
 
-	_ItemDownloadAPI[EProject] << "list_domains";
-	_ItemDownloadAPI[EDomain] << "list_users/domain_id/<domain_id>" << "list_devices/domain_id/<domain_id>";
+    _ItemDownloadAPI[EProject] << "POST: list_domains" << "POST: list_domain_admins";
+    _ItemDownloadAPI[EDomain] << "POST domain=<name>: list_users" << "POST domain=<name>: list_devices";
 /*	_ItemDownloadAPI[EDevice] << ;
 	_ItemDownloadAPI[EView] = "View";
 	_ItemDownloadAPI[EVariable] = "Variable";
-	_ItemDownloadAPI[ETransformation] = "Transformation";
+    _ItemDownloadAPI[ETransfformation] = "Transformation";
 	_ItemDownloadAPI[ENotificationRule] = "Notification Rule";
 	_ItemDownloadAPI[EUser] = "User";
 	_ItemDownloadAPI[EUserNotification] = "User Notification";
@@ -242,6 +245,8 @@ void ReathaDesktop::on_actionNew_Notification_Rule_triggered()
 	newItem(ENotificationRule);
 }
 
+QMap<QString, QStandardItem *> _uuid2item;
+
 void ReathaDesktop::newItem( TItemType it, const QString & json)
 {
 	QStandardItem *cur = 0;
@@ -258,21 +263,26 @@ void ReathaDesktop::newItem( TItemType it, const QString & json)
 		_curmi = _projects.index( _projects.rowCount()-1,0);
 	}
 
+    cur = _projects.itemFromIndex(_curmi);
 	_projects.setData( _curmi, _ItemNames[it] );
 	_projects.setData( _curmi, it , EIRType );
-	_projects.setData( _curmi, QUuid::createUuid().toString(), EIRUuid );
+    QString uuid = QUuid::createUuid().toString();
+    _uuid2item[uuid] = cur;
+    _projects.setData( _curmi, uuid, EIRUuid );
 	_projects.setData( _curmi, _ItemDownloadAPI[it], EIRDnAPI );
+    _projects.setData( _curmi, json, EIRData );
+
 	ui->swEditViews->setCurrentWidget(_ItemViews[it]);	
 }
 
-void ReathaDesktop::startRequest(QString uuid, QString api)
+void ReathaDesktop::startRequest(QString uuid, QString api, QString data)
 {
-	QUrl url( ui->eProjectUrl->text() + api );
+    QUrl url( ui->eProjectUrl->text() + api );
 
 	QNetworkRequest request(url);
-	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    //request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 	ui->eLog->append( "TX: " + url.toString() );
-	QNetworkReply *reply = _qnam.get(request);
+    QNetworkReply *reply = _qnam.post( request, data.toUtf8() );
 	reply->setProperty("APIRequest",api);
 	reply->setProperty("APICaller",uuid);
 
@@ -285,11 +295,11 @@ void ReathaDesktop::startRequest(QString uuid, QString api)
 
 bool ReathaDesktop::setCurrentItem( QString uuid )
 {
-	QList<QStandardItem *> allItems = _projects.findItems (".*", Qt::MatchRegExp );
-	for (int i=0; i<allItems.size(); ++i)
-	{
-		QStandardItem * it =  allItems.at(i);
-		if ( it->data(EIRUuid) == uuid )
+    //QList<QStandardItem *> allItems = _projects.findItems (".*", Qt::MatchRegExp );
+    //for (int i=0; i<allItems.size(); ++i)
+    {
+        QStandardItem * it =  _uuid2item[uuid];
+    //	if ( it->data(EIRUuid) == uuid )
 		{
 			_curmi = _projects.indexFromItem( it );
 			return true;
@@ -317,25 +327,113 @@ void ReathaDesktop::httpFinished()
 	
 	if ( apiRequest == "list_domains" )
 	{
-		QStringList domains = response.split( QRegExp("\\}"),QString::SkipEmptyParts );
-		foreach( QString data, domains )
-		{
-			if ( data.contains("\"id\":") )
-			{
-				if ( setCurrentItem( reply->property( "APICaller" ).toString() ) )
-				{
-					newItem( EDomain, data );
-				}
-			}
-		}
+        QJsonParseError err;
+        QJsonArray domains = QJsonDocument::fromJson(response.toUtf8(), &err).array();
+
+        if ( err.error == QJsonParseError::NoError )
+        {
+
+            for (QJsonArray::iterator jit=domains.begin(); jit != domains.end();++jit)
+            {
+                QJsonObject jo;
+                jo =  (*jit).toObject() ;
+                if ( setCurrentItem( reply->property( "APICaller" ).toString() ) )
+                {
+                    QJsonDocument jd(jo);
+                    newItem( EDomain, jd.toJson() );
+                    on_actionDownload_Project_triggered();
+                }
+            }
+        }
 	}
+    else if ( apiRequest == "list_domain_admins" )
+    {
+        QJsonParseError err;
+        QJsonArray json = QJsonDocument::fromJson(response.toUtf8(), &err).array();
+
+        if ( err.error == QJsonParseError::NoError )
+        {
+
+            for (QJsonArray::iterator jit=json.begin(); jit != json.end();++jit)
+            {
+                QJsonObject jo;
+                jo =  (*jit).toObject() ;
+                if ( setCurrentItem( reply->property( "APICaller" ).toString() ) )
+                {
+                    QJsonDocument jd(jo);
+                    newItem( EDomainAdmin, jd.toJson() );
+                    on_actionDownload_Project_triggered();
+                }
+            }
+        }
+    }
+    else if ( apiRequest == "list_users" )
+    {
+        QJsonParseError err;
+        QJsonArray json = QJsonDocument::fromJson(response.toUtf8(), &err).array();
+
+        if ( err.error == QJsonParseError::NoError )
+        {
+
+            for (QJsonArray::iterator jit=json.begin(); jit != json.end();++jit)
+            {
+                QJsonObject jo;
+                jo =  (*jit).toObject() ;
+                if ( setCurrentItem( reply->property( "APICaller" ).toString() ) )
+                {
+                    QJsonDocument jd(jo);
+                    newItem( EUser, jd.toJson() );
+                    on_actionDownload_Project_triggered();
+                }
+            }
+        }
+    }
+    else if ( apiRequest == "list_devices" )
+    {
+        QJsonParseError err;
+        QJsonArray json = QJsonDocument::fromJson(response.toUtf8(), &err).array();
+
+        if ( err.error == QJsonParseError::NoError )
+        {
+
+            for (QJsonArray::iterator jit=json.begin(); jit != json.end();++jit)
+            {
+                QJsonObject jo;
+                jo =  (*jit).toObject() ;
+                if ( setCurrentItem( reply->property( "APICaller" ).toString() ) )
+                {
+                    QJsonDocument jd(jo);
+                    newItem( EDevice, jd.toJson() );
+                    on_actionDownload_Project_triggered();
+                }
+            }
+        }
+    }
+
  }
 void ReathaDesktop::on_actionDownload_Project_triggered()
 {
 	QString uuid = _curmi.data( EIRUuid ).toString();
 	QStringList apis = _curmi.data( EIRDnAPI ).toStringList();
+    QJsonObject jo = QJsonDocument::fromJson( _curmi.data(EIRData).toByteArray()).object();
 	foreach( QString api, apis )
 	{
-		startRequest( uuid, api.replace("<domain_id>","10") );
-	}
+        QString url = api.section(":",1).trimmed();
+        QRegExp rx("<([^>]*)>");
+        QStringList postvars;
+        QString postData = api.section("POST",1).section(":",0,0).trimmed();
+        int pos = 0;
+
+        while ((pos = rx.indexIn(api, pos)) != -1) {
+            postvars << rx.cap(1);
+            pos += rx.matchedLength();
+        }
+
+        foreach( QString pdi, postvars )
+        {
+            postData = postData.replace(QString("<%1>").arg(pdi),jo.value(pdi).toString());
+        }
+
+        startRequest( uuid, url, postData );
+    }
 }

@@ -14,7 +14,8 @@ enum TItemRole
 {
     EIRType = Qt::UserRole+1,
 	EIRUuid,
-	EIRDnAPI
+    EIRDnAPI,
+    EIRData
 };
 
 enum TItemType
@@ -72,7 +73,7 @@ private slots:
     void on_actionNew_Notification_Rule_triggered();
 	void newItem( TItemType it, const QString & json=QString::null);
 
-	void startRequest(QString uuid, QString api);
+    void startRequest(QString uuid, QString url, QString postData);
     void httpFinished();
     void httpReadyRead();
 
