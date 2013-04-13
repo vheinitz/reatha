@@ -1,5 +1,17 @@
 <?php $this->load->view('header_view'); ?>
 
+
+<h4>Upload New Image</h4>
+<form action="<?php echo base_url(); ?>da/upload_image" method="post" enctype="multipart/form-data">
+	<fieldset>
+		<label>Image:</label>
+		<input type="file" name="image" />
+			
+		<label></label>
+		<input type="submit" class="btn" value="Add" />
+	</fieldset>
+</form>
+		
 <table class="table table-striped table-bordered">
   	<thead>
 	    <tr>
@@ -19,15 +31,6 @@
 </tbody>
 </table>
 <hr/>
-<h4>Upload New Image</h4>
-		<form action="<?php echo base_url(); ?>da/upload_image" method="post" enctype="multipart/form-data">
-			<fieldset>
-				<label>Image:</label>
-				<input type="file" name="image" />
-					
-				<label></label>
-				<input type="submit" class="btn" value="Add" />
-			</fieldset>
-		</form>
+
 
 <?php $this->load->view('footer_view'); ?>
