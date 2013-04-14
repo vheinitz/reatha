@@ -32,6 +32,7 @@ class Api extends REST_controller{
                 $domain_admins[] = $domain_admin->id;
             }
             $return[] = array(
+				'id'                => $domain->id,
                 'name'              => $domain->name,
                 'description'       => $domain->description,
             );
@@ -45,7 +46,7 @@ class Api extends REST_controller{
         $return = array();
         foreach($domain_admins as $domain_admin){            
             $return[] = array(
-//                'id'           => $domain_admin->id,
+                'id'           => $domain_admin->id,
 				'username'     => $domain_admin->username,
                 'password'     => $domain_admin->password,
 				'email'        => $domain_admin->email,
@@ -56,9 +57,9 @@ class Api extends REST_controller{
     }
 	
     function list_users_post(){
-		$domainname = $this->post('domain');	
+		$domain_id = $this->post('domain_id');	
 		$domain = new Domain( );
-		$domain->where('name',$domainname)->get();
+		$domain->where('id',$domain_id)->get();
 		if($domain->exists()){
 			$return = array();                
 			$users = new User();
@@ -66,6 +67,7 @@ class Api extends REST_controller{
 			//traversing the users array
 			foreach ($users as $user) {
 				$return[] = array(
+				    'id'  => $user->id,
 					'username'  => $user->username,
 					'password'  => $user->password,
 					'email'     => $user->email,
@@ -81,9 +83,9 @@ class Api extends REST_controller{
     }
 	
 	function list_devices_post(){
-		$domainname = $this->post('domain');	
+		$domain_id = $this->post('domain_id');	
 		$domain = new Domain( );
-		$domain->where('name',$domainname)->get();
+		$domain->where('id',$domain_id)->get();
 		if($domain->exists()){
 			$return = array();                
 			//traversing the device array
@@ -179,6 +181,51 @@ class Api extends REST_controller{
         }        
     }
 	
+	function list_notifications_post(){
+        if($this->post('device_id')){  
+            $device = new Device($this->post('device_id'));
+            if($device->exists()){
+                $return = array();                
+                //looping through the notification rules list
+                foreach ($device->notification_rules as $rule) {
+                    //get users assigned to this notification rule
+                    $assigned_users = array();
+                    //foreach ($rule->users as $user) {
+                    //    $assigned_users[] = $user->id;
+                    //}
+					
+					//TODO: optimize pls.
+					$var_name;
+					foreach ($device->variables as $var) {
+						if ( $var->id == $rule->variable_id )
+						{
+							$var_name = $var->name;
+							break;
+						}
+					}
+                    $return[] = array(
+                        'id'                    => $rule->id,
+//                        'device_id'             => $rule->device_id,
+                        'variable'              => $var_name,
+                        'name'                  => $rule->name,
+                        'description'           => $rule->description,
+                        'condition'             => $rule->condition,
+                        'severity_level'        => $rule->severity_level,
+                        'message'               => $rule->message,
+                        'subject'               => $rule->subject,
+                        'interval'              => $rule->interval,
+                        'activated'             => $rule->activated,
+//                        'assigned_users'        => $assigned_users
+                    );
+                }
+                $this->response($return, 200);
+            } 
+        } else {
+            log_message('info','api/list_notification_rules_get | no id provided');
+            $this->response(NULL, 400); 
+        }        
+    }
+	
 	function list_views_get(){
         if($this->get('device_id')){  
             $device = new Device($this->get('device_id'));
@@ -201,6 +248,28 @@ class Api extends REST_controller{
         }         
     } 
 
+	function list_variables_post(){
+        if($this->post('device_id')){  
+            $device = new Device($this->post('device_id'));
+            if($device->exists()){
+                $return = array();                
+                //traversing the views array
+                foreach ($device->variables as $var) {
+                    $return[] = array(
+                        'id'                    => $var->id,
+//                       'device_id'             => $var->device_id,
+                        'name'                  => $var->name,
+//                        'value'                 => $var->value
+                    );
+                }
+                $this->response($return, 200);
+            } 
+        } else {
+            log_message('info','api/list_variables_get | no id provided');
+            $this->response(NULL, 400); 
+        }         
+    }
+	
     function list_variables_get(){
         if($this->get('device_id')){  
             $device = new Device($this->get('device_id'));
@@ -223,7 +292,38 @@ class Api extends REST_controller{
         }         
     }
 
-    function list_transformations_get(){
+    function list_transformations_post(){
+        if($this->post('device_id')){  
+            $device = new Device($this->post('device_id'));
+            if($device->exists()){
+                $return = array();                
+                //going through the transformations list
+                foreach ($device->transformations as $t) {
+					//TODO: optimize pls.
+					$var_name;
+					foreach ($device->variables as $var) {
+						if ( $var->id == $t->export_var_id )
+						{
+							$var_name = $var->name;
+							break;
+						}
+					}
+                    $return[] = array(
+                        'id'                    => $t->id,
+//                        'device_id'             => $t->device_id,
+                        'export_var'            => $var_name,
+                        'body'                  => $t->body
+                    );
+                }
+                $this->response($return, 200);
+            } 
+        } else {
+            log_message('info','api/list_transformations_get | no id provided');
+            $this->response(NULL, 400); 
+        }         
+    }  
+	
+	function list_transformations_get(){
         if($this->get('device_id')){  
             $device = new Device($this->get('device_id'));
             if($device->exists()){
@@ -280,7 +380,31 @@ class Api extends REST_controller{
         }       
     }
 
-    function list_images_get(){
+    function list_images_post(){
+        if($this->post('domain_id')){  
+            $domain = new Domain($this->post('domain_id'));
+            if($domain->exists()){
+                $return = array();                
+                //traversing the device array
+                foreach ($domain->images as $image) {
+                    //$image_as_base64 = base64_encode(file_get_contents('./assets/'.$domain->name.'/'.$image->file));
+                    $return[] = array(
+                        'id'                    => $image->id,
+//                        'domain_id'             => $image->domain_id,
+                        'url'                   => './assets/'.$domain->name.'/'.$image->file,
+//                        'file_as_base64'        => $image_as_base64,
+//                        'created'               => $image->created
+                    );
+                }
+                $this->response($return, 200);
+            } 
+        } else {
+            log_message('info','api/list_devices_get | no id provided');
+            $this->response(NULL, 400); 
+        }  
+    }
+	
+	function list_images_get(){
         if($this->get('domain_id')){  
             $domain = new Domain($this->get('domain_id'));
             if($domain->exists()){

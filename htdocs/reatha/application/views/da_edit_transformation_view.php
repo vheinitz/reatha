@@ -15,7 +15,7 @@
 		<?php } } ?>
 	</select>
 	<label>Transformation: </label>
-	<input type="text" name="transformation" value="<?php echo $t->body; ?>" /> &nbsp;&nbsp;<small>Example: ({var1}+{var2}) * 10}</small>
+	<input type="text" name="transformation" value="<?php echo $t->body; ?>" /> &nbsp;&nbsp;<small>Example: ({var1}+{var2})*10</small>
 	<label>Export Variable Name: </label>
 	<input type="text" name="export_variable_name" value="<?php $export_var = new Variable($t->export_var_id); echo $export_var->name; ?>" /> &nbsp;&nbsp;<small>Leave it as it is if you don't want to create another var.</small>			
 	<br/><button type="submit" class="btn">Edit</button>

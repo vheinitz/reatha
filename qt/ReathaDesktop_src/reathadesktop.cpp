@@ -11,6 +11,7 @@
 QMap <int,QString> _ItemNames;
 QMap <int,QWidget*> _ItemViews;
 QMap <int,QStringList> _ItemDownloadAPI;
+QMap <QString,TItemType> _CreateOnResponse;
 
 QString ReathaDesktopVersion = "0.0.1";
 
@@ -56,9 +57,29 @@ ReathaDesktop::ReathaDesktop(QWidget *parent) :
  *list notification rules  GET /api/list_notification_rules/device_id/<device_id>
 */
 
-    _ItemDownloadAPI[EProject] << "POST: list_domains" << "POST: list_domain_admins";
-    _ItemDownloadAPI[EDomain] << "POST domain=<name>: list_users" << "POST domain=<name>: list_devices";
-    _ItemDownloadAPI[EDevice] << "POST device_id=<id>: list_views";
+    _ItemDownloadAPI[EProject] << "POST: list_domains"
+                               << "POST: list_domain_admins";
+
+    _ItemDownloadAPI[EDomain]  << "POST domain_id=<id>: list_users"
+                               << "POST domain_id=<id>: list_devices"
+                               << "POST domain_id=<id>: list_images";
+
+    _ItemDownloadAPI[EDevice]  << "POST device_id=<id>: list_views"
+                               << "POST device_id=<id>: list_notifications"
+                               << "POST device_id=<id>: list_variables"
+                               << "POST device_id=<id>: list_transformations"
+                               << "POST device_id=<id>: get_list_view";
+
+    _CreateOnResponse["list_domains"] = EDomain;
+    _CreateOnResponse["list_domain_admins"] = EDomainAdmin;
+    _CreateOnResponse["list_users"] = EUser;
+    _CreateOnResponse["list_devices"] = EDevice;
+    _CreateOnResponse["list_images"] = EImage;
+    _CreateOnResponse["list_views"] = EView;
+    _CreateOnResponse["list_notifications"] = ENotificationRule;
+    _CreateOnResponse["list_transformations"] = ETransformation;
+
+
 /*	_ItemDownloadAPI[EView] = "View";
 	_ItemDownloadAPI[EVariable] = "Variable";
     _ItemDownloadAPI[ETransfformation] = "Transformation";
@@ -325,8 +346,28 @@ void ReathaDesktop::httpFinished()
     QString response = reply->readAll();
 	ui->eLog->append( "RX: " + apiRequest +"  "+response );
 	
-	
-	if ( apiRequest == "list_domains" )
+    if (_CreateOnResponse.contains(apiRequest))
+    {
+        QJsonParseError err;
+        QJsonArray domains = QJsonDocument::fromJson(response.toUtf8(), &err).array();
+
+        if ( err.error == QJsonParseError::NoError )
+        {
+
+            for (QJsonArray::iterator jit=domains.begin(); jit != domains.end();++jit)
+            {
+                QJsonObject jo;
+                jo =  (*jit).toObject() ;
+                if ( setCurrentItem( reply->property( "APICaller" ).toString() ) )
+                {
+                    QJsonDocument jd(jo);
+                    newItem( _CreateOnResponse[apiRequest], jd.toJson() );
+                    on_actionDownload_Project_triggered();
+                }
+            }
+        }
+    }
+    /*else if ( apiRequest == "list_domains" )
 	{
         QJsonParseError err;
         QJsonArray domains = QJsonDocument::fromJson(response.toUtf8(), &err).array();
@@ -431,7 +472,7 @@ void ReathaDesktop::httpFinished()
                 }
             }
         }
-    }
+    }*/
 
  }
 void ReathaDesktop::on_actionDownload_Project_triggered()
