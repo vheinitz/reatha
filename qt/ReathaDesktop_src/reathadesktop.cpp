@@ -12,6 +12,7 @@ QMap <int,QString> _ItemNames;
 QMap <int,QWidget*> _ItemViews;
 QMap <int,QStringList> _ItemDownloadAPI;
 QMap <QString,TItemType> _CreateOnResponse;
+QMap <QString,QString> _ViewsDef;
 
 QString ReathaDesktopVersion = "0.0.1";
 
@@ -92,6 +93,13 @@ ReathaDesktop::ReathaDesktop(QWidget *parent) :
 
 	this->setWindowTitle(QString("Reatha Desktop. Version: %1").arg(ReathaDesktopVersion) );
 
+    QStringList defs = ui->tViewsDescriptions->toPlainText().split("\n",QString::SkipEmptyParts);
+
+    foreach(QString def, defs)
+    {
+        _ViewsDef[def.section(";",0,0)] = def.section(";",1);
+    }
+
 
 
    
@@ -167,6 +175,49 @@ void ReathaDesktop::on_actionNew_project_triggered()
 	 newItem(EProject);
 }
 
+void ReathaDesktop::setEditViews(QString n, QString json)
+{
+    ui->wViewsContainer->deleteLater();
+    ui->wViewsContainer = new QWidget(this);
+    ui->lMainContainer->addWidget(ui->wViewsContainer);
+    ui->wViewsContainer->show();
+    ui->wViewsContainer->setLayout(new QVBoxLayout);
+
+     QJsonObject item = QJsonDocument::fromJson( json.toUtf8() ).object();
+     QStringList keys = item.keys();
+     foreach(QString k, keys)
+     {
+         QString fk = n+"."+k;
+         if ( _ViewsDef.contains(fk) )
+         {
+
+             QString def = _ViewsDef[fk];
+             QString label = def.section(";",0,0);
+             QString editor = def.section(";",1,1);
+             QHBoxLayout *lEdit = new QHBoxLayout;
+             QLabel *l = new QLabel(label,ui->wViewsContainer);
+             lEdit->addWidget(l);
+             if ( editor == "e" )
+             {
+                 QLineEdit *e = new QLineEdit(ui->wViewsContainer);
+                 e->setText(item.value(k).toVariant().toString());
+                 lEdit->addWidget(e);
+                 e->show();
+             }
+             else if ( editor == "t" )
+             {
+                 QTextEdit *e = new QTextEdit(ui->wViewsContainer);
+                 e->setText(item.value(k).toVariant().toString());
+                 lEdit->addWidget(e);
+                 e->show();
+             }
+             l->show();
+             ui->wViewsContainer->layout()->addItem(lEdit);
+         }
+     }
+
+}
+
 void ReathaDesktop::on_tvPrjView_clicked(const QModelIndex &index)
 {
 	_curmi = index;
@@ -174,31 +225,23 @@ void ReathaDesktop::on_tvPrjView_clicked(const QModelIndex &index)
     {
         int itemType = _curmi.data(EIRType).toInt();
 
+        ui->swEditViews->setCurrentWidget(ui->wpCommon);
         switch( itemType )
         {
             case EProject:
 				ui->swEditViews->setCurrentWidget(ui->wpProject);
             break;
-            case EDomain:
-				ui->swEditViews->setCurrentWidget(ui->wpDomain);
-            break;
+            case EDomain:				
             case EDevice:
-            break;
             case EView:
-            break;
             case EVariable:
-            break;
             case ETransformation:
-            break;
             case ENotificationRule:
-            break;
             case EUser:
-            break;
             case EUserNotification:
-            break;
             case EDomainAdmin:
-            break;
             case EImage:
+                setEditViews( _ItemNames[itemType], _curmi.data(EIRData).toString() );
             break;
             default:
                 ui->swEditViews->setCurrentWidget(ui->wpCommon);

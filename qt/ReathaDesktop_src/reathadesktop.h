@@ -81,6 +81,8 @@ private slots:
 
     void on_actionDownload_Project_triggered();
 
+    void setEditViews(QString n, QString d);
+
 private:
     Ui::ReathaDesktop *ui;
     QStandardItemModel _projects;
