@@ -391,7 +391,7 @@ class Api extends REST_controller{
                     $return[] = array(
                         'id'                    => $image->id,
 //                        'domain_id'             => $image->domain_id,
-                        'url'                   => './assets/'.$domain->name.'/'.$image->file,
+                        'url'                   => site_url( './assets/'.$domain->name.'/'.$image->file ),
 //                        'file_as_base64'        => $image_as_base64,
 //                        'created'               => $image->created
                     );
