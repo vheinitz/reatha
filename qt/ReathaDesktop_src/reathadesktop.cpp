@@ -211,6 +211,20 @@ void ReathaDesktop::setEditViews(QString n, QString json)
                  lEdit->addWidget(e);
                  e->show();
              }
+             else if ( editor == "i" )
+             {
+                 QUrl url( item.value(k).toVariant().toString().remove("./") );
+                 QNetworkRequest req(url);
+                 QString labelUniqName = QUuid::createUuid().toString();
+                 l->setObjectName( labelUniqName );
+                 QNetworkReply *reply =_qnam.get(req);
+                 reply->setProperty( "_MyImageLabelName_", labelUniqName );
+                 connect(reply, SIGNAL(finished()),
+                      this, SLOT(httpFinished()));
+                 connect(reply, SIGNAL(readyRead()),
+                      this, SLOT(httpReadyRead()));
+
+             }
              l->show();
              ui->wViewsContainer->layout()->addItem(lEdit);
          }
@@ -378,12 +392,53 @@ void ReathaDesktop::httpFinished()
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
     if (!reply) 
 		return;
+
+    QString labelName = reply->property("_MyImageLabelName_").toString();
+    if (!labelName.isEmpty())
+    {
+        QLabel * label = findChild<QLabel*>(labelName);
+        if (label)
+        {
+            QPixmap pixmap;
+            pixmap.loadFromData(reply->readAll());
+            label->setPixmap(pixmap);
+        }
+    }
+    else
+    {
+        QString apiRequest = reply->property("APIRequest").toString();
+        QString response = reply->readAll();
+        ui->eLog->append( "RX: " + apiRequest +"  "+response );
+
+        if (_CreateOnResponse.contains(apiRequest))
+        {
+            QJsonParseError err;
+            QJsonArray domains = QJsonDocument::fromJson(response.toUtf8(), &err).array();
+
+            if ( err.error == QJsonParseError::NoError )
+            {
+
+                for (QJsonArray::iterator jit=domains.begin(); jit != domains.end();++jit)
+                {
+                    QJsonObject jo;
+                    jo =  (*jit).toObject() ;
+                    if ( setCurrentItem( reply->property( "APICaller" ).toString() ) )
+                    {
+                        QJsonDocument jd(jo);
+                        newItem( _CreateOnResponse[apiRequest], jd.toJson() );
+                        on_actionDownload_Project_triggered();
+                    }
+                }
+            }
+        }
+    }
     
     reply->deleteLater();
 }
 
  void ReathaDesktop::httpReadyRead()
  {
+     return;
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 	QString apiRequest = reply->property("APIRequest").toString();
     QString response = reply->readAll();
@@ -549,4 +604,9 @@ void ReathaDesktop::on_actionDownload_Project_triggered()
 
         startRequest( uuid, url, postData );
     }
+}
+
+void ReathaDesktop::on_actionConfig_Edit_views_triggered()
+{
+    ui->swEditViews->setCurrentWidget(ui->wpViewsConfig);
 }

@@ -83,6 +83,11 @@ private slots:
 
     void setEditViews(QString n, QString d);
 
+    void on_actionConfig_Edit_views_triggered();
+
+    //void processImageDownload(QNetworkReply *reply);
+
+
 private:
     Ui::ReathaDesktop *ui;
     QStandardItemModel _projects;
