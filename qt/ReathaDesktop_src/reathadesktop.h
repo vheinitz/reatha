@@ -14,7 +14,8 @@ enum TItemRole
 {
     EIRType = Qt::UserRole+1,
 	EIRUuid,
-	EIRDnAPI
+    EIRDnAPI,
+    EIRData
 };
 
 enum TItemType
@@ -72,13 +73,20 @@ private slots:
     void on_actionNew_Notification_Rule_triggered();
 	void newItem( TItemType it, const QString & json=QString::null);
 
-	void startRequest(QString uuid, QString api);
+    void startRequest(QString uuid, QString url, QString postData);
     void httpFinished();
     void httpReadyRead();
 
 	bool setCurrentItem( QString uuid );
 
     void on_actionDownload_Project_triggered();
+
+    void setEditViews(QString n, QString d);
+
+    void on_actionConfig_Edit_views_triggered();
+
+    //void processImageDownload(QNetworkReply *reply);
+
 
 private:
     Ui::ReathaDesktop *ui;

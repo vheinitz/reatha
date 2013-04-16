@@ -1,9 +1,12 @@
 
 QT       += core gui network
 
-TARGET = ReathaDesktop
-TEMPLATE = vcapp
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+TARGET = ReathaDesktop
+TEMPLATE = app
+
+DESTDIR = ../output
 
 SOURCES += main.cpp\
         reathadesktop.cpp

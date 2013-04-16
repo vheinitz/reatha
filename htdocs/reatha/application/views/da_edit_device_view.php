@@ -115,7 +115,7 @@
 				<?php } ?>
 			</select>
 			<label>Transformation: </label>
-			<input type="text" name="transformation" /> &nbsp;&nbsp;<small>Example: ({var1}+{var2}) * 10}</small>
+			<input type="text" name="transformation" /> &nbsp;&nbsp;<small>Example: ({var1}+{var2})*10</small>
 			<label>Export Variable Name: </label>
 			<input type="text" name="export_variable_name" /> &nbsp;&nbsp;<small>New variable name for holding transformation value</small>			
 			<input type="hidden" name="device_id" value="<?php echo $device->id; ?>" />
