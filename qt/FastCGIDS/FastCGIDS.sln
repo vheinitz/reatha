@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FastCGIDS", "FastCGIDS.vcproj", "{68CD87AC-716B-3F46-9DE4-F53805D45B8D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{68CD87AC-716B-3F46-9DE4-F53805D45B8D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{68CD87AC-716B-3F46-9DE4-F53805D45B8D}.Debug|Win32.Build.0 = Debug|Win32
+		{68CD87AC-716B-3F46-9DE4-F53805D45B8D}.Release|Win32.ActiveCfg = Release|Win32
+		{68CD87AC-716B-3F46-9DE4-F53805D45B8D}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
