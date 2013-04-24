@@ -1,6 +1,6 @@
 /* ===========================================================================
  * Copyright 2013: Valentin Heinitz, www.heinitz-it.de
- * Testing implementation of FastCGI in Qt
+ * FastCGI setver. Manages the connections.
  * Author: Valentin Heinitz, 2013-04-24
  * License: GPL, http://www.gnu.org/licenses/gpl.html
  *
@@ -8,32 +8,30 @@
  * ongoinf work ...
  ========================================================================== */
 
-#ifndef FASTCGIDSGUI_H
-#define FASTCGIDSGUI_H
+#ifndef FASTCGISERVER_H
+#define FASTCGISERVER_H
 
-#include <QMainWindow>
+#include "fastcgirequest.h"
+#include <QObject>
+#include <QTcpServer>
+#include <QTcpSocket>
 
-
-namespace Ui {
-class FastCgiDsGui;
-}
-
-class FastCgiServer;
-
-class FastCgiDsGui : public QMainWindow
+class FastCgiServer: public QObject
 {
-    Q_OBJECT
-    
+	Q_OBJECT
 public:
-    explicit FastCgiDsGui(QWidget *parent = 0);
-    ~FastCgiDsGui();
+	FastCgiServer(QObject *p);
+	virtual ~FastCgiServer();
 
 public slots:
-	void start();
+    void start(unsigned short port);
+
+private slots:
+    void processNewConnection();
+
 
 private:
-    Ui::FastCgiDsGui *ui;
-	FastCgiServer *_fcgiServer;
+    QTcpServer _srv;
 };
 
-#endif // FASTCGIDSGUI_H
+#endif

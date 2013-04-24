@@ -1,10 +1,5 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2013-04-22T22:09:08
-#
-#-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,8 +9,14 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        fastcgidsgui.cpp
+        fastcgiserver.cpp\
+		fastcgirequest.cpp\
+		fastcgidsgui.cpp\
+		db/dbmanager.cpp
 
-HEADERS  += fastcgidsgui.h
+HEADERS  += fastcgidsgui.h\
+		fastcgiserver.h\
+		fastcgirequest.h\
+		db/dbmanager.h
 
 FORMS    += fastcgidsgui.ui
