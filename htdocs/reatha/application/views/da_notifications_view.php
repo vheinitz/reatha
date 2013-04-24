@@ -3,36 +3,35 @@
 <i class="icon icon-arrow-left"></i> <a href="<?php echo base_url(); ?>da">Back to device list</a><br/>
 
 <h3>Notifications for Device: <?php echo $device->name; ?></h3>
-
-
-<?php foreach ($device->notification_rules as $notification_rule) { ?>
-	<table class="table table-striped table-bordered">
-		<tbody>
+	<?php if($device->notification_rules->exists()){ ?>
+	<table class="table table-hover table-da-notification-list">
+		<thead>
 			<tr>
-				<td class="td-notification-list-row-caption">Name:</td><td><?php echo $notification_rule->name;?></td>
-				<td rowspan="9" class="td-notification-list-action">
-					<?php if($notification_rule->activated) { ?>
-						<a href="<?php echo base_url(); ?>da/toggle_notification_status/<?php echo $notification_rule->id."/0"; ?>" class="btn btn-small" id="notification-list-action"><i class="icon-pause"></i> Deactivate</a><br/>
-					<?php } else { ?>
-						<a href="<?php echo base_url(); ?>da/toggle_notification_status/<?php echo $notification_rule->id."/1"; ?>" class="btn btn-small" id="notification-list-action"><i class="icon-play"></i> Activate</a><br/>
-					<?php } ?>
-					<a class="btn btn-small" id="notification-list-action" href="<?php echo base_url(); ?>da/edit_notification_rule/<?php echo $notification_rule->id; ?>"><i class="icon-pencil"></i> Edit</a><br/>
-					<a class="btn btn-small" id="notification-list-action" href="<?php echo base_url(); ?>da/delete_notification_rule/<?php echo $notification_rule->id; ?>"><i class="icon-remove"></i> Delete</a>
-				</td>
+				<th>#</th><th style="text-align:center">Name</th><th style="text-align:center">Actions</th>
 			</tr>
-			<tr><td>Description:</td><td><?php echo $notification_rule->description;?></td></tr>
-			<tr><td>Variable:</td><td><?php echo $notification_rule->variable->name;?></td></tr>			
-			<tr><td>Condition:</td><td><?php echo $notification_rule->condition;?></td></tr>
-			<tr><td>Min. Interval:</td><td><?php echo $notification_rule->interval;?></td></tr>
-			<tr><td>Severity Level:</td><td><?php echo $notification_rule->get_severity_level();?></td></tr>
-			<tr><td>Message:</td><td><?php echo $notification_rule->message;?></td></tr>
-			<tr><td>Email Subject:</td><td><?php echo $notification_rule->subject;?></td></tr>
-			<tr><td>Activated:</td><td><?php echo $notification_rule->activated?"Yes":"No";?></td></tr>			
+		</thead>			
+		<tbody>
+		<?php foreach ($device->notification_rules as $key=>$notification_rule) { ?>
+			<tr>
+				<td><?php echo $key+1; ?></td>
+				<td style="text-align:center"><?php echo $notification_rule->name;?></td>
+				<td class="td-notification-list-action">
+					<?php if($notification_rule->activated) { ?>
+						<a href="<?php echo base_url(); ?>da/toggle_notification_status/<?php echo $notification_rule->id."/0"; ?>" class="btn btn-small" id="notification-list-action"><i class="icon-pause"></i> Deactivate</a>&nbsp;
+					<?php } else { ?>
+						<a href="<?php echo base_url(); ?>da/toggle_notification_status/<?php echo $notification_rule->id."/1"; ?>" class="btn btn-small" id="notification-list-action"><i class="icon-play"></i> Activate</a>&nbsp;
+					<?php } ?>
+					<a class="btn btn-small" id="notification-list-action" href="<?php echo base_url(); ?>da/edit_notification_rule/<?php echo $notification_rule->id; ?>"><i class="icon-pencil"></i> Edit</a>&nbsp;
+					<a class="btn btn-small" id="notification-list-action" href="<?php echo base_url(); ?>da/delete_notification_rule/<?php echo $notification_rule->id; ?>"><i class="icon-remove"></i> Delete</a>&nbsp;
+				</td>
+			</tr>		
+		<?php } ?>
 		</tbody>
-	</table>	
-<?php } ?>
-
-
+	</table>
+	<?php } else {
+		echo "No notifications";		
+	}; ?>
+	<br/>
 <h4>New Notification</h4>
 <form class="form-horizontal" action="<?php echo base_url(); ?>da/add_notification_rule/" method="POST">
 	<div class="control-group">

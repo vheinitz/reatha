@@ -66,34 +66,38 @@ class Da extends CI_Controller{
 		$this->form_validation->set_rules('device_variables','Device Variables','required|trim|xss_clean|max_length[300]');
 		$this->form_validation->set_message('valid_device_name','This device name is already in use in this domain.');
 		if($this->form_validation->run()){
-			$device_name 		= $this->form_validation->set_value('device_name');
-			$device_description = $this->form_validation->set_value('device_description');
-			$device_location 	= $this->form_validation->set_value('device_location');
-			$device_variables	= $this->form_validation->set_value('device_variables');
-			
-			// Hash device key using phpass
-			require_once('application/libraries/phpass-0.1/PasswordHash.php');
-			$hasher 	= new PasswordHash(6,FALSE);
-			$device_key = $hasher->HashPassword($device_name);
-						
 			$domain = new Domain($this->session->userdata('managing_domain_id'));
-			$device = new Device();
-			$device->domain_id 		= $domain->id;
-			$device->name 			= $device_name;
-			$device->description 	= $device_description;
-			$device->location 		= $device_location;
-			$device->key 			= $device_key;
-			if(!$device->save()){
-				log_message('error','da/add_device | could not save device, user id: '.$user->id.', device name: '.$device_name);
-				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, we couldn't save this device. Please try again."));
-			} else {
-				//device saved, now process and save device variables
-				$result = $device->add_variables($device_variables);
-				if($result['type']=='success'){
-					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device successfully created."));				
+			if($domain->exists()){			
+				$device_name 		= $this->form_validation->set_value('device_name');
+				$device_description = $this->form_validation->set_value('device_description');
+				$device_location 	= $this->form_validation->set_value('device_location');
+				$device_variables	= $this->form_validation->set_value('device_variables');
+				
+				// Hash device key using phpass
+				require_once('application/libraries/phpass-0.1/PasswordHash.php');
+				$hasher 	= new PasswordHash(6,FALSE);
+				$device_key = $hasher->HashPassword($device_name);
+							
+				$device = new Device();
+				$device->domain_id 		= $domain->id;
+				$device->name 			= $device_name;
+				$device->description 	= $device_description;
+				$device->location 		= $device_location;
+				$device->key 			= $device_key;
+				if(!$device->save()){
+					log_message('error','da/add_device | could not save device, user id: '.$user->id.', device name: '.$device_name);
+					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>"Sorry, we couldn't save this device. Please try again."));
 				} else {
-					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>$result['message']));					
+					//device saved, now process and save device variables
+					$result = $device->add_variables($device_variables);
+					if($result['type']=='success'){
+						$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"Device successfully created."));				
+					} else {
+						$this->session->set_flashdata('message',array('type'=>'error', 'message'=>$result['message']));					
+					}
 				}
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>'No domain selected.'));				
 			}
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));			
@@ -107,24 +111,22 @@ class Da extends CI_Controller{
 		$this->form_validation->set_rules('password','Password','trim|required|xss_clean');
 		$this->form_validation->set_rules('email','Email','trim|required|xss_clean');
 		$this->form_validation->set_rules('device_id','Device Id','trim|xss_clean');
-		$this->form_validation->set_rules('domain_id','Domain Id','trim|required|xss_clean');
 		if($this->form_validation->run()){
-			$this->load->library('tank_auth');
-			$email_activation = $this->config->item('email_activation', 'tank_auth');
-			if (!is_null($data = $this->tank_auth->create_user(
-					$this->form_validation->set_value('username'),
-					$this->form_validation->set_value('email'),
-					$this->form_validation->set_value('password'),
-					$email_activation))){
-				//send welcome email to newly created user admin, with login details
-				$data['site_name'] = $this->config->item('website_name', 'tank_auth');
-				$this->_send_email('welcome', $data['email'], $data);
+			$domain = new Domain($this->session->userdata('managing_domain_id'));
+			if($domain->exists()){
+				$this->load->library('tank_auth');
+				$email_activation = $this->config->item('email_activation', 'tank_auth');
+				if (!is_null($data = $this->tank_auth->create_user(
+						$this->form_validation->set_value('username'),
+						$this->form_validation->set_value('email'),
+						$this->form_validation->set_value('password'),
+						$email_activation))){
+					//send welcome email to newly created user admin, with login details
+					$data['site_name'] = $this->config->item('website_name', 'tank_auth');
+					$this->_send_email('welcome', $data['email'], $data);
 
-				//mark user as belonging to submitted domain id
-				$new_user = new User($data['user_id']);
-				$domain_id = $this->form_validation->set_value('domain_id');
-				$domain = new Domain($domain_id);
-				if($domain->exists()){
+					//mark user as belonging to submitted domain id
+					$new_user = new User($data['user_id']);
 					$new_user->belongs_to_domain_id = $domain_id;
 					$new_user->role = '3';
 					$new_user->save();
@@ -138,8 +140,12 @@ class Da extends CI_Controller{
 					}
 					$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"User added successfully"));					
 				} else {
-					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>'This domain does not exist'));					
-				}	
+					$this->lang->load('tank_auth');
+					$error = $this->tank_auth->get_error_message();
+					$this->session->set_flashdata('message',array('type'=>'error', 'message'=>$this->lang->line($error['username'])));				
+				}
+			} else {
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>'No domain selected.'));					
 			}			
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));	
@@ -350,9 +356,11 @@ class Da extends CI_Controller{
 
 							//clone device list view
 							$cloned_view = $device->device_list_view->get();
-							$cloned_view->id = "";
-							$cloned_view->device_id = $cloned_device->id;
-							$cloned_view->save_as_new();
+							if($cloned_view->exists()){
+								$cloned_view->id = "";
+								$cloned_view->device_id = $cloned_device->id;
+								$cloned_view->save_as_new();
+							}
 						}
 					}
 

@@ -173,6 +173,10 @@ class A extends CI_Controller{
 					}					
 				}
 				$this->session->set_flashdata('message',array('type'=>'success', 'message'=>"User created successfully"));	
+			} else {
+				$this->lang->load('tank_auth');
+				$error = $this->tank_auth->get_error_message();
+				$this->session->set_flashdata('message',array('type'=>'error', 'message'=>$this->lang->line($error['username'])));					
 			}			
 		} else {
 			$this->session->set_flashdata('message',array('type'=>'error', 'message'=>validation_errors()));	

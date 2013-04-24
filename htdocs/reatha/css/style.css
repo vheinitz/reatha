@@ -51,7 +51,7 @@
 }
 
 .td-notification-list-action{
-	width: 15%;
+	width: 50%;
 }
 
 #notification-list-action{
@@ -137,6 +137,11 @@ select, input[type="file"]{
 	word-wrap:break-word;
 	padding: 0px;
 	resize:none;
+}
+
+.table-da-notification-list{
+	width: 650px;
+	display: block;
 }	
 
 @media (min-width: 768px) and (max-width: 979px) { 
@@ -212,12 +217,15 @@ select, input[type="file"]{
 	#user-devices-list{
 		width: 90%;
 		margin: 0px auto;
+		font-size: small;
 	}	
 	.da-device-key{
 		font-size: 0.5em;	
-	}	
+	}
+
 	#user-device-data{
 		width: 90%;
 		margin: 0px auto;
+		font-size: small;
 	} 		
 }
