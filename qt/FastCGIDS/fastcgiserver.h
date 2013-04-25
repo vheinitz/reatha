@@ -15,6 +15,7 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QMap>
 
 class FastCgiServer: public QObject
 {
@@ -28,10 +29,12 @@ public slots:
 
 private slots:
     void processNewConnection();
+    void processNewRequest(); //TODO move elsewhere
 
 
 private:
     QTcpServer _srv;
+	QMap<QString, QString> _deviceVars;
 };
 
 #endif

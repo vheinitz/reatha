@@ -2,6 +2,7 @@
 #define _FastCgiRequest_HG
 
 #include <QTcpSocket>
+#include <QTimer>
 #include <QObject>
 
 enum {	 EFcgiBeginRequest=1
@@ -95,10 +96,35 @@ private:
 	bool readEndRequest( int &i, QByteArray &data, FcgiEndRequestRecord &er );
 
 public slots:
-	void prcessData();
-	void prcessError(QAbstractSocket::SocketError);
+	void processData();
+	void processError(QAbstractSocket::SocketError);
+	void close();
+
+signals:
+	void newRequest();
+
+
+public:
+	TFastCgiParameters _parameters;	
+	QByteArray _inData;
+	int requestId()const{return _reqId;}
+
+	void sendData( QString data );
+private slots:
+	void processResponse();
+	void processTimeout();
 
 private:
 	QTcpSocket *_sock;
+	QByteArray _data;
+	QString _outData;
+	QTimer *_timeoutTimer;
+
+	FcgiHeader _header;
+	FcgiBeginRequestRecord _beginReqRecord;
+	
+	int _reqId;
+	int _idx;
+	static int _uidcnt;
 };
 #endif

@@ -3,7 +3,7 @@
 //Copyright 2013, Valentin Heinitz
 //vheinitz@googlemail.com, 2013-01-16
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include "reathatestclient.h"
 
 

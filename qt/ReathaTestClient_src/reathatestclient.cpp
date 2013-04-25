@@ -12,6 +12,10 @@
 #include <QNetworkReply>
 #include "help.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+#include <QUrlQuery>
+#endif
+
 const QString ReathaTestClientVersion="0.0.5";
 
 ReathaTestClient::ReathaTestClient(QWidget *parent) :
@@ -114,13 +118,21 @@ void ReathaTestClient::updateData( QString tagId, QString tagValue )
 void ReathaTestClient::startRequest()
 {
 	QUrl url(ui->eUrl->text());
-	QUrl postData;
 
-	postData.addQueryItem("key", ui->eDeviceKey->text());
-	for( QMap<QString,QString>::iterator it = _sendDataList.begin(); it !=_sendDataList.end();++it )
-	{
-		postData.addQueryItem( it.key(), it.value() );
-	}
+
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+    QUrl postData;
+#else
+    QUrlQuery postData;
+#endif
+    postData.addQueryItem("key", ui->eDeviceKey->text());
+    for( QMap<QString,QString>::iterator it = _sendDataList.begin(); it !=_sendDataList.end();++it )
+    {
+        postData.addQueryItem( it.key(), it.value() );
+    }
+
+
+
 	_sendDataList.clear();
 
 	QNetworkRequest request(url);

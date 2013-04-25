@@ -1,0 +1,87 @@
+<!doctype html>
+<!-- 
+   Author: Valentin Heinitz, http://heinitz-it.de
+   Copyright: 2013
+   License: BSD
+   
+   Description:
+   ============
+   Demonstration of publisher subscriber mechanism within DOM.
+   Elements elem1 - elem4 subscribe to variables v1-v4 and change t
+   heir CSS attribute "opacity" accordingly to the values ov v1-v4.
+   The values are obtained by ajax requests.
+   Currently the request data is ignored. 
+   ===TODO: send array of vars to be sent in response
+   Response data is application/json array having name-value pairs:
+   [{"varName":"VariableName1","val":"VariableValue1"},...]
+   
+   Subscription is done with: subscribe( VariableName, DomElementId, ElementCssAttribute );
+   ===TODO add type of action e.g. calling any function
+-->
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>FastCGI Data-Server Polling Demo</title>	
+</head>
+<body>
+
+<!-- Elements to be updated-->
+	<div id="elem1">elem1</div><br/>
+	<div id="elem2">elem2</div><br/>
+	<div id="elem3">elem3</div><br/>
+	<div id="elem4">elem4</div><br/>
+	
+	<script src="./js/jquery-1.9.1.min.js"></script>
+	<script>
+	
+		var _vars=[];
+		var idx=0;
+		var dataapi="api.php"; // currently nginx configured to process fcgi pn any php
+		function subscribe( varName, elem, prop )
+		{
+			_vars[ _vars.length ] = {"varName":varName,"elem":elem,"prop":prop};
+			idx++;
+			console.log( varName +", "+ elem +", "+ prop );
+		}
+		
+		function publish( varName, val )
+		{
+			for( i = 0; i < _vars.length; i++ )
+			{			
+				if ( _vars[i].varName ===  varName )
+				{
+					$("#"+_vars[i].elem).css(_vars[i].prop, val);
+				}
+			}
+		}
+		
+		function processResponse( vars )
+		{
+			for( ii = 0; ii < vars.length; ii++ )
+			{	
+				publish( vars[ii].varName, vars[ii].val );
+			}
+		}
+		
+		function pollData( )
+		{
+			$.post( dataapi, ["v1","v2","v3"] ).done( function( data ) {
+				processResponse( data );
+			});
+		}
+				
+		$( document ).ready(function() {
+			
+			setInterval(pollData, 10)
+			
+			subscribe( "v1", "elem1", "opacity" );
+			subscribe( "v2", "elem2", "opacity" );
+			subscribe( "v3", "elem3", "opacity" );
+			subscribe( "v4", "elem4", "opacity" );		
+			
+			
+		});		
+	</script>
+</body>
+</html>

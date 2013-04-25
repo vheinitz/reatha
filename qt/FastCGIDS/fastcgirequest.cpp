@@ -1,11 +1,22 @@
 #include "fastcgirequest.h"
+#include <QTimer>
+
+int FastCgiRequest::_uidcnt=0;
 
 FastCgiRequest::FastCgiRequest(QTcpSocket *sock, QObject *p):
 	QObject(p)
 	,_sock(sock)
+	,_reqId(-1)
+	,_idx(0)	
 {
-	connect(_sock,SIGNAL(readyRead()), this, SLOT(prcessData()));
-	connect(_sock,SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(prcessError(QAbstractSocket::SocketError)));
+	connect(_sock,SIGNAL(readyRead()), this, SLOT(processData()));
+	connect(_sock,SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(processError(QAbstractSocket::SocketError)));
+	_timeoutTimer = new QTimer(this);
+	_timeoutTimer->setInterval(2000);
+	_timeoutTimer->setSingleShot(true);
+	connect(_timeoutTimer,SIGNAL(timeout()), this, SLOT(processTimeout()));
+	_uidcnt++;
+
 }
 
 FastCgiRequest::~FastCgiRequest()
@@ -17,11 +28,25 @@ FastCgiRequest::~FastCgiRequest()
 
 bool FastCgiRequest::readParameters( int &i, QByteArray &data, TFastCgiParameters &p )
 {
+	if (i+1 >= data.size())
+		return false;
+
 	while(1){//TODO check for errors
 		int nameLen=data.at(i++);
 		if ( nameLen == 0 )
 			return true;
+		if (i+1 >= data.size())
+		{
+			--i;
+			return false;
+		}
 		int valueLen=data.at(i++);
+		if (i+valueLen+nameLen >= data.size())
+		{
+			--i;
+			--i;
+			return false;
+		}
 		QString name = data.mid( i, nameLen );	
 		i+=nameLen;
 		QString value = data.mid( i, valueLen );
@@ -67,6 +92,8 @@ QByteArray FastCgiRequest::makeHeaderData( int type, int req, int len, int plen 
 
 bool FastCgiRequest::readInput( int &i, QByteArray &data, int len, QByteArray &d )
 {
+	if (i+len >= data.size())
+		return false;
 	d= data.mid(i,len);
 	i+=len;
 	return true;
@@ -74,6 +101,8 @@ bool FastCgiRequest::readInput( int &i, QByteArray &data, int len, QByteArray &d
 
 bool FastCgiRequest::readBeginRequest( int &i, QByteArray &data, FcgiBeginRequestRecord &br )
 {
+	if (i+8 > data.size())
+		return false;
 	br.body.role = ((unsigned char)data.at(i++)<<8) | (unsigned char)data.at(i++);
 	br.body.flags = data.at(i++);
 	i+=5; //skip reserved
@@ -82,45 +111,63 @@ bool FastCgiRequest::readBeginRequest( int &i, QByteArray &data, FcgiBeginReques
 
 bool FastCgiRequest::readEndRequest( int &i, QByteArray &data, FcgiEndRequestRecord &er )
 {
+	if (i+8 > data.size())
+		return false;
 	er.body.appStatus = (unsigned char)(data.at(i++)<<24) | (unsigned char)(data.at(i++)<<16) |(unsigned char)(data.at(i++)<<8)| (unsigned char)data.at(i++);
 	er.body.protocolStatus = data.at(i++);
 	i+=5; //skip reserved
 	return true;
 }
 
-void FastCgiRequest::prcessData()
+//TODO make sure no chunk is missing
+void FastCgiRequest::processData()
 {
-    QByteArray data = _sock->readAll();
-	FcgiHeader h;
-	FcgiBeginRequestRecord br;
-	TFastCgiParameters p;	
-	QByteArray d;
-	int reqId=0;
-	int i=0;
-	const char *pbegin=data.constData();
-	const char *dp=data.constData();
-	while(  i < data.size() )
+	_timeoutTimer->stop();
+	static bool readHeader_=true;
+    _data += _sock->readAll();
+	while(  _idx < _data.size()-1 )
 	{
-		
-		readHeader( i, data, h );
-		dp=pbegin+i;
-		switch( h.type )
+		if (readHeader_)
+			if (!readHeader( _idx, _data, _header) )
+			{
+				_timeoutTimer->start();
+				return;
+			}
+
+		readHeader_=true;
+		switch( _header.type )
 		{
 			case EFcgiBeginRequest:
-				reqId = h.requestId;
-				readBeginRequest( i,data, br);
+				_reqId = _header.requestId;
+				if (!readBeginRequest( _idx, _data, _beginReqRecord))
+				{
+					readHeader_=false;
+					_timeoutTimer->start();
+					return;			
+				}
 				break;
 			case EFcgiAbortRequest:
 			 break;
 			case EFcgiEndRequest:
 			 break;
 			case EFcgiParams:				
-				p.clear();
-				if ( h.contentLength > 0 )
-					readParameters( i,data,p );
+				_parameters.clear();
+				if ( _header.contentLength > 0 )
+					if (!readParameters( _idx, _data, _parameters ))
+					{
+						_timeoutTimer->start();
+						readHeader_=false;
+						return;			
+					}
 			 break;
 			case EFcgiStdin:
-				readInput(i,data,h.contentLength, d);
+				if ( _header.contentLength )
+					if(!readInput(_idx, _data, _header.contentLength, _inData))
+					{
+						_timeoutTimer->start();
+						readHeader_=false;
+						return;			
+					}
 			 break;
 			case EFcgiStdout:
 			 break;
@@ -134,33 +181,58 @@ void FastCgiRequest::prcessData()
 			 break;
 			case EFcgiUnknownType:
 			default:
-				i=data.size()+1;
+				_idx=_data.size()+1;
 				break;
 		}			
 	}	
-	QByteArray dout = "Content-type: application/json\r\n\r\n{\"var\":\"v1\",\"val\":\"0.4\"}";
+	emit newRequest();
+
+}
+
+void FastCgiRequest::sendData( QString data )
+{
+	_outData = data;
+	QTimer::singleShot(10,this, SLOT(processResponse()));
+}
+
+void FastCgiRequest::processTimeout()
+{
+	processResponse();
+}
+
+void FastCgiRequest::processResponse()
+{
+	disconnect(_sock,SIGNAL(readyRead()), this, SLOT(processData()));
+	_timeoutTimer->stop();
+	QByteArray dout = QString("Content-type: application/json\r\n\r\n%1").arg( _outData ).toUtf8();
 	int elen = align8Byte(dout.size());
 	int plen = elen-dout.size();
-	QByteArray ho = makeHeaderData(EFcgiStdout,reqId,dout.size(),plen);
+	QByteArray ho = makeHeaderData(EFcgiStdout,_reqId,dout.size(),plen);
 	int ti=0;
-	readHeader(ti,ho,h);
+	readHeader(ti,ho,_header);
     _sock->write(ho);
 	_sock->write(dout);
 	QByteArray dummy( plen, Qt::Uninitialized );
 	_sock->write(dummy);
-	ho = makeHeaderData(EFcgiStdout,reqId,0,0);
+	ho = makeHeaderData(EFcgiStdout,_reqId,0,0);
 	_sock->write(ho);
-	ho = makeHeaderData(EFcgiEndRequest,reqId,0,0);	
+	ho = makeHeaderData(EFcgiEndRequest,_reqId,0,0);	
 	_sock->write(ho);
 	ho = makeHeaderData(0,0,0,0);	
 	_sock->write(ho);
 	_sock->close();
-	//_sock->deleteLater();
-	_sock=0;
-
+	QTimer::singleShot(500, this, SLOT(close()));
 }
 
-void FastCgiRequest::prcessError(QAbstractSocket::SocketError)
+void FastCgiRequest::close()
+{
+	_sock->deleteLater();
+	deleteLater();
+	_uidcnt++;
+	_uidcnt--;
+}
+
+void FastCgiRequest::processError(QAbstractSocket::SocketError)
 {
 
 }

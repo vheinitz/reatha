@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="FastCGIDS"
-	ProjectGUID="{68CD87AC-716B-3F46-9DE4-F53805D45B8D}"
+	ProjectGUID="{6D962EEB-BBA1-38B6-8A7E-E7FC5DD48DE1}"
 	Keyword="Qt4VSv1.0">
 	<Platforms>
 		<Platform
@@ -19,7 +19,7 @@
 			UseOfMfc="0">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;..\..\..\Qt\4.8.4\include\QtCore&quot;,&quot;..\..\..\Qt\4.8.4\include\QtNetwork&quot;,&quot;..\..\..\Qt\4.8.4\include\QtGui&quot;,&quot;..\..\..\Qt\4.8.4\include&quot;,&quot;..\..\..\Qt\4.8.4\include\ActiveQt&quot;,&quot;debug&quot;,&quot;.&quot;,..\..\..\Qt\4.8.4\mkspecs\default"
+				AdditionalIncludeDirectories="&quot;c:\Qt\4.8.4\include\QtCore&quot;,&quot;c:\Qt\4.8.4\include\QtNetwork&quot;,&quot;c:\Qt\4.8.4\include\QtGui&quot;,&quot;c:\Qt\4.8.4\include\QtSql&quot;,&quot;c:\Qt\4.8.4\include&quot;,&quot;c:\Qt\4.8.4\include\ActiveQt&quot;,&quot;debug&quot;,&quot;.&quot;,c:\Qt\4.8.4\mkspecs\default"
 				AdditionalOptions="-Zm200 -w34100 -w34189"
 				AssemblerListingLocation="debug\"
 				BufferSecurityCheck="false"
@@ -28,7 +28,7 @@
 				GeneratePreprocessedFile="0"
 				ObjectFile="debug\"
 				Optimization ="4"
-				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_GUI_LIB,QT_NETWORK_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_SQL_LIB,QT_GUI_LIB,QT_NETWORK_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
 				ProgramDataBaseFileName=".\"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
@@ -39,7 +39,7 @@
 				Name="VCCustomBuildTool" />
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="c:\Qt\4.8.4\lib\qtmaind.lib c:\Qt\4.8.4\lib\QtGuid4.lib c:\Qt\4.8.4\lib\QtNetworkd4.lib c:\Qt\4.8.4\lib\QtCored4.lib"
+				AdditionalDependencies="c:\Qt\4.8.4\lib\qtmaind.lib c:\Qt\4.8.4\lib\QtSqld4.lib c:\Qt\4.8.4\lib\QtGuid4.lib c:\Qt\4.8.4\lib\QtNetworkd4.lib c:\Qt\4.8.4\lib\QtCored4.lib"
 				AdditionalLibraryDirectories="c:\Qt\4.8.4\lib"
 				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
 				GenerateDebugInformation="true"
@@ -62,7 +62,7 @@
 				Name="VCPreLinkEventTool" />
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_GUI_LIB,QT_NETWORK_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,_DEBUG" />
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_SQL_LIB,QT_GUI_LIB,QT_NETWORK_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,_DEBUG" />
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -73,7 +73,7 @@
 			UseOfMfc="0">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;..\..\..\Qt\4.8.4\include\QtCore&quot;,&quot;..\..\..\Qt\4.8.4\include\QtNetwork&quot;,&quot;..\..\..\Qt\4.8.4\include\QtGui&quot;,&quot;..\..\..\Qt\4.8.4\include&quot;,&quot;..\..\..\Qt\4.8.4\include\ActiveQt&quot;,&quot;release&quot;,&quot;.&quot;,..\..\..\Qt\4.8.4\mkspecs\default"
+				AdditionalIncludeDirectories="&quot;c:\Qt\4.8.4\include\QtCore&quot;,&quot;c:\Qt\4.8.4\include\QtNetwork&quot;,&quot;c:\Qt\4.8.4\include\QtGui&quot;,&quot;c:\Qt\4.8.4\include\QtSql&quot;,&quot;c:\Qt\4.8.4\include&quot;,&quot;c:\Qt\4.8.4\include\ActiveQt&quot;,&quot;release&quot;,&quot;.&quot;,c:\Qt\4.8.4\mkspecs\default"
 				AdditionalOptions="-Zm200 -w34100 -w34189"
 				AssemblerListingLocation="release\"
 				BufferSecurityCheck="false"
@@ -82,7 +82,7 @@
 				GeneratePreprocessedFile="0"
 				ObjectFile="release\"
 				Optimization ="2"
-				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_GUI_LIB,QT_NETWORK_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,NDEBUG"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_SQL_LIB,QT_GUI_LIB,QT_NETWORK_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,NDEBUG"
 				ProgramDataBaseFileName=".\"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
@@ -93,7 +93,7 @@
 				Name="VCCustomBuildTool" />
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="c:\Qt\4.8.4\lib\qtmain.lib c:\Qt\4.8.4\lib\QtGui4.lib c:\Qt\4.8.4\lib\QtNetwork4.lib c:\Qt\4.8.4\lib\QtCore4.lib"
+				AdditionalDependencies="c:\Qt\4.8.4\lib\qtmain.lib c:\Qt\4.8.4\lib\QtSql4.lib c:\Qt\4.8.4\lib\QtGui4.lib c:\Qt\4.8.4\lib\QtNetwork4.lib c:\Qt\4.8.4\lib\QtCore4.lib"
 				AdditionalLibraryDirectories="c:\Qt\4.8.4\lib"
 				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
 				GenerateDebugInformation="false"
@@ -117,7 +117,7 @@
 				Name="VCPreLinkEventTool" />
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_GUI_LIB,QT_NETWORK_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT" />
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_SQL_LIB,QT_GUI_LIB,QT_NETWORK_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT" />
 		</Configuration>
 	</Configurations>
 	<Files>
@@ -126,7 +126,13 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath="db\dbmanager.cpp" />
+			<File
 				RelativePath="fastcgidsgui.cpp" />
+			<File
+				RelativePath="fastcgirequest.cpp" />
+			<File
+				RelativePath="fastcgiserver.cpp" />
 			<File
 				RelativePath="main.cpp" />
 		</Filter>
@@ -135,13 +141,15 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
+				RelativePath="db\dbmanager.h" />
+			<File
 				RelativePath="fastcgidsgui.h">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
 						AdditionalDependencies="C:\Qt\4.8.4\bin\moc.exe;fastcgidsgui.h"
-						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;..\..\..\Qt\4.8.4\include\QtCore&quot; -I&quot;..\..\..\Qt\4.8.4\include\QtNetwork&quot; -I&quot;..\..\..\Qt\4.8.4\include\QtGui&quot; -I&quot;..\..\..\Qt\4.8.4\include&quot; -I&quot;..\..\..\Qt\4.8.4\include\ActiveQt&quot; -I&quot;debug&quot; -I&quot;.&quot; -I..\..\..\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 fastcgidsgui.h -o debug\moc_fastcgidsgui.cpp"
+						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;c:\Qt\4.8.4\include\QtCore&quot; -I&quot;c:\Qt\4.8.4\include\QtNetwork&quot; -I&quot;c:\Qt\4.8.4\include\QtGui&quot; -I&quot;c:\Qt\4.8.4\include\QtSql&quot; -I&quot;c:\Qt\4.8.4\include&quot; -I&quot;c:\Qt\4.8.4\include\ActiveQt&quot; -I&quot;debug&quot; -I&quot;.&quot; -Ic:\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 fastcgidsgui.h -o debug\moc_fastcgidsgui.cpp"
 						Description="MOC fastcgidsgui.h"
 						Outputs="debug\moc_fastcgidsgui.cpp"
 						Path="c:\Qt\4.8.4\bin" />
@@ -151,9 +159,55 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						AdditionalDependencies="C:\Qt\4.8.4\bin\moc.exe;fastcgidsgui.h"
-						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;..\..\..\Qt\4.8.4\include\QtCore&quot; -I&quot;..\..\..\Qt\4.8.4\include\QtNetwork&quot; -I&quot;..\..\..\Qt\4.8.4\include\QtGui&quot; -I&quot;..\..\..\Qt\4.8.4\include&quot; -I&quot;..\..\..\Qt\4.8.4\include\ActiveQt&quot; -I&quot;release&quot; -I&quot;.&quot; -I..\..\..\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 fastcgidsgui.h -o release\moc_fastcgidsgui.cpp"
+						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;c:\Qt\4.8.4\include\QtCore&quot; -I&quot;c:\Qt\4.8.4\include\QtNetwork&quot; -I&quot;c:\Qt\4.8.4\include\QtGui&quot; -I&quot;c:\Qt\4.8.4\include\QtSql&quot; -I&quot;c:\Qt\4.8.4\include&quot; -I&quot;c:\Qt\4.8.4\include\ActiveQt&quot; -I&quot;release&quot; -I&quot;.&quot; -Ic:\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 fastcgidsgui.h -o release\moc_fastcgidsgui.cpp"
 						Description="MOC fastcgidsgui.h"
 						Outputs="release\moc_fastcgidsgui.cpp"
+						Path="c:\Qt\4.8.4\bin" />
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="fastcgirequest.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\Qt\4.8.4\bin\moc.exe;fastcgirequest.h"
+						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;c:\Qt\4.8.4\include\QtCore&quot; -I&quot;c:\Qt\4.8.4\include\QtNetwork&quot; -I&quot;c:\Qt\4.8.4\include\QtGui&quot; -I&quot;c:\Qt\4.8.4\include\QtSql&quot; -I&quot;c:\Qt\4.8.4\include&quot; -I&quot;c:\Qt\4.8.4\include\ActiveQt&quot; -I&quot;debug&quot; -I&quot;.&quot; -Ic:\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 fastcgirequest.h -o debug\moc_fastcgirequest.cpp"
+						Description="MOC fastcgirequest.h"
+						Outputs="debug\moc_fastcgirequest.cpp"
+						Path="c:\Qt\4.8.4\bin" />
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\Qt\4.8.4\bin\moc.exe;fastcgirequest.h"
+						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;c:\Qt\4.8.4\include\QtCore&quot; -I&quot;c:\Qt\4.8.4\include\QtNetwork&quot; -I&quot;c:\Qt\4.8.4\include\QtGui&quot; -I&quot;c:\Qt\4.8.4\include\QtSql&quot; -I&quot;c:\Qt\4.8.4\include&quot; -I&quot;c:\Qt\4.8.4\include\ActiveQt&quot; -I&quot;release&quot; -I&quot;.&quot; -Ic:\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 fastcgirequest.h -o release\moc_fastcgirequest.cpp"
+						Description="MOC fastcgirequest.h"
+						Outputs="release\moc_fastcgirequest.cpp"
+						Path="c:\Qt\4.8.4\bin" />
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="fastcgiserver.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\Qt\4.8.4\bin\moc.exe;fastcgiserver.h"
+						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;c:\Qt\4.8.4\include\QtCore&quot; -I&quot;c:\Qt\4.8.4\include\QtNetwork&quot; -I&quot;c:\Qt\4.8.4\include\QtGui&quot; -I&quot;c:\Qt\4.8.4\include\QtSql&quot; -I&quot;c:\Qt\4.8.4\include&quot; -I&quot;c:\Qt\4.8.4\include\ActiveQt&quot; -I&quot;debug&quot; -I&quot;.&quot; -Ic:\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 fastcgiserver.h -o debug\moc_fastcgiserver.cpp"
+						Description="MOC fastcgiserver.h"
+						Outputs="debug\moc_fastcgiserver.cpp"
+						Path="c:\Qt\4.8.4\bin" />
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\Qt\4.8.4\bin\moc.exe;fastcgiserver.h"
+						CommandLine="C:\Qt\4.8.4\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;c:\Qt\4.8.4\include\QtCore&quot; -I&quot;c:\Qt\4.8.4\include\QtNetwork&quot; -I&quot;c:\Qt\4.8.4\include\QtGui&quot; -I&quot;c:\Qt\4.8.4\include\QtSql&quot; -I&quot;c:\Qt\4.8.4\include&quot; -I&quot;c:\Qt\4.8.4\include\ActiveQt&quot; -I&quot;release&quot; -I&quot;.&quot; -Ic:\Qt\4.8.4\mkspecs\default -D_MSC_VER=1500 -DWIN32 fastcgiserver.h -o release\moc_fastcgiserver.cpp"
+						Description="MOC fastcgiserver.h"
+						Outputs="release\moc_fastcgiserver.cpp"
 						Path="c:\Qt\4.8.4\bin" />
 				</FileConfiguration>
 			</File>
@@ -170,6 +224,30 @@
 			</File>
 			<File
 				RelativePath="release\moc_fastcgidsgui.cpp">
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true" />
+			</File>
+			<File
+				RelativePath="debug\moc_fastcgirequest.cpp">
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true" />
+			</File>
+			<File
+				RelativePath="release\moc_fastcgirequest.cpp">
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true" />
+			</File>
+			<File
+				RelativePath="debug\moc_fastcgiserver.cpp">
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true" />
+			</File>
+			<File
+				RelativePath="release\moc_fastcgiserver.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
 					ExcludedFromBuild="true" />
