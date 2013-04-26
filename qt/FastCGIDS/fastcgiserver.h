@@ -34,7 +34,7 @@ private slots:
 
 private:
     QTcpServer _srv;
-	QMap<QString, QString> _deviceVars;
+	QMap<QString, QMap<QString, QString> > _deviceVars;
 };
 
 #endif

@@ -126,6 +126,7 @@ void ReathaTestClient::startRequest()
     QUrlQuery postData;
 #endif
     postData.addQueryItem("key", ui->eDeviceKey->text());
+	postData.addQueryItem("cmd", "SET");
     for( QMap<QString,QString>::iterator it = _sendDataList.begin(); it !=_sendDataList.end();++it )
     {
         postData.addQueryItem( it.key(), it.value() );

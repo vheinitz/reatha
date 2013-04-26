@@ -36,11 +36,15 @@
 	<script>
 	
 		var _vars=[];
+		var _subscribed=[];
 		var idx=0;
+		var _KEY = "12345678";
+		var _pollIntervalId;
 		var dataapi="api.php"; // currently nginx configured to process fcgi pn any php
 		function subscribe( varName, elem, prop )
 		{
 			_vars[ _vars.length ] = {"varName":varName,"elem":elem,"prop":prop};
+			_subscribed [_subscribed.length] = varName;
 			idx++;
 			console.log( varName +", "+ elem +", "+ prop );
 		}
@@ -58,27 +62,35 @@
 		
 		function processResponse( vars )
 		{
-			for( ii = 0; ii < vars.length; ii++ )
-			{	
-				publish( vars[ii].varName, vars[ii].val );
+			
+			if( vars.status === "ok"  )
+			{
+				for( ii = 0; ii < vars.data.length; ii++ )
+				{	
+					publish( vars.data[ii].varName, vars.data[ii].val );
+				}
+				_pollIntervalId = setInterval(pollData, 1000);
 			}
 		}
 		
 		function pollData( )
 		{
-			$.post( dataapi, ["v1","v2","v3"] ).done( function( data ) {
+			clearInterval(_pollIntervalId);
+			$.post( dataapi, "key="+_KEY+"&cmd=GET&"+_subscribed.join("&") ).done( function( data ) {
 				processResponse( data );
 			});
 		}
 				
 		$( document ).ready(function() {
 			
-			setInterval(pollData, 10)
+			setInterval(pollData, 3000)			
 			
-			subscribe( "v1", "elem1", "opacity" );
-			subscribe( "v2", "elem2", "opacity" );
-			subscribe( "v3", "elem3", "opacity" );
+			subscribe( "v1", "elem1", "color" );
+			subscribe( "v2", "elem2", "right" );
+			subscribe( "v3", "elem3", "fontSize" );
 			subscribe( "v4", "elem4", "opacity" );		
+			
+			pollData( );
 			
 			
 		});		
