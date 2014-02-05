@@ -1,0 +1,7 @@
+2013/04/26 23:18:04 [notice] 1952#6848: signal process started
+2013/04/26 23:18:04 [error] 1952#6848: CreateFile() "C:\valik\workspace\reathagh\reatha\nginx/logs/nginx.pid" failed (2: FormatMessage() error:(15100))
+2013/04/26 23:18:56 [notice] 5920#5516: signal process started
+2013/04/26 23:18:56 [error] 5920#5516: invalid PID number "" in "C:\valik\workspace\reathagh\reatha\nginx/logs/nginx.pid"
+2013/04/26 23:19:11 [emerg] 6192#3948: CreateDirectory() "C:\valik\workspace\reathagh\reatha\nginx/temp/client_body_temp" failed (3: FormatMessage() error:(15100))
+2013/04/26 23:19:40 [error] 6212#5412: *1 CreateFile() "C:\valik\workspace\reathagh\reatha\nginx/html/favicon.ico" failed (2: FormatMessage() error:(15100)), client: 127.0.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "127.0.0.1:88"
+2013/04/26 23:22:52 [error] 6212#5412: *4 CreateFile() "C:\valik\workspace\reathagh\reatha\nginx/html/vauth" failed (2: FormatMessage() error:(15105)), client: 127.0.0.1, server: localhost, request: "GET /vauth HTTP/1.1", host: "127.0.0.1:88", referrer: "http://127.0.0.1:88/chview.html"

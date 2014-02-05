@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- 
+   Author: Valentin Heinitz, http://heinitz-it.de
+   Copyright: 2013
+   License: BSD
+   
+   Description:
+   ============
+   Demonstration changing view within a page
+-->
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Change view demo</title>	
+</head>
+<body>
+
+<!-- Elements to be updated-->
+	<div id="main" class="mc">
+	</div><br/>
+	
+	<script src="./js/jquery-1.9.1.min.js"></script>
+	<script src="./js/bootstrap.min.js"></script>
+	<link href="./css/bootstrap.min.css" rel="stylesheet" media="screen" />   
+	
+	
+	<script>
+				
+		$( document ).ready(function() {
+			$.get( "./vmain" ).done( function( data ) {
+				//console.log("data:"+data);
+				$("#main").html(data);
+				$("#bgomain").click(function(event) {
+					event.preventDefault();
+					$.get( "./vauth" ).done( function( mdata ) {
+						console.log("data:"+mdata);
+						$("#main").html(mdata);
+					});
+				})
+			});
+		});	
+		
+		/*$("#bgomain").click(function(event) {
+					event.preventDefault();
+					$("#main").replaceWith('<h2>New heading</h2>');
+				});*/
+	</script>
+</body>
+</html>
