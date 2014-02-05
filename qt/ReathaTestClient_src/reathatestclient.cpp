@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QDateTime>
 #include <QNetworkReply>
+#include <QStringListModel>
 #include "help.h"
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
@@ -39,10 +40,10 @@ ReathaTestClient::ReathaTestClient(QWidget *parent) :
 	connect(&_sendDataTimer, SIGNAL(timeout()), this, SLOT(startRequest()) );
 	_sendDataTimer.setSingleShot(true);
 	_sendDataTimer.setInterval(1000);
-    ui->tvCurrentValues->setModel(&_currentValues);
 	this->setWindowTitle(QString("Reatha Device Simulator. Version: %1").arg(ReathaTestClientVersion) );
     _currentValues.setColumnCount(2);
     _currentValues.setHorizontalHeaderLabels(QStringList()<<tr("Var. name")<<tr("Value"));
+	ui->ltCurrentValues->setModel(&_curValues);
 }
 
 void ReathaTestClient::onVarValueChanges(QString var, QVariant val)
@@ -50,19 +51,14 @@ void ReathaTestClient::onVarValueChanges(QString var, QVariant val)
 	QString sval = val.toString();
 	//ui->eLog->appendPlainText( var+" = "+sval );
 	updateData( var,sval );
-    for ( int i=0; i< _currentValues.columnCount(); ++i )
+
+	QStringList Vars;
+    foreach ( QString k, _sendDataList.keys() )
     {        
-		if ( _currentValues.item(i) && _currentValues.item(i)->data(Qt::DisplayRole).toString() == var )
-        {
-            _currentValues.setItem(i,1,new QStandardItem(sval));
-            return;
-        }
-    }
-    _currentValues.appendRow(
-                QList<QStandardItem*>()
-                    <<new QStandardItem(var)
-                    <<new QStandardItem(sval)
-                );	
+		Vars << k + "\t\t" + _sendDataList[k];
+
+    }   
+	_curValues.setStringList(Vars);
 }
 
 ReathaTestClient::~ReathaTestClient()
@@ -125,22 +121,30 @@ void ReathaTestClient::startRequest()
 #else
     QUrlQuery postData;
 #endif
-    postData.addQueryItem("key", ui->eDeviceKey->text());
-	postData.addQueryItem("cmd", "SET");
+	QString js=QString("{\"device\":\"%1\",").arg(ui->eDeviceKey->text());
+    //postData.addQueryItem("key", ui->eDeviceKey->text());
+	//postData.addQueryItem("cmd", "SET");
+	QString vars;
     for( QMap<QString,QString>::iterator it = _sendDataList.begin(); it !=_sendDataList.end();++it )
     {
-        postData.addQueryItem( it.key(), it.value() );
+		if (!vars.isEmpty())
+			vars+=',';
+		vars +=QString("\"%1\":\"%2\"").arg(it.key()).arg(it.value());
+        //postData.addQueryItem( it.key(), it.value() );
     }
 
+	js += QString("\"vars\":{%1}}").arg(vars);
+
+	//postData.addQueryItem( it.key(), it.value() );
 
 
 	_sendDataList.clear();
 
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	ui->eLog->appendPlainText( "POST: " + url.toString() );
-	ui->eLog->appendPlainText( "  DATA: " + postData.encodedQuery());	
-	QNetworkReply *reply = _qnam.post(request, postData.encodedQuery());
+	ui->eLog->appendPlainText( "PUT: " + url.toString() );
+	ui->eLog->appendPlainText( "  DATA: " + js );	
+	QNetworkReply *reply = _qnam.put(request, js.toUtf8() );
 
     connect(reply, SIGNAL(finished()),
          this, SLOT(httpFinished()));

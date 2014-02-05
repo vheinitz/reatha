@@ -11,6 +11,7 @@
 #include <QUrl>
 #include <QTimer>
 #include <QStandardItemModel>
+#include <QStringListModel>
 #include <QMap>
 #include <QSharedPointer>
 #include <scriptengine.h>
@@ -65,6 +66,7 @@ private:
     QStandardItemModel _currentValues;
     TScript _script;
 	QMap<QString,QString> _sendDataList;
+	QStringListModel _curValues;
 };
 
 #endif // REATHATESTCLIENT_H
