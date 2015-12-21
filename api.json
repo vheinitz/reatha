@@ -1,0 +1,147 @@
+[
+
+  {
+    "url": "/api/user/login",
+    "resp": {
+      "result": "OK"
+    }
+  },
+  {
+    "url": "/api/user/logout",
+    "resp": {
+      "result": "OK"
+    }
+  },
+  {
+    "url": "/api/instrument/list",
+    "resp": {
+      "result": "OK",
+      "instruments": [
+        {
+          "id": "DEV1",
+          "name": "DEV1",
+          "type": "HELIOS1",
+          "location": "Location Data",
+          "info": "some info",
+          "last_contact": "2015-12-17 01:42:33"
+        },
+        {
+          "id": "DEV2",
+          "name": "DEV2",
+          "type": "HELIOS2",
+          "location": "Location Data",
+          "info": "some info",
+          "last_contact": "2015-12-17 01:42:33"
+        },
+        {
+          "id": "DEV3",
+          "name": "DEV3",
+          "type": "HELIOS3",
+          "location": "Location Data",
+          "info": "some info",
+          "last_contact": "2015-12-17 01:42:33"
+        }
+      ]
+    }
+  },
+  {
+    "url": "/api/instrument/:DEV1",
+    "resp": {
+      "result": "OK",
+      "data": {
+        "id": "DEV1",
+        "name": "DEV1",
+        "type": "HELIOS1",
+        "location": "Location Data",
+        "info": "some info",
+        "last_contact": "2015-12-17 01:42:33"
+      }
+    }
+  },
+  {
+    "url": "/api/instrument/:DEV2",
+    "resp": {
+      "result": "OK",
+      "data": {
+        "id": "DEV2",
+        "name": "DEV2",
+        "type": "HELIOS2",
+        "location": "Location Data",
+        "info": "some info",
+        "last_contact": "2015-12-17 01:42:33"
+      }
+    }
+  },
+  {
+    "url": "/api/instrument/:DEV3",
+    "resp": {
+      "result": "OK",
+      "data": {
+        "id": "DEV3",
+        "name": "DEV3",
+        "type": "HELIOS3",
+        "location": "Location Data",
+        "info": "some info",
+        "last_contact": "2015-12-17 01:42:33"
+      }
+    }
+  },
+  {
+    "url": "/api/instrument/get/:DEV1",
+    "resp": {
+      "result": "OK",
+      "data": {
+        "vars": [
+          {
+            "n": "var1",
+            "v": 1
+          },
+          {
+            "n": "var2",
+            "v": 2
+          },
+          {
+            "n": "var3",
+            "v": 3
+          }
+        ]
+      }
+    }
+  },
+  {
+    "url": "/api/instrument/get/:DEV2",
+    "resp": {
+      "result": "OK",
+      "data": {
+        "vars": [
+          {
+            "n": "_var1",
+            "v": 1
+          },
+          {
+            "n": "_var2",
+            "v": 2
+          },
+          {
+            "n": "_var3",
+            "v": 3
+          }
+        ]
+      }
+    }
+  },
+  {
+    "url": "/api/instrument/set/:KEY;",
+    "resp": {
+      "result": "OK",
+      "data": {
+        "id": "DEV3",
+        "name": "DEV3",
+        "type": "HELIOS3",
+        "location": "Location Data",
+        "info": "some info",
+        "last_contact": "2015-12-17 01:42:33"
+      }
+    }
+  }
+]

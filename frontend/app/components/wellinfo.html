@@ -1,0 +1,10 @@
+
+<div class="panel" css{margin:2px} data-bind="visible:wellInfo">
+	<div class="panel-body">
+		<strong>Test:</strong><br>  <small data-bind="text: wellInfo()? wellInfo().runData.test_name : '' " ></small><br>
+		<strong>Test mode:</strong><br>  <small data-bind="text: wellInfo()? wellInfo().runData.test_mode : '' " ></small><br>
+		<strong>Sample Id:</strong><br>  <small data-bind="text: wellInfo()? wellInfo().runData.sample_id : '' " ></small><br>
+		<strong>Dilution:</strong><br>  <small data-bind="text: wellInfo()? wellInfo().runData.dilution : '' " ></small><br>
+		<strong>Slide Barcode:</strong><br>  <small data-bind="text: wellInfo()? wellInfo().runData.slide_id : '' " ></small><br>
+	</div>
+</div>

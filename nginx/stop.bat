@@ -1,1 +1,0 @@
-pskill -t nginx.exe

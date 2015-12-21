@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title data-bind="text: route().page">Web Monitoring</title>
+    <!-- build:css -->
+      <link href="bower_modules/components-bootstrap/css/bootstrap.min.css" rel="stylesheet">
+      <link href="css/styles.css" rel="stylesheet">
+
+    <!-- endbuild -->
+    <!-- build:js -->
+      <script src="app/require.config.js"></script>
+      <script data-main="app/startup" src="bower_modules/requirejs/require.js"></script>
+      <script src="bower_components/jquery-flot/jquery.js"></script>
+	    <script src="bower_components/jquery-flot/jquery.flot.js"></script>
+      <script src="bower_components/jquery-flot/jquery.flot.categories.js"></script>
+      <script src="bower_components/jquery-flot/jquery.flot.time.js"></script>
+    <!-- endbuild -->
+  </head>
+  <body>
+    <navbar params="route: route"></navbar>
+    <div id="page" class="col-md-12" data-bind="component: { name: app_share.main_view , params: route }"></div>
+  </body>
+</html>
