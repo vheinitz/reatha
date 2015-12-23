@@ -55,6 +55,12 @@ define(["knockout", "text!./instrument.html"], function (ko, template) {
 		        for (var vi in data.data.vars) {
 		            //self.instruments.push({id:js.devices[dev], type:"HELIOS", info:"Floor 001" });
 		            self.vars.push(data.data.vars[vi]);
+		            cid = "#" + data.data.vars[vi].n;
+		            //if ($(cid).length) {
+
+		            $("#" + data.data.vars[vi].n).text(data.data.vars[vi].v);
+		            //}
+		            
 		        }
 		    });
 		};
