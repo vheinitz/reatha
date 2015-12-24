@@ -49,9 +49,30 @@ define(["knockout", "text!./instrument.html"], function (ko, template) {
 
 		this.getVars= function () {
 		    console.log("getVars :", '/api/instrument/get/:' + this.id());
+
+		   
+		    //var html = mustache.to_html(template, person);
+		    //$('#sampleArea').html(html);
+           		    
+		    console.log("listInstruments ... ", template);
+
 		    $.post('/api/instrument/get/:' + this.id(), '{"session":"ABCDEFG"}', function (data) {
 		        console.log("listInstruments ... ", data.data);
 		        self.vars([]);
+		        var template = data.data.template;
+
+		        var matches = template.match(/{{([^}]*?)}}/);
+
+		        console.log("VARS: ", matches);
+
+		        /*for (var mi in matches) {
+		            console.log("VARS: ", matches[mi]);
+		        }*/
+
+		        if (matches) {
+		            var submatch = matches[1];
+		        }
+
 		        for (var vi in data.data.vars) {
 		            //self.instruments.push({id:js.devices[dev], type:"HELIOS", info:"Floor 001" });
 		            self.vars.push(data.data.vars[vi]);
@@ -60,8 +81,9 @@ define(["knockout", "text!./instrument.html"], function (ko, template) {
 
 		            $("#" + data.data.vars[vi].n).text(data.data.vars[vi].v);
 		            //}
-		            
+		            template = template.replace("{{" + data.data.vars[vi].n + "}}", data.data.vars[vi].v);
 		        }
+		        document.getElementById('sampleArea').innerHTML = template;
 		    });
 		};
 

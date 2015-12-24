@@ -91,6 +91,7 @@
     "resp": {
       "result": "OK",
       "data": {
+        "template": "<h4>{{var3}} {{var1}}</h4>Blog: {{var2}}",
         "vars": [
           {
             "n": "var1",
