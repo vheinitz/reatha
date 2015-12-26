@@ -1,12 +1,14 @@
-
-
-
 var Instr = {}
 
-function pollVars() {
-    setTimeout(pollVars, 3000);
-    Instr.getVars();
+function poll_vars() {
+    setTimeout(poll_vars, 3000);
+    Instr.get_vars();
 }
+
+function view( v) {
+    Instr.change_view(v);
+}
+
 
 define(["knockout", "text!./instrument.html"], function (ko, template) {
 	
@@ -24,6 +26,8 @@ define(["knockout", "text!./instrument.html"], function (ko, template) {
 		this.name = ko.observable("");
 		this.type = ko.observable("");
 		this.vars = ko.observableArray([]);
+		this.views = [];
+		this.current_view_idx = 0;
 		
 
 		
@@ -36,32 +40,59 @@ define(["knockout", "text!./instrument.html"], function (ko, template) {
 		    console.log("listInstruments :", '/api/instrument/:' + this.id());
 		    $.post('/api/instrument/:' + this.id(), '{"session":"ABCDEFG"}', function (data) {
 		        console.log("listInstruments ... ", data.data);
+				console.log("listInstruments ... ", data.data);
 		        self.info(data.data.info);
 		        self.name(data.data.name);
 		        self.location(data.data.location);
 		        self.last_contact(data.data.last_contact);
 		        self.type(data.data.type);
-		        self.getVars();
-		        pollVars();
+		        self.get_vars();
+				self.views = data.data.views;
+		        poll_vars();
 		    });
 		};
 
+		this.change_view= function ( v ) {
+			console.log("Change View :", v);
+		    self.current_view_idx = 0;
+			var found = false;
+			for (var vi in self.views) {
+				if (v == self.views[self.current_view_idx].n)
+				{
+					found = true;
+					console.log("View OK!:", vi, self.views[self.current_view_idx].v );
+					break;
+				}
+				self.current_view_idx +=1;
+			}
+			if (! found) 
+				self.current_view_idx = 0;
+			else
+				console.log("Invalid View:", v );
+			
+			self.get_vars();
+		}
 
-		this.getVars= function () {
-		    console.log("getVars :", '/api/instrument/get/:' + this.id());
-
-		   
-		    //var html = mustache.to_html(template, person);
-		    //$('#sampleArea').html(html);
-           		    
-		    console.log("listInstruments ... ", template);
+		this.get_vars= function () {
+		    console.log("get_vars :", '/api/instrument/get/:' + this.id());
 
 		    $.post('/api/instrument/get/:' + this.id(), '{"session":"ABCDEFG"}', function (data) {
-		        console.log("listInstruments ... ", data.data);
+		        console.log("Instr vars ... ", data.data.vars);
 		        self.vars([]);
-		        var template = data.data.template;
+		        //var template = data.data.template;
+				var template = self.views[self.current_view_idx].v;//"<h4>{{$var3+1}} {{$var1}}</h4>Blog: {{$var2}} <div onClick=\"command('chpage', 'p1')\">Test click</div>";
+				
+		        for (var vi in data.data.vars) {
+		            //self.instruments.push({id:js.devices[dev], type:"HELIOS", info:"Floor 001" });
+		            self.vars.push(data.data.vars[vi]);
+		            cid = "#" + data.data.vars[vi].n;
+		            $("#" + data.data.vars[vi].n).text(data.data.vars[vi].v);
+		            template = template.replace("$" + data.data.vars[vi].n, data.data.vars[vi].v);
+		        }
+				
+				
 
-		        var matches = template.match(/{{([^}]*?)}}/);
+		        var matches = template.match(/{{([^}]*?)}}/g);
 
 		        console.log("VARS: ", matches);
 
@@ -72,17 +103,19 @@ define(["knockout", "text!./instrument.html"], function (ko, template) {
 		        if (matches) {
 		            var submatch = matches[1];
 		        }
-
-		        for (var vi in data.data.vars) {
-		            //self.instruments.push({id:js.devices[dev], type:"HELIOS", info:"Floor 001" });
-		            self.vars.push(data.data.vars[vi]);
-		            cid = "#" + data.data.vars[vi].n;
-		            //if ($(cid).length) {
-
-		            $("#" + data.data.vars[vi].n).text(data.data.vars[vi].v);
-		            //}
-		            template = template.replace("{{" + data.data.vars[vi].n + "}}", data.data.vars[vi].v);
+				
+				var_results = []
+				for (var mi in matches)
+				{
+					var val = eval(matches[mi]);
+					var_results.push( val )
 		        }
+				console.log("VAR_RESULTS: ", var_results);
+				for (var ri in var_results) {
+		            template = template.replace( /\{\{[^}]+\}\}/, var_results[ri] );
+					console.log("HTML: ",ri, template);
+		        }
+				
 		        document.getElementById('sampleArea').innerHTML = template;
 		    });
 		};

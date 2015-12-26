@@ -54,7 +54,21 @@
         "type": "HELIOS1",
         "location": "Location Data",
         "info": "some info",
-        "last_contact": "2015-12-17 01:42:33"
+        "last_contact": "2015-12-17 01:42:33",
+		"views": [
+          {
+            "n": "main",
+            "v": "<h3>Main Dev 1</h3> <div onClick=\"view('status')\">Status</div> | <div onClick=\"view('config')\">Config</div>"
+          },
+          {
+            "n": "status",
+            "v": "<h4>Status</h4> Status: {{$var2}}<br/><div onClick=\"view('main')\">Main</div>"
+          },
+          {
+            "n": "config",
+            "v": "<h4>{{$var3+1}} {{$var1}}</h4>Blog: {{$var2}} <br/><div onClick=\"view('main')\">Main</div>"
+          }
+        ]
       }
     }
   },
@@ -68,7 +82,21 @@
         "type": "HELIOS2",
         "location": "Location Data",
         "info": "some info",
-        "last_contact": "2015-12-17 01:42:33"
+        "last_contact": "2015-12-17 01:42:33",
+		"views": [
+          {
+            "n": "main",
+            "v": "<h3>Main Dev 2</h3>"
+          },
+          {
+            "n": "status",
+            "v": "<h4>Status</h4> Status: {{$var2}}"
+          },
+          {
+            "n": "config",
+            "v": "<h4>{{$var3+1}} {{$var1}}</h4>Blog: {{$var2}}"
+          }
+        ]
       }
     }
   },
@@ -82,7 +110,21 @@
         "type": "HELIOS3",
         "location": "Location Data",
         "info": "some info",
-        "last_contact": "2015-12-17 01:42:33"
+        "last_contact": "2015-12-17 01:42:33",
+		"views": [
+          {
+            "n": "main",
+            "v": "<h3>Main Dev 3</h3>"
+          },
+          {
+            "n": "status",
+            "v": "<h4>Status</h4> Status: {{$var2}}"
+          },
+          {
+            "n": "config",
+            "v": "<h4>{{$var3+1}} {{$var1}}</h4>Blog: {{$var2}}"
+          }
+        ]
       }
     }
   },
@@ -91,11 +133,10 @@
     "resp": {
       "result": "OK",
       "data": {
-        "template": "<h4>{{var3}} {{var1}}</h4>Blog: {{var2}}",
         "vars": [
           {
             "n": "var1",
-            "v": "hello"
+            "v": "'hello'.replace('h','H')"
           },
           {
             "n": "var2",
