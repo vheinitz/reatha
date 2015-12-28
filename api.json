@@ -1,9 +1,27 @@
 [
 
   {
-    "url": "/api/user/login",
+    "url": "/api/user/login/:user;:user",
     "resp": {
-      "result": "OK"
+      "result": "OK",
+	  "level":"user",
+	  "session":"1"
+    }
+  },
+  {
+    "url": "/api/user/login/:suser;:suser",
+    "resp": {
+      "result": "OK",
+	  "level":"suser",
+	  "session":"2"
+    }
+  },
+  {
+    "url": "/api/user/login/:admin;:admin",
+    "resp": {
+      "result": "OK",
+	  "level":"admin",
+	  "session":"3"
     }
   },
   {

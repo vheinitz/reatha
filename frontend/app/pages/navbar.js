@@ -1,9 +1,10 @@
 define(['knockout', 'text!./navbar.html'], function(ko, template) {
 
   function NavBarViewModel(params) {
-      app_share.main_view("home");
+      //app_share.main_view("home");
+	  var self = this;
       this.route = params.route;
-
+	  
       this.page_instruments = function ()
       {
           console.log("page_instruments ");
@@ -15,6 +16,21 @@ define(['knockout', 'text!./navbar.html'], function(ko, template) {
           console.log("page_home ");
           app_share.main_view("home");
       }
+	  
+	  this.page_admin = function () {
+
+          console.log("page_home ");
+          app_share.main_view("admin");
+      }
+	  
+	  this.logout = function () {
+
+          console.log("logout ");
+          app_share.main_view("login");
+      }
+	  
+	  //app_share.main_view("login");
+	  app_share.main_view("admin");
   }
 
 

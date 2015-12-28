@@ -2,7 +2,7 @@
 
 // [AUTO-UPDATE FROM DISK]
 var app_components = [ "wellinfo" ];
-var app_pages = ["navbar", "home", "instruments", "instrument"];
+var app_pages = ["navbar", "home", "instruments", "instrument", "login", "admin"];
 // [END AUTO-UPDATE FROM DISK]
 
 var require = {

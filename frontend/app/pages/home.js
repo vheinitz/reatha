@@ -2,7 +2,7 @@ console.log( "Home" )
 define(["knockout", "text!./home.html"], function(ko, templ_arg) {
 
   function HomeViewModel(route) {
-    this.message = ko.observable('Welcome to web monitoring!');
+    
   }
 
  
