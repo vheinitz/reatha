@@ -3,13 +3,16 @@ var app_share = {
     main_view: 'login',
 	level: '',
 	session:'',
-    instrument_id: ''
+    instrument_id: '',
+	domain_id: ''
 };
 define(['jquery', 'knockout', './router', 'bootstrap', 'knockout-projections'], function($, ko, router) {
 
     app_share.main_view = ko.observable();
 	app_share.level = ko.observable();
 	app_share.session = ko.observable();
+	app_share.instrument_id = ko.observable();
+	app_share.domain_id = ko.observable();
 
 	//router.app_components = app_components;
 	//router.app_pages = app_pages;

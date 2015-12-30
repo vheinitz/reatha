@@ -12,6 +12,26 @@ define(["knockout", "text!./admin.html"], function (ko, template) {
 		this.delete_domain = function() {
 			self.model.delete_domain( self )	
 		}.bind(this);
+		
+		this.configure_domain = function() {
+			//self.model.configure_domain( self )
+			self.model.selected_domain(self.data.id)
+		}.bind(this);
+        
+	}
+	
+	var DomainAdmin = function( model, data) {
+		//console.log( "Instrument", JSON.stringify(data) );
+		var self = this;	
+		this.model = model;	
+		this.data = data;
+		this.edit_domain_admin = function() {
+			self.model.edit_domain_admin( self )	
+		}.bind(this);
+		
+		this.delete_domain_admin = function() {
+			self.model.delete_domain_admin( self )	
+		}.bind(this);
         
 	}
 	
@@ -20,6 +40,10 @@ define(["knockout", "text!./admin.html"], function (ko, template) {
 	    var self = this;
 		//console.log("AdminViewModel", app_share.instrument_id());
 		this.domains = ko.observableArray();
+		this.domain_admins = ko.observableArray();
+		
+		this.selected_domain = ko.observable('');
+		
 		this.addName = ko.observable();
 		this.addInfo = ko.observable();
 		this.addId = ko.observable();
@@ -44,6 +68,26 @@ define(["knockout", "text!./admin.html"], function (ko, template) {
 				//setTimeout(self.listInstruments.bind(self), 3000);
 			});
 		};
+		
+		this.list_domain_admins = function( )
+		{
+			console.log( "listInstruments " );
+			$.post('/api/domain/:'+'123','{"session":"ABCDEFG"}', function(data) {
+				console.log( "listInstruments ... ", data );
+				js =  data
+				//console.log( "listInstruments ... JSON ", js );
+				
+				self.domains([]);
+				
+				for(var di in js.domains)
+				{
+					//self.domains.push({id:js.devices[dev], type:"HELIOS", info:"Floor 001" });
+					self.domains.push(new Domain(self, js.domains[di]));
+					console.log( "DOMAIN:", di, js.domains[di] );
+				}
+				//setTimeout(self.listInstruments.bind(self), 3000);
+			});
+		};
 
 		this.edit_domain = function ( d) {
 		    console.log("edit_domain ", d.data.id);
@@ -53,6 +97,12 @@ define(["knockout", "text!./admin.html"], function (ko, template) {
 		
 		this.delete_domain = function ( d) {
 		    console.log("delete_domain ", d.data.id);
+		    //app_share.domain_id(d.data.id)
+		    //app_share.main_view('instrument');		  
+		};
+		
+		this.configure_domain = function ( d) {
+		    console.log("configure_domain ", d.data.id);
 		    //app_share.domain_id(d.data.id)
 		    //app_share.main_view('instrument');		  
 		};
