@@ -1,1 +1,2 @@
-nodemon .\app.js 
+REM nodemon .\app.js
+node .\app.js 

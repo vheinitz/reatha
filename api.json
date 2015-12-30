@@ -31,6 +31,29 @@
     }
   },
   {
+    "url": "/api/domain/list",
+    "resp": {
+      "result": "OK",
+      "domains": [
+        {
+          "id": "Customer XYZ",
+          "name": "XYZ",
+          "info": "Customer in Medical industry. Monitoring of Lab-devices"
+        },
+        {
+          "id": "Customer ABC",
+          "name": "ABC",
+          "info": "Customer in automotive industry. Monitoring of test-cars"
+        },
+        {
+          "id": "Customer 4711",
+          "name": "4711",
+          "info": "Server monitoring"
+        }
+      ]
+    }
+  },  
+  {
     "url": "/api/instrument/list",
     "resp": {
       "result": "OK",
