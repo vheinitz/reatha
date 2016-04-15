@@ -6,11 +6,18 @@ var moment = require('moment');
 var fs = require('fs');
 var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json({ type: 'application/*+json' } );
+var mg = require('mongodb').MongoClient;
+var assert = require('assert');
+
+var dburl = 'mongodb://localhost:27017/rm';
 
 var router = express.Router();
 
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  console.log("ROOT");
+  
   res.render('index', { title: 'HERA' });
 });
 
@@ -41,11 +48,56 @@ router.get('/api/auth/disconnect', function (req, res) {
 
 ////////////////////// INSTRUMENT /////////////////////////////
 router.post('/api/instrument/list', function(req, res) {
-	 
+	console.log('/api/instrument/list')
+	mg.connect(dburl, function(err, db) {
+	  console.log("URL:", dburl);
+	  assert.equal(null, err);
+	  console.log("Connected correctly to server.");
+	   var cursor =db.collection('rmdevices').find( );
+	   var ans = {};
+		ans["result"] = "OK";
+	   var instr = []
+		
+	   cursor.each(function(err, doc) {
+		  assert.equal(err, null);
+		  if (doc != null) {
+			 //console.dir(doc);
+			 instr.push(doc)
+		  } else {
+			 ans["instruments"] = instr;
+			 console.log(ans);
+			 db.close();
+			 return res.json(ans);
+		  }
+	   });
+	});
 });
 
-router.get('/api/instrument/:id', function (req, res) {
-    return list_entries(q_select_ws("instrument", req.body, "instrument_access_key"), req, res);
+router.post('/api/instrument/:id', function (req, res) {
+    console.log('/api/instrument/:id', req.params.id)
+	mg.connect(dburl, function(err, db) {
+	  console.log("URL:", dburl);
+	  assert.equal(null, err);
+	  console.log("Connected correctly to server.");
+	   var cursor =db.collection('rmdevices').find( );
+	   var ans = {};
+		ans["result"] = "OK";
+	   var instr = []
+		
+	   cursor.each(function(err, doc) {
+		  assert.equal(err, null);
+		  if (doc != null) {
+		     console.log(doc, doc["_id"], req.params.id);
+			if (doc["_id"] == req.params.id) {
+				ans["data"]=doc;
+			}
+		  } else {
+			 console.log(ans);
+			 db.close();
+			 return res.json(ans);
+		  }
+	   });
+	});
 });
 
 router.get('/api/instrument/types', function(req, res) {

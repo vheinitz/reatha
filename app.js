@@ -3,6 +3,7 @@ var multer = require('multer');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
+var bodyParser = require('body-parser');
 
 var fs = require('fs');
 var app = express();
@@ -10,19 +11,36 @@ var app = express();
 var jsonfile = require('jsonfile')
 var util = require('util')
 
-var file = 'api.json'
 
-stubs = {}
+var rmapi = require('./routes/index');
 
+var dburl = 'mongodb://localhost:27017/rm';
 
 app.use(favicon(__dirname + '/frontend/favicon.ico'));
 
 app.use(express.static(path.join(__dirname, 'frontend')));
 
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+//app.use(cookieParser());
+//app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'app')));
+
+app.use('/', rmapi);
+
+
 app.use(function(req, res, next) {
    console.log( req.path );
     url = req.path;
+	
+	
+	
+	
+	var results = { status: "ERROR" };
+	return res.json(results);
+	/*
+	
 	jsonfile.readFile(file, function (err, obj) {
 		console.dir(obj)
 		stubs = obj;
@@ -42,6 +60,7 @@ app.use(function(req, res, next) {
 
 		res.render(json(stubs));	
 		})	
+		*/
 });
 
 

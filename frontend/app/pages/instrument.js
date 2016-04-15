@@ -37,8 +37,8 @@ define(["knockout", "text!./instrument.html"], function (ko, template) {
 		};
 
 		this.instrumentData = function () {
-		    console.log("listInstruments :", '/api/instrument/:' + this.id());
-		    $.post('/api/instrument/:' + this.id(), '{"session":"ABCDEFG"}', function (data) {
+		    console.log("listInstruments :", '/api/instrument/' + this.id());
+		    $.post('/api/instrument/' + this.id(), '{"session":"ABCDEFG"}', function (data) {
 		        console.log("listInstruments ... ", data.data);
 				console.log("listInstruments ... ", data.data);
 		        self.info(data.data.info);

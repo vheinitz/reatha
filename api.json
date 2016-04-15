@@ -25,6 +25,19 @@
     }
   },
   {
+    "url": "/api/domain/:CustomerXYZ",
+    "resp": {
+		"result": "OK",
+		"data": {
+			"id": "CustomerXYZ",
+			"name": "XYZ",
+			"info": "Customer in Medical industry. Monitoring of Lab-devices",
+			"admin": "xyz",
+			"password":"xyz"
+		}
+    }
+  },
+  {
     "url": "/api/user/logout",
     "resp": {
       "result": "OK"
@@ -36,19 +49,25 @@
       "result": "OK",
       "domains": [
         {
-          "id": "Customer XYZ",
+          "id": "CustomerXYZ",
           "name": "XYZ",
-          "info": "Customer in Medical industry. Monitoring of Lab-devices"
+          "info": "Customer in Medical industry. Monitoring of Lab-devices",
+		  "admin": "xyz",
+		  "password":"xyz"
         },
         {
-          "id": "Customer ABC",
+          "id": "CustomerABC",
           "name": "ABC",
-          "info": "Customer in automotive industry. Monitoring of test-cars"
+          "info": "Customer in automotive industry. Monitoring of test-cars",
+		  "admin": "abc",
+		  "password":"abc"
         },
         {
-          "id": "Customer 4711",
+          "id": "Customer4711",
           "name": "4711",
-          "info": "Server monitoring"
+          "info": "Server monitoring",
+		  "admin": "4711",
+		  "password":"4711"
         }
       ]
     }

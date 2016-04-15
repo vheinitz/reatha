@@ -20,9 +20,11 @@
 				<tr>
 					<td data-bind="text: data.name"></td>
 					<td data-bind="text: data.info"></td>
+					<!-- td data-bind="text: data.admin"></td>
+					<td data-bind="text: data.password"></td -->
 					<td data-bind="text: data.id"></td>
 					<td > 
-					    <a href='#' data-bind='click: configure_domain '>configure</a>
+					    <!-- a href='#' data-bind='click: configure_domain '>configure</a -->
 						<a href='#' data-bind='click: edit_domain '>edit</a>
 						<a href='#' data-bind='click: delete_domain '>delete</a>		
 					</td>	
@@ -31,32 +33,15 @@
 		</table>
   	</div>
 	<div data-bind='visible: selected_domain() ' class="panel-body">
-		<h4 >Domain: </h4>
-		<a href='#' data-bind='click: add_domain '>add</a>
-  		<table class="table table-hover">
-      		<tr><th>Name</th><th>Info</th><th>ID</th><th></th></tr>
-			<tr data-bind="visible: addMode()">
-				<td><input data-bind="value: addName" /></td>
-				<td><input data-bind="value: addInfo" /></td>
-				<td><input data-bind="value: addId" /></td>
-				<td > 
-					<a href='#' data-bind='click: add_ok '>OK</a>
-					<a href='#' data-bind='click: add_cancel '>Cancel</a>		
-				</td>	
-			</tr>
-      		<!-- ko foreach: domains -->
-				<tr>
-					<td data-bind="text: data.name"></td>
-					<td data-bind="text: data.info"></td>
-					<td data-bind="text: data.id"></td>
-					<td > 
-					    <a href='#' data-bind='click: configure_domain '>configure</a>
-						<a href='#' data-bind='click: edit_domain '>edit</a>
-						<a href='#' data-bind='click: delete_domain '>delete</a>		
-					</td>	
-				</tr>
-			<!-- /ko -->
+		<h4 data-bind='text: "Domain: " + selected_domain()'> </h4>
+		<table>
+			<tr><td>Name:</td> <td><input data-bind="value: edit_name" /></td></tr>
+			<tr><td>Info:</td> <td><input data-bind="value: edit_info" /></td></tr>
+			<tr><td>Admin:</td> <td><input data-bind="value: edit_admin" /></td></tr>
+			<tr><td>Password:</td> <td><input data-bind="value: edit_password" /></td></tr>
+			<tr><td>Repeat Password:</td> <td><input /></td></tr>
 		</table>
+		<a href='#' data-bind='click: edit_domain_ok '>OK</a>
   	</div>
 </div>
        

@@ -1,0 +1,20 @@
+[
+  {
+    "_id": "user001",
+	"level":"user",
+	"user":"user",
+	"password":"user"
+  },
+  {
+    "_id": "user002",
+	"level":"superuser",
+	"user":"superuser",
+	"password":"superuser"
+  },
+  {
+    "_id": "user003",
+	"level":"admin",
+	"user":"admin",
+	"password":"admin"
+  }
+]

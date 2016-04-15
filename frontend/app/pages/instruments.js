@@ -7,7 +7,7 @@ define(["knockout", "text!./instruments.html"], function(ko, template ) {
 		this.model = model;	
 		this.data = data;
 		this.select = function() {
-			console.log("select:" + self.data.id);
+			console.log("select:" + self.data._id);
 			self.model.selectInstrument( self )	
 		}.bind(this);
         
@@ -52,7 +52,7 @@ define(["knockout", "text!./instruments.html"], function(ko, template ) {
 
 		this.selectInstrument = function ( instrument) {
 		    console.log("listInstrument ", instrument.data.id);
-		    app_share.instrument_id(instrument.data.id)
+		    app_share.instrument_id(instrument.data._id)
 		    app_share.main_view('instrument');		  
 		};
 

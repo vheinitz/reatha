@@ -30,7 +30,8 @@ define(['knockout', 'text!./navbar.html'], function(ko, template) {
       }
 	  
 	  //app_share.main_view("login");
-	  app_share.main_view("admin");
+	  //app_share.main_view("admin");
+	  app_share.main_view("instruments");
   }
 
 

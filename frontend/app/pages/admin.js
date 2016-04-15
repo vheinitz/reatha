@@ -6,18 +6,17 @@ define(["knockout", "text!./admin.html"], function (ko, template) {
 		this.model = model;	
 		this.data = data;
 		this.edit_domain = function() {
-			self.model.edit_domain( self )	
+			self.model.selected_domain(self.data.id)
+			console.log( "Edit Domain", JSON.stringify(self.data) );
+			self.model.edit_domain( self )
+			
+			
 		}.bind(this);
 		
 		this.delete_domain = function() {
 			self.model.delete_domain( self )	
 		}.bind(this);
 		
-		this.configure_domain = function() {
-			//self.model.configure_domain( self )
-			self.model.selected_domain(self.data.id)
-		}.bind(this);
-        
 	}
 	
 	var DomainAdmin = function( model, data) {
@@ -49,6 +48,11 @@ define(["knockout", "text!./admin.html"], function (ko, template) {
 		this.addId = ko.observable();
 		this.addMode = ko.observable(false);
 		
+		this.edit_name = ko.observable();
+		this.edit_info = ko.observable();
+		this.edit_admin = ko.observable();
+		this.edit_password = ko.observable(false);
+		
 		this.listDomains = function( )
 		{
 			console.log( "listInstruments " );
@@ -69,40 +73,39 @@ define(["knockout", "text!./admin.html"], function (ko, template) {
 			});
 		};
 		
-		this.list_domain_admins = function( )
+		this.domain_details = function( )
 		{
-			console.log( "listInstruments " );
-			$.post('/api/domain/:'+'123','{"session":"ABCDEFG"}', function(data) {
-				console.log( "listInstruments ... ", data );
-				js =  data
-				//console.log( "listInstruments ... JSON ", js );
-				
-				self.domains([]);
-				
-				for(var di in js.domains)
-				{
-					//self.domains.push({id:js.devices[dev], type:"HELIOS", info:"Floor 001" });
-					self.domains.push(new Domain(self, js.domains[di]));
-					console.log( "DOMAIN:", di, js.domains[di] );
-				}
-				//setTimeout(self.listInstruments.bind(self), 3000);
+			console.log( "domain_details " );
+			$.post('/api/domain/:'+self.selected_domain(),'{"session":"ABCDEFG"}', function(data) {
+				console.log( "domain_details ... ", data );
+				js =  data.data;				
+				self.edit_name(js.name);
+				self.edit_info(js.info);
+				self.edit_admin(js.admin);
+				self.edit_password(js.password);
 			});
 		};
 
 		this.edit_domain = function ( d) {
 		    console.log("edit_domain ", d.data.id);
-		    //app_share.domain_id(d.data.id)
+		    self.domain_details();
+		    //app_share.main_view('instrument');		  
+		};
+		
+		this.edit_domain_ok = function ( ) {
+		    console.log("edit_domain_ok ");
+			self.selected_domain('')
+		    //app_share.main_view('instrument');		  
+		};
+		
+		this.edit_domain_cancel = function ( ) {
+		    console.log("edit_domain_cancel ");
+			self.selected_domain('')
 		    //app_share.main_view('instrument');		  
 		};
 		
 		this.delete_domain = function ( d) {
 		    console.log("delete_domain ", d.data.id);
-		    //app_share.domain_id(d.data.id)
-		    //app_share.main_view('instrument');		  
-		};
-		
-		this.configure_domain = function ( d) {
-		    console.log("configure_domain ", d.data.id);
 		    //app_share.domain_id(d.data.id)
 		    //app_share.main_view('instrument');		  
 		};
