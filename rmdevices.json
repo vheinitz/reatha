@@ -1,4 +1,4 @@
-[
+
   {
         "_id": "DEV1",
         "name": "DEV1",
@@ -20,7 +20,8 @@
             "v": "<h4>{{$var3+1}} {{$var1}}</h4>Blog: {{$var2}} <br/><div onClick=\"view('main')\">Main</div>"
           }
         ]
-  },
+  }
+  
   {
         "_id": "DEV2",
         "name": "DEV2",
@@ -42,7 +43,8 @@
             "v": "<h4>{{$var3+1}} {{$var1}}</h4>Blog: {{$var2}}"
           }
         ]
-  },
+  }
+  
   {
         "_id": "DEV3",
         "name": "DEV3",
@@ -65,4 +67,3 @@
           }
         ]
   }
-]
