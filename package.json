@@ -8,7 +8,7 @@
   "engines": {
 	  "node": ">=0.12.7 <0.13",
 	  "npm": "~2.11.3"
-  },
+  },  
   "dependencies": {
     "body-parser": "^1.12.4",
     "connect-busboy": "0.0.2",
