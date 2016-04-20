@@ -31,7 +31,7 @@ app.use('/', rmapi);
 
 
 app.use(function(req, res, next) {
-   console.log( req.path );
+   console.log( "REQ:", req.path );
     url = req.path;
 	
 	

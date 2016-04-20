@@ -7,11 +7,11 @@ define(["knockout", "text!./login.html"], function(ko, templ_arg) {
 	this.password = ko.observable('');
 	
 	this.login = function ( ) {
-		console.log("login ", self.user(), self.password() );
-		$.post('/api/user/login/:'+self.user()+";:"+self.password(),{}, function(data) {
+		console.log("login ", self.user() );
+		$.post('/api/auth/login/'+self.user()+'/'+self.password(),{}, function(data) {
 			console.log("Data ", data );
-			app_share.level(data.level);
-			app_share.session(data.session);
+			app_share.level(data.data.level);
+			app_share.session(data.data.session);
 			
 			if ( app_share.level() )
 			{
