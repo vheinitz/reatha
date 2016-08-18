@@ -676,6 +676,9 @@ class CI_Loader {
 
 		if ((bool) @ini_get('short_open_tag') === FALSE AND config_item('rewrite_short_tags') == TRUE)
 		{
+			echo "$_ci_path";
+			echo"<br>";
+			
 			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($_ci_path))));
 		}
 		else
