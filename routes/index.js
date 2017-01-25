@@ -6,26 +6,9 @@ var moment = require('moment');
 var fs = require('fs');
 var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json({ type: 'application/*+json' } );
-var mg = require('mongodb').MongoClient;
 var assert = require('assert');
-
-var dburl = 'mongodb://localhost:27017/rm';
-
 var router = express.Router();
 
-var Db = require('mongodb').Db,
-    MongoClient = require('mongodb').MongoClient,
-    Server = require('mongodb').Server,
-    ReplSetServers = require('mongodb').ReplSetServers,
-    ObjectID = require('mongodb').ObjectID,
-    Binary = require('mongodb').Binary,
-    GridStore = require('mongodb').GridStore,
-    Grid = require('mongodb').Grid,
-    Code = require('mongodb').Code,
-    assert = require('assert');
-
-var db = new Db('rm', new Server('localhost', 27017));
-// Establish connection to db
 
 
 

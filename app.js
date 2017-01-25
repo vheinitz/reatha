@@ -14,8 +14,6 @@ var util = require('util')
 
 var rmapi = require('./routes/index');
 
-var dburl = 'mongodb://localhost:27017/rm';
-
 app.use(favicon(__dirname + '/frontend/favicon.ico'));
 
 app.use(express.static(path.join(__dirname, 'frontend')));
