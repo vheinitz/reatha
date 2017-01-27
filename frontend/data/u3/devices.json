@@ -1,13 +1,13 @@
 [
   {
     "id": 1,
-    "name": "Helios1",
+    "name": "Device1 ",
     "location": "One Street, 3245, City, Upper Floor",
     "status": "OK"    
   },
   {
-    "id": 1,
-    "name": "Helios2",
+    "id": 2,
+    "name": "Device 2",
     "location": "USA, WashingtonDC, ABC-Street",
     "status": "Error"    
   }  

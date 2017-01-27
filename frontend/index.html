@@ -8,6 +8,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     
     <script>
+      var userId = ''
       var loggedIn = true;//TODO false;
       var reatha = angular.module('reatha', ['ngRoute']);
 
@@ -34,19 +35,21 @@
           });
       });
 
+      //reatha.value('userId', "u1");
+      
       reatha.factory('devices', function($http){
         return {
           list: function (callback){
             $http({
               method: 'GET',
-              url: 'data/devices.json',
+              url: 'data/' + userId + '/devices.json',
               cache: true
             }).success(callback);
           },
           find: function(id, callback){
             $http({
               method: 'GET',
-              url: 'data/device_' + id + '.json',
+              url: 'data/' + userId + '/device_' + id + '.json',
               cache: true
             }).success(callback);
           }
@@ -56,9 +59,10 @@
       reatha.controller('LoginCtrl', ['$scope', '$location', function($scope, $location) {                      
         $scope.login = function() {
           console.log ( 'Login function' );
-          if ($scope.user == 'u' && $scope.password == 'p')
+          if ( ($scope.user == 'u1' || $scope.user == 'u2' || $scope.user == 'u3') && $scope.password == 'p')
           {
             loggedIn = true;
+            userId = $scope.user;
             $location.path('/list');
           }
           
