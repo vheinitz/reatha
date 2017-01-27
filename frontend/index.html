@@ -1,25 +1,114 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿<html ng-app="reatha">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title data-bind="text: route().page">Web Monitoring</title>
-    <!-- build:css -->
-      <link href="bower_modules/components-bootstrap/css/bootstrap.min.css" rel="stylesheet">
-      <link href="css/styles.css" rel="stylesheet">
+    <title>Angular.js Example</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.10/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.10/angular-route.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    
+    <script>
+      var loggedIn = false;
+      var reatha = angular.module('reatha', ['ngRoute']);
 
-    <!-- endbuild -->
-    <!-- build:js -->
-      <script src="app/require.config.js"></script>
-      <script data-main="app/startup" src="bower_modules/requirejs/require.js"></script>
-      <script src="bower_components/jquery-flot/jquery.js"></script>
-	  <script src="bower_components/jquery-flot/jquery.flot.js"></script>
-      <script src="bower_components/jquery-flot/jquery.flot.categories.js"></script>
-      <script src="bower_components/jquery-flot/jquery.flot.time.js"></script>
-    <!-- endbuild -->
+      reatha.config(function($routeProvider) {
+        $routeProvider.
+          when('/', {
+            templateUrl: 'login.html',
+            controller: 'LoginCtrl'
+          }).
+          when('/logout', {
+            templateUrl: 'login.html',
+            controller: 'LoginCtrl'
+          }).
+          when('/list', {
+            templateUrl: 'device-list.html',
+            controller: 'DeviceListCtrl'
+          }).
+          when('/:deviceId', {
+            templateUrl: 'device-detail.html',
+            controller: 'DeviceDetailCtrl'
+          }).
+          otherwise({
+            redirectTo: '/'
+          });
+      });
+
+      reatha.factory('devices', function($http){
+        return {
+          list: function (callback){
+            $http({
+              method: 'GET',
+              url: 'devices.json',
+              cache: true
+            }).success(callback);
+          },
+          find: function(id, callback){
+            $http({
+              method: 'GET',
+              url: 'device_' + id + '.json',
+              cache: true
+            }).success(callback);
+          }
+        };
+      });
+
+      reatha.controller('LoginCtrl', ['$scope', '$location', function($scope, $location) {                      
+        $scope.login = function() {
+          console.log ( 'Login function' );
+          if ($scope.user == 'u' && $scope.password == 'p')
+          {
+            loggedIn = true;
+            $location.path('/list');
+          }
+          
+        };
+      }]);
+      
+      reatha.controller('DeviceListCtrl', ['$scope', 'devices', '$location', function($scope,  devices, $location) {
+        console.log( "Loggedin:", $scope.loggedIn ) 
+        if ( loggedIn != true)
+          {
+            console.log( "GOTO /" ) 
+            $location.path('/');
+          }
+          
+        devices.list(function(devices) {
+             $scope.devices = devices;
+        });
+      }]);
+
+      reatha.controller('DeviceDetailCtrl', function ($scope, $routeParams, devices){
+        devices.find($routeParams.deviceId, function(device) {
+          $scope.device = device;
+        });
+      });
+
+    </script>
   </head>
   <body>
-    <navbar params="route: route"></navbar>
-    <div id="page" class="col-md-12" data-bind="component: { name: app_share.main_view , params: route }"></div>
+    <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Web Monitor</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">      
+      
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#/logout">Logout</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+    <div ng-view></div>
   </body>
 </html>
