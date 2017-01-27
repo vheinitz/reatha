@@ -1,5 +1,20 @@
-<ul>
-  <li ng-repeat="device in devices">
-    <a href="#/{{device.id}}">{{device.name}}</a>
-  </li>
-</ul>
+<div class="container">
+  <h2>Available devices</h2>
+              
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Location</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="device in devices">
+        <td><a href="#/{{device.id}}">{{device.name}}</td>
+        <td>{{device.location}}</td>
+        <td>{{device.status}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
