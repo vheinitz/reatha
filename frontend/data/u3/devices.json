@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "Helios1",
+    "location": "One Street, 3245, City, Upper Floor",
+    "status": "OK"    
+  },
+  {
+    "id": 1,
+    "name": "Helios2",
+    "location": "USA, WashingtonDC, ABC-Street",
+    "status": "Error"    
+  }  
+]
