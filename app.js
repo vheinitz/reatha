@@ -89,7 +89,7 @@ app.use(function(err, req, res, next) {
 
 var http = require('http');
 
-var port = process.env.PORT || 5000;
+var port = process.env.PORT || 80;
 
 app.set('port', port)
 

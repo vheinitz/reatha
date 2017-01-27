@@ -9,7 +9,7 @@ var jsonParser = bodyParser.json({ type: 'application/*+json' } );
 var assert = require('assert');
 var router = express.Router();
 
-
+var devicesData=[];
 
 
 /* GET home page. */
@@ -45,8 +45,8 @@ db.open(function(err, db) {
 
 router.post('/api/auth/login/:user/:passwd', function(req, res) {
   console.log('/api/auth/login/:'+req.params.user+'/:'+req.params.passwd)
-  var results = { status: "ERROR" };
-  mg.connect(dburl, function(err, db) {
+  var results = { status: "ERROR", data:"err descr" };
+  /*mg.connect(dburl, function(err, db) {
 	  console.log("URL:", dburl);
 	  assert.equal(null, err);
 	  console.log("Connected correctly to server.");
@@ -70,8 +70,9 @@ router.post('/api/auth/login/:user/:passwd', function(req, res) {
 		  }
 	   });
 	});
-	
-  //return res.json(results);
+ */	
+  results = {"status":"OK","data":{"session":"ABCDEFG","level":req.params.user}};
+  return res.json(results);
 });
 
 router.get('/api/auth/logout', function (req, res) {
@@ -95,9 +96,10 @@ router.get('/api/auth/disconnect', function (req, res) {
 
 
 ////////////////////// INSTRUMENT /////////////////////////////
-router.post('/api/instrument/list', function(req, res) {
+router.get('/api/instrument/list', function(req, res) {
 	console.log('/api/instrument/list')
-	mg.connect(dburl, function(err, db) {
+	res.json(devicesData)
+	/*mg.connect(dburl, function(err, db) {
 	  console.log("URL:", dburl);
 	  assert.equal(null, err);
 	  console.log("Connected correctly to server.");
@@ -118,7 +120,7 @@ router.post('/api/instrument/list', function(req, res) {
 			 return res.json(ans);
 		  }
 	   });
-	});
+	});*/
 });
 
 router.post('/api/instrument/:id', function (req, res) {
@@ -166,6 +168,40 @@ router.post('/api/instrument/update', function(req, res) {
     return update_entries( q_update( req.body, "instrument", {types:["s","i","s","j"],names:["instrument_name","instrument_type_pkref","instrument_access_key","instrument_info"]} ), req, res );      
 });
 
+devicesData = 
+  [
+	{
+        _id: "DEV1",
+        name: "DEV1",
+        type: "HELIOS",
+        location: "Location Data",
+        info: "some info"
+	},
+	{
+        _id: "DEV2",
+        name: "DEV2",
+        type: "HELIOS",
+        location: "Location Data",
+        info: "some info"
+	},
+	{
+        _id: "DEV3",
+        name: "DEV3",
+        type: "HELIOS",
+        location: "Location Data",
+        info: "some info"
+	},
+	{
+        _id: "DEV4",
+        name: "DEV4",
+        type: "HELIOS",
+        location: "Location Data",
+        info: "some info"
+	}
+		  
+  ]
+  
+  
 ////////////////////// END INSTRUMENT ///////////////////////// 
 module.exports = router;
 
