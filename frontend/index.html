@@ -11,6 +11,7 @@
       var userId = 'u1'
       var session_id = 'ABCDE';//TODO false;
       var reatha = angular.module('reatha', ['ngRoute']);
+      var timer ={};
 
       reatha.value('page', 'device-list.html' );
       reatha.config(function($routeProvider) {
@@ -29,7 +30,8 @@
           });
       });
 
-      reatha.controller('LoginCtrl', ['$scope', '$location','$http', function($scope, $location, $http) {                      
+      reatha.controller('LoginCtrl', ['$scope', '$location','$http', function($scope, $location, $http) {        
+        clearInterval(timer);              
         $scope.login = function() {
           console.log ( 'Login function' );
           $http({
@@ -63,6 +65,7 @@
 
 reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($scope, $location, $http) {
         console.log( "Loggedin:", session_id ) 
+        clearInterval(timer);
         if ( session_id == '')
         {
             console.log( "GOTO /" ) 
@@ -102,18 +105,20 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
             }).success(function (response, status, headers, config) {
                 console.log ("DATA:", response)
                 $scope.html = response;
-                
-                $http({
-                    method: 'POST',
-                    url: '/api/instrument/:' + idx + '/data/:' + session_id ,
-                    cache: false
-                    }).success(function (response, status, headers, config) {
-                        console.log ("DATA:", response)
-                        $scope.device = response;
-                        
-                    }).error(function (data, status, headers, config) {
-                        $scope.status = status + ' ' + headers;
-                    });  
+                  
+                  timer = setInterval( function(){
+                  $http({
+                      method: 'POST',
+                      url: '/api/instrument/:' + idx + '/data/:' + session_id ,
+                      cache: false
+                      }).success(function (response, status, headers, config) {
+                          console.log ("DATA:", response)
+                          $scope.device = response;
+                          
+                      }).error(function (data, status, headers, config) {
+                          $scope.status = status + ' ' + headers;
+                      });  
+                },3000);
                 
             }).error(function (data, status, headers, config) {
                 $scope.status = status + ' ' + headers;
