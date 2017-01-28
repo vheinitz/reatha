@@ -8,86 +8,120 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     
     <script>
-      var userId = ''
-      var loggedIn = true;//TODO false;
+      var userId = 'u1'
+      var session_id = 'ABCDE';//TODO false;
       var reatha = angular.module('reatha', ['ngRoute']);
 
+      reatha.value('page', 'device-list.html' );
       reatha.config(function($routeProvider) {
         $routeProvider.
           when('/', {
             templateUrl: 'login.html',
             controller: 'LoginCtrl'
           }).
-          when('/logout', {
+          when('/login', {
             templateUrl: 'login.html',
             controller: 'LoginCtrl'
           }).
-          when('/list', {
-            templateUrl: 'device-list.html',
-            controller: 'DeviceListCtrl'
-          }).
-          when('/:deviceId', {
-            templateUrl: 'device-detail.html',
-            controller: 'DeviceDetailCtrl'
-          }).
-          otherwise({
-            redirectTo: '/'
+          when('/device', {
+            templateUrl: 'device-view.html',
+            controller: 'DeviceViewCtrl'
           });
       });
 
-      //reatha.value('userId', "u1");
-      
-      reatha.factory('devices', function($http){
-        return {
-          list: function (callback){
-            $http({
-              method: 'GET',
-              url: 'data/' + userId + '/devices.json',
-              cache: true
-            }).success(callback);
-          },
-          find: function(id, callback){
-            $http({
-              method: 'GET',
-              url: 'data/' + userId + '/device_' + id + '.json',
-              cache: true
-            }).success(callback);
-          }
-        };
-      });
-
-      reatha.controller('LoginCtrl', ['$scope', '$location', function($scope, $location) {                      
+      reatha.controller('LoginCtrl', ['$scope', '$location','$http', function($scope, $location, $http) {                      
         $scope.login = function() {
           console.log ( 'Login function' );
-          if ( ($scope.user == 'u1' || $scope.user == 'u2' || $scope.user == 'u3') && $scope.password == 'p')
-          {
-            loggedIn = true;
-            userId = $scope.user;
-            $location.path('/list');
-          }
-          
+          $http({
+                  url: '/api/auth/login/'+ $scope.user + '/'+ $scope.password,
+                  method: "POST",
+                }
+              ).success(function (response, status, headers, config) {
+                  console.log ("DATA:", response)
+                  session_id  = response.data.session_id;
+                  userId = $scope.user;
+                  $location.path('/device'); 
+              }).error(function (data, status, headers, config) {
+                  $scope.status = status + ' ' + headers;
+              });
         };
       }]);
       
-      reatha.controller('DeviceListCtrl', ['$scope', 'devices', '$location', function($scope,  devices, $location) {
-        console.log( "Loggedin:", $scope.loggedIn ) 
-        if ( loggedIn != true)
-          {
-            console.log( "GOTO /" ) 
-            $location.path('/');
+      reatha.directive('dynamic', function ($compile) {
+        return {
+          restrict: 'A',
+          replace: true,
+          link: function (scope, ele, attrs) {
+            scope.$watch(attrs.dynamic, function(html) {
+              ele.html(html);
+              $compile(ele.contents())(scope);
+            });
           }
-          
-        devices.list(function(devices) {
-             $scope.devices = devices;
-        });
-      }]);
-
-      reatha.controller('DeviceDetailCtrl', function ($scope, $routeParams, devices){
-        devices.find($routeParams.deviceId, function(device) {
-          $scope.device = device;
-        });
+        };
       });
 
+
+reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($scope, $location, $http) {
+        console.log( "Loggedin:", session_id ) 
+        if ( session_id == '')
+        {
+            console.log( "GOTO /" ) 
+            $location.path('/');
+        }
+             
+        $http({
+            method: 'POST',
+            url: '/api/instrument/list/view/:' + session_id ,
+            cache: false
+            }).success(function (response, status, headers, config) {
+                console.log ("DATA:", response)
+                $scope.html = response;
+                
+                $http({
+                    method: 'POST',
+                    url: '/api/instrument/list/:' + session_id ,
+                    cache: false
+                    }).success(function (response, status, headers, config) {
+                        console.log ("DATA:", response)
+                        $scope.devices = response;
+                        
+                    }).error(function (data, status, headers, config) {
+                        $scope.status = status + ' ' + headers;
+                    });  
+                
+            }).error(function (data, status, headers, config) {
+                $scope.status = status + ' ' + headers;
+            });
+            
+         $scope.select = function(idx) {
+            console.log( "$scope.select", idx );
+            $http({
+            method: 'POST',
+            url: '/api/instrument/:' + idx + '/view/:' + session_id ,
+            cache: false
+            }).success(function (response, status, headers, config) {
+                console.log ("DATA:", response)
+                $scope.html = response;
+                
+                $http({
+                    method: 'POST',
+                    url: '/api/instrument/:' + idx + '/data/:' + session_id ,
+                    cache: false
+                    }).success(function (response, status, headers, config) {
+                        console.log ("DATA:", response)
+                        $scope.device = response;
+                        
+                    }).error(function (data, status, headers, config) {
+                        $scope.status = status + ' ' + headers;
+                    });  
+                
+            }).error(function (data, status, headers, config) {
+                $scope.status = status + ' ' + headers;
+            });
+          }
+                   
+      }]);
+      
     </script>
   </head>
   <body>
@@ -104,15 +138,15 @@
       <a class="navbar-brand" href="#">Web Monitor</a>
     </div>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">      
       
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#/logout">Logout</a></li>
+        <li><a href="#/login">Logout</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
     <div ng-view></div>
+       
   </body>
 </html>

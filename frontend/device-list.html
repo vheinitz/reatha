@@ -10,10 +10,10 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="device in devices">
-        <td><a href="#/{{device.id}}">{{device.name}}</td>
+      <tr ng-repeat="device in devices" ng-click="select(device.id)" >
+        <td>{{device.name}} </td>
         <td>{{device.location}}</td>
-        <td>{{device.status}}</td>
+        <td>{{device.status}} </td>
       </tr>
     </tbody>
   </table>
