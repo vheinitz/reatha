@@ -1,10 +1,11 @@
 var express = require('express');
 var request = require('request');
 var async = require('async');
-var format = require('string-format')
+var format = require('string-format');
 var moment = require('moment');
 var fs = require('fs');
-var bodyParser = require('body-parser')
+var path = require('path');
+var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json({ type: 'application/*+json' } );
 var assert = require('assert');
 var router = express.Router();
@@ -19,63 +20,14 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Remote Monitoring' });
 });
 
-/*
-db.open(function(err, db) {
-
-  // Fetch a collection to insert document into
-  db.collection("remove_all_documents_no_safe", function(err, collection) {
-
-    // Insert a bunch of documents
-    collection.insert([{a:1}, {b:2}], {w:1}, function(err, result) {
-      assert.equal(null, err);
-
-      // Remove all the document
-      collection.remove();
-
-      // Fetch all results
-      collection.find().toArray(function(err, items) {
-        assert.equal(null, err);
-        assert.equal(0, items.length);
-        db.close();
-      });
-    });
-  })
-});
-*/
-
 router.post('/api/auth/login/:user/:passwd', function(req, res) {
   console.log('/api/auth/login/:'+req.params.user+'/:'+req.params.passwd)
   var results = { status: "ERROR", data:"err descr" };
-  /*mg.connect(dburl, function(err, db) {
-	  console.log("URL:", dburl);
-	  assert.equal(null, err);
-	  console.log("Connected correctly to server.");
-	   var cursor =db.collection('rmusers').find( );
-	   var ans = {};
-		ans["result"] = "OK";
-	   var instr = []
-		
-	   cursor.each(function(err, doc) {
-		  assert.equal(err, null);
-		  if (doc != null) {
-			 //console.dir(doc);
-			 instr.push(doc)
-		  } else {
-			 ans["instruments"] = instr;
-			 console.log(ans);
-			 db.close();
-			 results = {"status":"OK","data":{"session":"ABCDEFG","level":req.params.user}};
-			 return res.json(results);			 
-			 //return res.json(ans);
-		  }
-	   });
-	});
- */	
-  results = {"status":"OK","data":{"session":"ABCDEFG","level":req.params.user}};
+  results = {"status":"OK","data":{"session_id":"ABCDEFG","level":req.params.user}};
   return res.json(results);
 });
 
-router.get('/api/auth/logout', function (req, res) {
+router.get('/api/auth/logout/:session_id', function (req, res) {
     var results = { status: "OK" };
     return res.json(results);
 });
@@ -94,60 +46,93 @@ router.get('/api/auth/disconnect', function (req, res) {
     return res.json(results);
 });
 
-
 ////////////////////// INSTRUMENT /////////////////////////////
-router.get('/api/instrument/list', function(req, res) {
-	console.log('/api/instrument/list')
-	res.json(devicesData)
-	/*mg.connect(dburl, function(err, db) {
-	  console.log("URL:", dburl);
-	  assert.equal(null, err);
-	  console.log("Connected correctly to server.");
-	   var cursor =db.collection('rmdevices').find( );
-	   var ans = {};
-		ans["result"] = "OK";
-	   var instr = []
-		
-	   cursor.each(function(err, doc) {
-		  assert.equal(err, null);
-		  if (doc != null) {
-			 //console.dir(doc);
-			 instr.push(doc)
-		  } else {
-			 ans["instruments"] = instr;
-			 console.log(ans);
-			 db.close();
-			 return res.json(ans);
-		  }
-	   });
-	});*/
+router.post('/api/instrument/list/:session_id', function(req, res) {
+	console.log('/api/instrument/list/:')
+	
+    var filename = "frontend/data/u1/devices.json";
+	console.log(filename);
+	try{
+		fs.readFile(filename,'utf8', function read(err, data) {
+			if (err) {
+				throw err;
+			}
+			console.log( "Data:", data );			
+			return res.end(data);
+		});
+	}
+	catch(exception)
+	{
+		console.log( "Ex:", exception );
+		var results = { status: "ERROR", data:"err descr" };
+		return res.json(results);
+	}
 });
 
-router.post('/api/instrument/:id', function (req, res) {
-    console.log('/api/instrument/:id', req.params.id)
-	mg.connect(dburl, function(err, db) {
-	  console.log("URL:", dburl);
-	  assert.equal(null, err);
-	  console.log("Connected correctly to server.");
-	   var cursor =db.collection('rmdevices').find( );
-	   var ans = {};
-		ans["result"] = "OK";
-	   var instr = []
-		
-	   cursor.each(function(err, doc) {
-		  assert.equal(err, null);
-		  if (doc != null) {
-		     console.log(doc, doc["_id"], req.params.id);
-			if (doc["_id"] == req.params.id) {
-				ans["data"]=doc;
+router.post('/api/instrument/list/view/:session_id', function(req, res) {
+	console.log('/api/instrument/list/view:')
+	
+    var filename = "frontend/device-list.html";
+	console.log(filename);
+	try{
+		fs.readFile(filename,'utf8', function read(err, data) {
+			if (err) {
+				throw err;
 			}
-		  } else {
-			 console.log(ans);
-			 db.close();
-			 return res.json(ans);
-		  }
-	   });
-	});
+			console.log( "Data:", data );			
+			return res.end(data);
+		});
+	}
+	catch(exception)
+	{
+		console.log( "Ex:", exception );
+		var results = { status: "ERROR", data:"err descr" };
+		return res.json(results);
+	}
+});
+
+router.post('/api/instrument/:id/view/:session_id', function(req, res) {
+	console.log('/api/instrument/:id/view/:session_id')
+	
+    var filename = "frontend/device-detail.html";
+	console.log(filename);
+	try{
+		fs.readFile(filename,'utf8', function read(err, data) {
+			if (err) {
+				throw err;
+			}
+			console.log( "Data:", data );			
+			return res.end(data);
+		});
+	}
+	catch(exception)
+	{
+		console.log( "Ex:", exception );
+		var results = { status: "ERROR", data:"err descr" };
+		return res.json(results);
+	}
+});
+
+router.post('/api/instrument/:id/data/:session_id', function(req, res) {
+	console.log('/api/instrument/:id/data/:session_id')
+	
+    var filename = "frontend/data/u1/device_1.json";
+	console.log(filename);
+	try{
+		fs.readFile(filename,'utf8', function read(err, data) {
+			if (err) {
+				throw err;
+			}
+			console.log( "Data:", data );			
+			return res.end(data);
+		});
+	}
+	catch(exception)
+	{
+		console.log( "Ex:", exception );
+		var results = { status: "ERROR", data:"err descr" };
+		return res.json(results);
+	}
 });
 
 router.get('/api/instrument/types', function(req, res) {
@@ -164,45 +149,10 @@ router.get('/api/instrument/delete', function(req, res) {
 });
 
 router.post('/api/instrument/update', function(req, res) {
-    console.log('/api/instrument/update')
+    console.log('/api/instrument/update');
     return update_entries( q_update( req.body, "instrument", {types:["s","i","s","j"],names:["instrument_name","instrument_type_pkref","instrument_access_key","instrument_info"]} ), req, res );      
 });
-
-devicesData = 
-  [
-	{
-        _id: "DEV1",
-        name: "DEV1",
-        type: "HELIOS",
-        location: "Location Data",
-        info: "some info"
-	},
-	{
-        _id: "DEV2",
-        name: "DEV2",
-        type: "HELIOS",
-        location: "Location Data",
-        info: "some info"
-	},
-	{
-        _id: "DEV3",
-        name: "DEV3",
-        type: "HELIOS",
-        location: "Location Data",
-        info: "some info"
-	},
-	{
-        _id: "DEV4",
-        name: "DEV4",
-        type: "HELIOS",
-        location: "Location Data",
-        info: "some info"
-	}
-		  
-  ]
   
   
 ////////////////////// END INSTRUMENT ///////////////////////// 
 module.exports = router;
-
-
