@@ -11,6 +11,27 @@ var assert = require('assert');
 var router = express.Router();
 
 var devicesData=[];
+var instruments=
+	[
+		{ key:"u1/device_1"}
+		,{ key:"u1/device_2"}
+		,{ key:"u1/device_3"}
+		,{ key:"u2/device_1"}
+		,{ key:"u2/device_2"}
+		,{ key:"u2/device_3"}
+		,{ key:"u3/device_1"}
+		,{ key:"u3/device_2"}
+		,{ key:"u3/device_3"}
+	];
+
+var sessions=
+	[
+		{ id:"u1", user: "u1"}
+	];
+
+function userOfSession(session_id) {
+	return "u1";
+}
 
 
 /* GET home page. */
@@ -23,25 +44,12 @@ router.get('/', function(req, res, next) {
 router.post('/api/auth/login/:user/:passwd', function(req, res) {
   console.log('/api/auth/login/:'+req.params.user+'/:'+req.params.passwd)
   var results = { status: "ERROR", data:"err descr" };
-  results = {"status":"OK","data":{"session_id":"ABCDEFG","level":req.params.user}};
+  results = {"status":"OK","data":{"session_id":"u1","level":req.params.user}};
   return res.json(results);
 });
 
 router.get('/api/auth/logout/:session_id', function (req, res) {
-    var results = { status: "OK" };
-    return res.json(results);
-});
-
-router.get('/api/auth/connect', function (req, res) {
-
-    var json = list_entries(q_select_j1_w("instrument_session", "instrument", req, "instrument_access_key"), req, res);
-    console.log("/api/auth/connect sessions", json)
-    var results = { status: "OK", "data": { session: "ABCDEFG" } };
-    return res.json(results);
-});
-
-router.get('/api/auth/disconnect', function (req, res) {
-
+	console.log('Session:', req.params.session_id);
     var results = { status: "OK" };
     return res.json(results);
 });
@@ -49,10 +57,16 @@ router.get('/api/auth/disconnect', function (req, res) {
 ////////////////////// INSTRUMENT /////////////////////////////
 router.post('/api/instrument/list/:session_id', function(req, res) {
 	console.log('/api/instrument/list/:')
+	console.log('Session:', req.params.session_id);
 	
-    var filename = "frontend/data/u1/devices.json";
-	console.log(filename);
+	
 	try{
+		user = userOfSession( req.params.session_id );
+		if ( user === '' )
+			throw("Session Error");
+			 
+		var filename = "frontend/data/" + user + "/devices.json";
+		console.log(filename);
 		fs.readFile(filename,'utf8', function read(err, data) {
 			if (err) {
 				throw err;
@@ -91,8 +105,8 @@ router.post('/api/instrument/list/view/:session_id', function(req, res) {
 	}
 });
 
-router.post('/api/instrument/:id/view/:session_id', function(req, res) {
-	console.log('/api/instrument/:id/view/:session_id')
+router.post('/api/instrument/view/:session_id/:id', function(req, res) {
+	console.log('/api/instrument/view/:session_id/:id')
 	
     var filename = "frontend/device-detail.html";
 	console.log(filename);
@@ -113,8 +127,8 @@ router.post('/api/instrument/:id/view/:session_id', function(req, res) {
 	}
 });
 
-router.post('/api/instrument/:id/data/:session_id', function(req, res) {
-	console.log('/api/instrument/:id/data/:session_id')
+router.post('/api/instrument/data/:session_id/:id', function(req, res) {
+	console.log('/api/instrument/data/:session_id/:id')
 	
     var filename = "frontend/data/u1/device_1.json";
 	console.log(filename);
@@ -123,7 +137,7 @@ router.post('/api/instrument/:id/data/:session_id', function(req, res) {
 			if (err) {
 				throw err;
 			}
-			console.log( "Data:", data );			
+			//console.log( "Data:", data );			
 			return res.end(data);
 		});
 	}
@@ -135,24 +149,35 @@ router.post('/api/instrument/:id/data/:session_id', function(req, res) {
 	}
 });
 
-router.get('/api/instrument/types', function(req, res) {
-    return list_entries( q_select( "instrument_type" ), req, res ); 
+
+/*
+curl -X POST -H "Content-Type: application/json" -d "{\"name\":\"Device X\", \"status\":\"ERR\", \"current_wl\":\"123\"}" 127.0.0.1/api/instrument/set/u1__device_1
+*/
+router.post('/api/instrument/set/:key', function(req, res) {
+	console.log('/api/instrument/set/:key', req)
+	
+    var filename = "frontend/data/" + req.params.key.replace(/__/g, '/') + ".json";
+	console.log(filename);
+	try{
+		data=JSON.stringify(req.body);
+		fs.writeFile( filename, data, function(err) {
+			if(err) {
+				var results = { status: "ERROR", data: err };
+				return res.json(results);
+			}
+			console.log("data saved!");
+			//console.log( "Data:", data );			
+			return res.json( { status: "OK" } );
+		}); 
+	}
+	catch(exception)
+	{
+		console.log( "Ex:", exception );
+		var results = { status: "ERROR", data: exception };
+		return res.json(results);
+	}
 });
 
-router.post('/api/instrument/add', function(req, res) {
-    return add_entries( q_insert( req.body, "instrument", {types:["s","i","s","j"],names:["instrument_name","instrument_type_pkref","instrument_access_key","instrument_info"]} ), req, res );      
-});
-
-
-router.get('/api/instrument/delete', function(req, res) {
-    return delete_entries( q_delete_by_pk( req.query, "instrument" ), req, res );      
-});
-
-router.post('/api/instrument/update', function(req, res) {
-    console.log('/api/instrument/update');
-    return update_entries( q_update( req.body, "instrument", {types:["s","i","s","j"],names:["instrument_name","instrument_type_pkref","instrument_access_key","instrument_info"]} ), req, res );      
-});
-  
   
 ////////////////////// END INSTRUMENT ///////////////////////// 
 module.exports = router;

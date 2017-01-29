@@ -1,5 +1,1 @@
-{
-  "name": "Device1",
-  "status": "OKfsds",
-  "current_wl": "asdasdasd"
-}
+{"name":"Device X","status":"ERR","current_wl":"123"}
