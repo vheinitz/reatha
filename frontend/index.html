@@ -74,7 +74,7 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
              
         $http({
             method: 'POST',
-            url: '/api/instrument/list/view/:' + session_id ,
+            url: '/api/instrument/list/view/' + session_id ,
             cache: false
             }).success(function (response, status, headers, config) {
                 console.log ("DATA:", response)
@@ -82,7 +82,7 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
                 
                 $http({
                     method: 'POST',
-                    url: '/api/instrument/list/:' + session_id ,
+                    url: '/api/instrument/list/' + session_id ,
                     cache: false
                     }).success(function (response, status, headers, config) {
                         console.log ("DATA:", response)
@@ -100,7 +100,7 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
             console.log( "$scope.select", idx );
             $http({
             method: 'POST',
-            url: '/api/instrument/view/:' + session_id +'/:' + idx,
+            url: '/api/instrument/view/' + session_id +'/:' + idx,
             cache: false
             }).success(function (response, status, headers, config) {
                 console.log ("DATA:", response)
@@ -109,7 +109,7 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
                   timer = setInterval( function(){
                   $http({
                       method: 'POST',
-                      url: '/api/instrument/data/:' + session_id + '/:' + idx ,
+                      url: '/api/instrument/data/' + session_id + '/:' + idx ,
                       cache: false
                       }).success(function (response, status, headers, config) {
                           console.log ("DATA:", response)
