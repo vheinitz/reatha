@@ -55,10 +55,10 @@ function initDB()
     if (coll === null) {
 		console.log ("Creating devices")
         devices = db.addCollection('devices')
-		devices.insert({key:'d1', name:'Device1', location:"floor 1", users:['u1'], status: 'OK', current_wl:'123'})
-		devices.insert({key:'d2', name:'Device2', location:"floor 2", users:['u1','u2'], status: 'OK', current_wl:'123'})
-		devices.insert({key:'d3', name:'Device3', location:"floor 3", users:['u2','u3'], status: 'OK', current_wl:'123'})
-		devices.insert({key:'d4', name:'Device4', location:"floor 4", users:['u1','u2','u3','u4'], status: 'OK', current_wl:'123'})
+		devices.insert({id:1, key:'d1', name:'Device1', location:"floor 1", users:['u1'], status: 'OK', current_wl:'123'})
+		devices.insert({id:2, key:'d2', name:'Device2', location:"floor 2", users:['u1','u2'], status: 'OK', current_wl:'123'})
+		devices.insert({id:3, key:'d3', name:'Device3', location:"floor 3", users:['u2','u3'], status: 'OK', current_wl:'123'})
+		devices.insert({id:4, key:'d4', name:'Device4', location:"floor 4", users:['u1','u2','u3','u4'], status: 'OK', current_wl:'123'})
     }
 	
 	coll = null;//db.getCollection('sessions');
@@ -175,7 +175,7 @@ router.post('/api/instrument/list/view/:session_id', function(req, res) {
 });
 
 router.post('/api/instrument/view/:session_id/:id', function(req, res) {
-	console.log('/api/instrument/view/:session_id/:id')
+	console.log('/api/instrument/view/', req.params.session_id,'/', req.params.id)
 	
     var filename = "frontend/device-detail.html";
 	console.log(filename);
@@ -197,7 +197,10 @@ router.post('/api/instrument/view/:session_id/:id', function(req, res) {
 });
 
 router.post('/api/instrument/data/:session_id/:id', function(req, res) {
-	console.log('/api/instrument/data/:session_id/:id')
+	console.log('/api/instrument/data', req.params.session_id,'/', req.params.id)
+	
+	dev = devices.findOne( { id: req.params.id } )
+	return res.end( JSON.stringify( dev ) )
 	
     var filename = "frontend/data/u1/device_1.json";
 	console.log(filename);
@@ -217,6 +220,7 @@ router.post('/api/instrument/data/:session_id/:id', function(req, res) {
 		return res.json(results);
 	}
 });
+
 
 
 /*
