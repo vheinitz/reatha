@@ -103,6 +103,7 @@ function userDevices(user) {
 	devs = devices.where( function(obj){
 		return obj.users.indexOf( user ) > -1;
 	}) 	
+	console.log(  "    ", JSON.stringify(devs) )
 	return devs;	
 }
 
@@ -163,15 +164,16 @@ router.post('/api/instrument/list/view/:session_id', function(req, res) {
 			if (err) {
 				throw err;
 			}
-			console.log( "   Data:", data );			
+			//console.log( "   Data:", data );			
 			return res.end(data);
 		});
 	}
 	catch(exception)
 	{
 		console.log( "   Ex:", exception );
+		return res.json({ status: "ERROR", data:"not handled" });
 	}
-	return res.json({ status: "ERROR", data:"not handled" });
+	
 });
 
 router.post('/api/instrument/view/:session_id/:id', function(req, res) {
@@ -186,6 +188,9 @@ router.post('/api/instrument/view/:session_id/:id', function(req, res) {
 	if (!fs.existsSync( filename ))
 		filename = "frontend/device-detail_"+req.params.id+".html"; //templs_device
 		
+	if (!fs.existsSync( filename ))
+		filename = "frontend/device-detail.html"; // default templs
+		
 	console.log("  Using view template: ", filename);
 	try{
 		fs.readFile(filename,'utf8', function read(err, data) {
@@ -198,9 +203,10 @@ router.post('/api/instrument/view/:session_id/:id', function(req, res) {
 	}
 	catch(exception)
 	{
-		console.log( "   Ex:", exception );		
+		console.log( "   Ex:", exception );
+		return res.json({ status: "ERROR", data:"not handled" });
 	}
-	return res.json({ status: "ERROR", data:"not handled" });
+	
 });
 
 router.post('/api/instrument/data/:session_id/:id', function(req, res) {
