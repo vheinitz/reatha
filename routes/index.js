@@ -40,7 +40,7 @@ function test()
 
 function initDB()
 {		
-    console.log( "initDB" )
+    console.log( "## initDB" )
 	
 	var coll = db.getCollection('users');
     if (coll === null) {
@@ -71,12 +71,12 @@ function initDB()
     sessions = db.getCollection('sessions')
 	sessions.clear();
 
-	test();
+	//test();
 }
 
 
 function sessionUser(session_id) {
-	console.log( "sessionUser( ", session_id , ")" )
+	console.log( "## sessionUser( ", session_id , ")" )
 	s = sessions.where( function(obj){
 		return obj.session_id == session_id;
 	})
@@ -85,6 +85,7 @@ function sessionUser(session_id) {
 }
 
 function sessionStart( user ) {
+	console.log( "## sessionStart( ", user , ")" )
 	s = sessions.where( function(obj){	
 	  return obj.user == user;
 	})
@@ -98,7 +99,7 @@ function sessionStart( user ) {
 }
 
 function userDevices(user) {
-	console.log(  "userDevices", user )
+	console.log(  "## userDevices( ", user,")" )
 	devs = devices.where( function(obj){
 		return obj.users.indexOf( user ) > -1;
 	}) 	
@@ -109,29 +110,27 @@ function userDevices(user) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  console.log("ROOT");
+  console.log("---ROOT");
   
   res.render('index', { title: 'Remote Monitoring' });
 });
 
 router.post('/api/auth/login/:user/:passwd', function(req, res) {
-  console.log('/api/auth/login/:'+req.params.user+'/:'+req.params.passwd)
+  console.log('---/api/auth/login/:'+req.params.user+'/:'+req.params.passwd)
   var ses = sessionStart( req.params.user );
   results = {"status":"OK","data":{"session_id":ses}};
   return res.json(results);
 });
 
 router.get('/api/auth/logout/:session_id', function (req, res) {
-	console.log('Session:', req.params.session_id);
+	console.log('---/api/auth/logout/', req.params.session_id);
     var results = { status: "OK" };
     return res.json(results);
 });
 
 ////////////////////// INSTRUMENT /////////////////////////////
 router.post('/api/instrument/list/:session_id', function(req, res) {
-	console.log('/api/instrument/list/:')
-	console.log('Session:', req.params.session_id);
-	
+	console.log('---/api/instrument/list/', req.params.session_id)	
 	
 	try{
 		user = sessionUser( req.params.session_id );
@@ -146,60 +145,70 @@ router.post('/api/instrument/list/:session_id', function(req, res) {
 	}
 	catch(exception)
 	{
-		console.log( "Ex:", exception );
-		var results = { status: "ERROR", data:"err descr" };
-		return res.json(results);
+		console.log( "Ex:", exception );		
 	}
+	return res.json({ status: "ERROR", data:"not handled" });
 });
 
 router.post('/api/instrument/list/view/:session_id', function(req, res) {
-	console.log('/api/instrument/list/view:')
+	console.log('---/api/instrument/list/view/',req.params.session_id)
+	user = sessionUser( req.params.session_id );
+    var filename = "frontend/device-list_" +user+".html";
+	if (!fs.existsSync( filename ))
+		filename = "frontend/device-list.html";
 	
-    var filename = "frontend/device-list.html";
-	console.log(filename);
+	console.log("  Using view template: ", filename);
 	try{
 		fs.readFile(filename,'utf8', function read(err, data) {
 			if (err) {
 				throw err;
 			}
-			console.log( "Data:", data );			
+			console.log( "   Data:", data );			
 			return res.end(data);
 		});
 	}
 	catch(exception)
 	{
-		console.log( "Ex:", exception );
-		var results = { status: "ERROR", data:"err descr" };
-		return res.json(results);
+		console.log( "   Ex:", exception );
 	}
+	return res.json({ status: "ERROR", data:"not handled" });
 });
 
 router.post('/api/instrument/view/:session_id/:id', function(req, res) {
-	console.log('/api/instrument/view/', req.params.session_id,'/', req.params.id)
+	console.log('---/api/instrument/view/', req.params.session_id,'/', req.params.id)
 	
-    var filename = "frontend/device-detail.html";
-	console.log(filename);
+	user = sessionUser( req.params.session_id );
+	
+    var filename = "frontend/device-detail_"+user+"_"+req.params.id+".html"; //templs_user_deviceid    
+	if (!fs.existsSync( filename ))
+		filename = "frontend/device-detail_"+user+".html"; //templs_user
+		
+	if (!fs.existsSync( filename ))
+		filename = "frontend/device-detail_"+req.params.id+".html"; //templs_device
+		
+	console.log("  Using view template: ", filename);
 	try{
 		fs.readFile(filename,'utf8', function read(err, data) {
 			if (err) {
 				throw err;
 			}
-			console.log( "Data:", data );			
+			console.log( "   Data:", data );			
 			return res.end(data);
 		});
 	}
 	catch(exception)
 	{
-		console.log( "Ex:", exception );
-		var results = { status: "ERROR", data:"err descr" };
-		return res.json(results);
+		console.log( "   Ex:", exception );		
 	}
+	return res.json({ status: "ERROR", data:"not handled" });
 });
 
 router.post('/api/instrument/data/:session_id/:id', function(req, res) {
-	console.log('/api/instrument/data', req.params.session_id,'/', req.params.id)
-	
-	dev = devices.findOne( { id: req.params.id } )
+	console.log('---/api/instrument/data/', req.params.session_id,'/', req.params.id)
+	devid =  JSON.stringify(2)
+	console.log(devid);
+	dev = devices.findOne( { 'id': devid } )
+	console.log(dev);
 	return res.end( JSON.stringify( dev ) )
 	
     var filename = "frontend/data/u1/device_1.json";
@@ -216,9 +225,8 @@ router.post('/api/instrument/data/:session_id/:id', function(req, res) {
 	catch(exception)
 	{
 		console.log( "Ex:", exception );
-		var results = { status: "ERROR", data:"err descr" };
-		return res.json(results);
 	}
+	return res.json({ status: "ERROR", data:"not handled" });
 });
 
 
@@ -227,7 +235,7 @@ router.post('/api/instrument/data/:session_id/:id', function(req, res) {
 curl -X POST -H "Content-Type: application/json" -d "{\"name\":\"Device X\", \"status\":\"ERR\", \"current_wl\":\"123\"}" 127.0.0.1/api/instrument/set/u1__device_1
 */
 router.post('/api/instrument/set/:key', function(req, res) {
-	console.log('/api/instrument/set/:key', req)
+	console.log('---/api/instrument/set/:key', req)
 	
     var filename = "frontend/data/" + req.params.key.replace(/__/g, '/') + ".json";
 	console.log(filename);
@@ -245,10 +253,9 @@ router.post('/api/instrument/set/:key', function(req, res) {
 	}
 	catch(exception)
 	{
-		console.log( "Ex:", exception );
-		var results = { status: "ERROR", data: exception };
-		return res.json(results);
+		console.log( "Ex:", exception );		
 	}
+	return res.json({ status: "ERROR", data:"not handled" });
 });
 
   

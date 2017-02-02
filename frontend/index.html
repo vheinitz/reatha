@@ -96,11 +96,11 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
                 $scope.status = status + ' ' + headers;
             });
             
-         $scope.select = function(idx) {
-            console.log( "$scope.select", idx );
+         $scope.select = function(id) {
+            console.log( "$scope.select", id );
             $http({
             method: 'POST',
-            url: '/api/instrument/view/' + session_id +'/:' + idx,
+            url: '/api/instrument/view/' + session_id +'/' + id,
             cache: false
             }).success(function (response, status, headers, config) {
                 console.log ("DATA:", response)
@@ -109,7 +109,7 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
                   timer = setInterval( function(){
                   $http({
                       method: 'POST',
-                      url: '/api/instrument/data/' + session_id + '/:' + idx ,
+                      url: '/api/instrument/data/' + session_id + '/' + id ,
                       cache: false
                       }).success(function (response, status, headers, config) {
                           console.log ("DATA:", response)
