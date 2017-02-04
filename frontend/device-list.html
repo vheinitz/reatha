@@ -4,6 +4,7 @@
   <table class="table table-condensed">
     <thead>
       <tr>
+        <th></th>
         <th>Name</th>
         <th>Location</th>
         <th>Status</th>
@@ -11,9 +12,10 @@
     </thead>
     <tbody>
       <tr ng-repeat="device in devices" ng-click="select(device.id)" >
+        <td><img src='{{ device.online  ? "icons/helios_s1.png" : "icons/helios_s0.png" }}' /> </td>
         <td>{{device.name}} </td>
         <td>{{device.location}}</td>
-        <td>{{device.status}} </td>
+        <td>{{device.online}} </td>
       </tr>
     </tbody>
   </table>

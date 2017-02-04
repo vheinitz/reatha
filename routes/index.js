@@ -12,7 +12,8 @@ var lokijs = require('lokijs');
 var router = express.Router();
 
 
-var db = new lokijs('loki.json', 
+
+var db = new lokijs('c:\\tmp\\reatha.json', 
 {
 	autosave: true, 
 	autosaveInterval: 60000,
@@ -24,6 +25,11 @@ var users=null;
 var devices=null;
 var sessions=null;
 
+function timestamp()
+{
+	ts = new Date()	
+	return ts.valueOf()
+}
 
 function test()
 {
@@ -37,6 +43,8 @@ function test()
 	console.log( "Devices ",JSON.stringify( devs  ) )
 
 }
+
+console.log( timestamp() )
 
 function initDB()
 {		
@@ -55,10 +63,10 @@ function initDB()
     if (coll === null) {
 		console.log ("   Creating devices")
         devices = db.addCollection('devices')
-		devices.insert({id:'1', key:'d1', name:'Device1', location:"floor 1", users:['u1'], status: 'OK', data:{}})
-		devices.insert({id:'2', key:'d2', name:'Device2', location:"floor 2", users:['u1','u2'], status: 'OK', data:{}})
-		devices.insert({id:'3', key:'d3', name:'Device3', location:"floor 3", users:['u2','u3'], status: 'OK', data:{}})
-		devices.insert({id:'4', key:'d4', name:'Device4', location:"floor 4", users:['u1','u2','u3','u4'], status: 'OK', data:{}})
+		devices.insert({id:'1', key:'d1', name:'Device1', location:"floor 1", users:['u1'], timestamp: '0', online: 0,  data:{}})
+		devices.insert({id:'2', key:'d2', name:'Device2', location:"floor 2", users:['u1','u2'], timestamp: '0', online: 0,  data:{}})
+		devices.insert({id:'3', key:'d3', name:'Device3', location:"floor 3", users:['u2','u3'], timestamp: '0', online: 0,  data:{}})
+		devices.insert({id:'4', key:'d4', name:'Device4', location:"floor 4", users:['u1','u2','u3','u4'],  timestamp: '0', online: 0,  data:{}})
     }
 	
 	coll = null;//db.getCollection('sessions');
@@ -99,15 +107,22 @@ function sessionStart( user ) {
 	return session_id;	
 }
 
+function sessionStop( session_id ) {
+	console.log( "## sessionStop( ", session_id , ")" )
+	s = sessions.findOne( { 'session_id' :obj.session_id } )
+	s.session_id=''
+	sessions.update( s )	
+}
+
+
 function userDevices(user) {
 	console.log(  "## userDevices( ", user,")" )
 	devs = devices.where( function(obj){
 		return obj.users.indexOf( user ) > -1;
 	}) 	
-	console.log(  "    ", JSON.stringify(devs) )
+	//console.log(  "    ", JSON.stringify(devs) )
 	return devs;	
 }
-
 
 
 /* GET home page. */
@@ -126,13 +141,15 @@ router.post('/api/auth/login/:user/:passwd', function(req, res) {
 
 router.get('/api/auth/logout/:session_id', function (req, res) {
 	console.log('---/api/auth/logout/', req.params.session_id);
+	sessionStop( req.params.session_id )
     var results = { status: "OK" };
     return res.json(results);
 });
 
 ////////////////////// INSTRUMENT /////////////////////////////
 router.post('/api/instrument/list/:session_id', function(req, res) {
-	console.log('---/api/instrument/list/', req.params.session_id)	
+	console.log('---/api/instrument/list/', req.params.session_id)
+	console.log("TIMESTAMP: ",timestamp() )
 	
 	try{
 		user = sessionUser( req.params.session_id );
@@ -143,6 +160,18 @@ router.post('/api/instrument/list/:session_id', function(req, res) {
 			
 		devs =  userDevices( user )
 		
+		for (dev in devs )
+		{
+			device  =  devices.findOne( { 'key' : devs[dev].key } )
+			//console.log( "   DEVICE:", dev,"  ", device );
+			console.log( "   DEVICE TS:", device.timestamp );
+			console.log( "   CURR.  TS:", timestamp() );
+			console.log( "   TS DIFF:", timestamp() - device.timestamp );
+			device.online = (timestamp() - device.timestamp ) < 4000;
+			//device.timestamp = timestamp(); 
+			devices.update(device);
+		}
+
 		return res.end( JSON.stringify( devs ) )
 	}
 	catch(exception)
@@ -212,14 +241,15 @@ router.post('/api/instrument/view/:session_id/:id', function(req, res) {
 
 router.post('/api/instrument/data/:session_id/:id', function(req, res) {
 	console.log('---/api/instrument/data/', req.params.session_id,'/', req.params.id)
-	
-	
   
 	try{
 		
 		dev = devices.findOne( { 'id': req.params.id } )
 		//console.log('   Devices:',  JSON.stringify(devices) )
 		//console.log('   Device:',  JSON.stringify(dev) )
+		dev.online = (timestamp() - dev.timestamp ) < 4000;
+		dev.timestamp = timestamp(); 
+		devices.update(dev);
 		console.log(   "Device data: ", dev.data);
 		return res.end( JSON.stringify( dev.data ) )
 	}
@@ -244,7 +274,9 @@ router.post('/api/instrument/set/:key', function(req, res) {
 		dev  =  devices.findOne( { 'key' : req.params.key } )
 		console.log('   Device:',  JSON.stringify(dev) )
 		console.log('   Body:', JSON.stringify(req.body) )
-		dev.data = req.body
+		dev.data = req.body		
+		dev.online = (timestamp() - dev.timestamp ) < 4000;
+		dev.timestamp = timestamp(); 
 		devices.update(dev);
 		return res.json( { status: "OK" } );
 	}
@@ -256,6 +288,6 @@ router.post('/api/instrument/set/:key', function(req, res) {
 	
 });
 
-  
+ 
 ////////////////////// END INSTRUMENT ///////////////////////// 
 module.exports = router;

@@ -8,8 +8,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     
     <script>
-      var userId = 'u1'
-      var session_id = 'ABCDE';//TODO false;
+      var userId = ''
+      var session_id = '';//TODO false;
       var reatha = angular.module('reatha', ['ngRoute']);
       var timer ={};
 
@@ -90,7 +90,24 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
                         
                     }).error(function (data, status, headers, config) {
                         $scope.status = status + ' ' + headers;
+                    });
+                    
+                clearInterval( timer )
+                timer = setInterval( function(){
+                  $http({
+                    method: 'POST',
+                    url: '/api/instrument/list/' + session_id ,
+                    cache: false
+                    }).success(function (response, status, headers, config) {
+                        console.log ("DATA:", response)
+                        $scope.devices = response;
+                        
+                    }).error(function (data, status, headers, config) {
+                        $scope.status = status + ' ' + headers;
                     });  
+                  },3000);
+                
+               
                 
             }).error(function (data, status, headers, config) {
                 $scope.status = status + ' ' + headers;
@@ -118,7 +135,7 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
                       }).error(function (data, status, headers, config) {
                           $scope.status = status + ' ' + headers;
                       });  
-                },3000);
+                  },3000);
                 
             }).error(function (data, status, headers, config) {
                 $scope.status = status + ' ' + headers;
