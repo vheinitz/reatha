@@ -71,8 +71,9 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
             console.log( "GOTO /" ) 
             $location.path('/');
         }
-             
-        $http({
+        
+        $scope.listDevices = function() {
+          $http({
             method: 'POST',
             url: '/api/instrument/list/view/' + session_id ,
             cache: false
@@ -112,6 +113,8 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
             }).error(function (data, status, headers, config) {
                 $scope.status = status + ' ' + headers;
             });
+         }
+         $scope.listDevices();
             
          $scope.select = function(id) {
             console.log( "$scope.select", id );
@@ -123,7 +126,6 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
                 console.log ("DATA:", response)
                 $scope.html = response;
                   
-                  timer = setInterval( function(){
                   $http({
                       method: 'POST',
                       url: '/api/instrument/data/' + session_id + '/' + id ,
@@ -134,8 +136,22 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
                           
                       }).error(function (data, status, headers, config) {
                           $scope.status = status + ' ' + headers;
+                      });
+                      
+                  clearInterval(timer); 
+                  timer = setInterval( function(){
+                    $http({
+                      method: 'POST',
+                      url: '/api/instrument/data/' + session_id + '/' + id ,
+                      cache: false
+                      }).success(function (response, status, headers, config) {
+                          console.log ("DATA:", response)
+                          $scope.device = response;
+                          
+                      }).error(function (data, status, headers, config) {
+                          $scope.status = status + ' ' + headers;
                       });  
-                  },3000);
+                    },3000);
                 
             }).error(function (data, status, headers, config) {
                 $scope.status = status + ' ' + headers;
@@ -157,7 +173,7 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">Web Monitor</a>
+      <a class="navbar-brand" href="#">Web Monitor</a>       
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">      
@@ -168,7 +184,6 @@ reatha.controller('DeviceViewCtrl', ['$scope', '$location','$http', function($sc
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
-    <div ng-view></div>
-       
+    <div ng-view></div>       
   </body>
 </html>
